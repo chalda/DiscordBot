@@ -1,0 +1,20 @@
+{
+  "name": "DiscordBot",
+  "version": "0.1",
+  "description": "Bot for Discord app",
+  "readme": "README.md",
+  "maintainers": [
+  ],
+  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chalda/DiscordBot.git"
+  },
+  "license": "GNU",
+  "dependencies": {
+    "discord.js": "*",
+    "request": ">=2.58.0",
+    "querystring": "*"
+  },
+  "main": "discord_bot.js"
+}
