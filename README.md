@@ -4,11 +4,12 @@ A chat bot for discord app based off <a href="https://github.com/hydrabolt/disco
 # Features:
 - !gif <tags> = returns a gif
 - !game <cs> or <hots>
+- !image => returns an image
+- !youtube => returns a youtube link
+- !say <text> => echos text
 
 # ToDo:
 
-- !youtube link
-- !image
 - Link history
 - "pugbomb" returns x number of pug images (pug are an example)
 - !help
