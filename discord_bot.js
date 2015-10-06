@@ -53,7 +53,7 @@ bot.on("message", function (msg) {
 	if (msg.content.substring(0, 4) === "ping") {
 		
 		//send a message to the channel the ping message was sent in.
-		bot.sendMessage(msg.channel, "pong!");
+		bot.sendMessage(msg.channel, "@"+msg.sender.username+" pong!");
 		
 		//alert the console
 		console.log("pong-ed " + msg.sender.username);
@@ -68,8 +68,20 @@ bot.on("message", function (msg) {
 		if(game === "hots") {
 			game = "Heroes of the Storm";
 		}
+		if(game === "sc2") {
+			game = "Starcraft II";
+		}
 		bot.sendMessage(msg.channel, "@everyone Anyone up for " + game + "?");
 		console.log("sent game invites for " + game);
+	}
+	if (msg.content.indexOf("dawnbot") > -1) {
+		bot.sendMessage(msg.channel, "Hello!");
+	}
+});
+//This is supposed to message on user sign on, but doessn't work
+bot.on("presence", function(user, userID, status, rawEvent) {
+	if(status === "online"){
+		bot.sendMessage({to: userID+"/Cairhien", message: "Greetings!"});
 	}
 });
 
