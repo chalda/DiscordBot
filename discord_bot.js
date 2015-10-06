@@ -6,6 +6,12 @@
 
 var Discord = require("discord.js");
 
+var yt = require("./youtube_plugin");
+var youtube_plugin = new yt();
+
+var gi = require("./google_image_plugin");
+var google_image_plugin = new gi();
+
 // Get the email and password
 var AuthDetails = require("./auth.json");
 var qs = require("querystring");
@@ -31,6 +37,10 @@ bot.on("disconnected", function () {
 });
 
 bot.on("message", function (msg) {
+
+	//if (!help)
+
+
 	if(msg.content.substring(0, 4) === "!gif"){
 		var tags = msg.content.split(" ");
 		tags.shift();
@@ -77,7 +87,32 @@ bot.on("message", function (msg) {
 	if (msg.content.indexOf("dawnbot") > -1) {
 		bot.sendMessage(msg.channel, "Hello!");
 	}
+
+	if(msg.content.substring(0,8) === "!youtube") {
+		var tags = msg.content.split(" ");
+		tags.shift();
+		tags = tags.join(" ");
+		youtube_plugin.respond(tags,msg.channel,bot)
+		//bot.sendMessage(msg.channel,youtube_plugin.respond(tags));
+	}
+
+	if(msg.content.substring(0,4) === "!say") {
+		var tags = msg.content.split(" ");
+		tags.shift();
+		tags = tags.join(" ");
+		bot.sendMessage(msg.channel,tags);
+		//bot.sendMessage(msg.channel,youtube_plugin.respond(tags));
+	}
+
+	if(msg.content.substring(0,6) === "!image") {
+		var tags = msg.content.split(" ");
+		tags.shift();
+		tags = tags.join(" ");
+		google_image_plugin.respond(tags,msg.channel,bot)
+		//bot.sendMessage(msg.channel,youtube_plugin.respond(tags));
+	}
 });
+
 //This is supposed to message on user sign on, but doessn't work
 bot.on("presence", function(user, userID, status, rawEvent) {
 	if(status === "online"){
