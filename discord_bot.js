@@ -59,7 +59,7 @@ bot.on("message", function (msg) {
 		console.log("pong-ed " + msg.sender.username);
 
 	}
-	if (msg.content.substring(0,6) === "!game ") {
+	else if (msg.content.substring(0,6) === "!game ") {
 		//ask if anyone wants to play the game
 		var game = msg.content.substring(6);
 		if(game === "cs") {
@@ -74,14 +74,23 @@ bot.on("message", function (msg) {
 		bot.sendMessage(msg.channel, "@everyone Anyone up for " + game + "?");
 		console.log("sent game invites for " + game);
 	}
-	if (msg.content.indexOf("dawnbot") > -1) {
+	else if (msg.content.indexOf("dawnbot") > -1) {
 		bot.sendMessage(msg.channel, "Hello!");
+	}
+	else if (msg.isMentioned(bot.user)) {
+		if (msg.content.indexOf("servers") > -1) {
+			bot.sendMessage(msg.channel,bot.servers);
+		} else if (msg.content.indexOf("channels") > -1) {
+			bot.sendMessage(msg.channel,bot.channels);
+		} else {
+			bot.sendMessage(msg.channel,msg.author + ", you called?");
+		}
 	}
 });
 //This is supposed to message on user sign on, but doessn't work
 bot.on("presence", function(user, userID, status, rawEvent) {
 	if(status === "online"){
-		bot.sendMessage({to: userID+"/Cairhien", message: "Greetings!"});
+		bot.sendMessage();
 	}
 });
 
