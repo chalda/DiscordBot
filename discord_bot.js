@@ -59,6 +59,18 @@ bot.on("message", function (msg) {
 		console.log("pong-ed " + msg.sender.username);
 
 	}
+	if (msg.content.substring(0,6) === "!game ") {
+		//ask if anyone wants to play the game
+		var game = msg.content.substring(6);
+		if(game === "cs") {
+			game = "Counter-Strike";
+		}
+		if(game === "hots") {
+			game = "Heroes of the Storm";
+		}
+		bot.sendMessage(msg.channel, "@everyone Anyone up for " + game + "?");
+		console.log("sent game invites for " + game);
+	}
 });
 
 function get_gif(tags, func) {
