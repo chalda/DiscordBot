@@ -63,7 +63,7 @@ bot.on("message", function (msg) {
 	if (msg.content.substring(0, 4) === "ping") {
 		
 		//send a message to the channel the ping message was sent in.
-		bot.sendMessage(msg.channel, "@"+msg.sender.username+" pong!");
+		bot.sendMessage(msg.channel, msg.sender+" pong!");
 		
 		//alert the console
 		console.log("pong-ed " + msg.sender.username);
@@ -88,10 +88,22 @@ bot.on("message", function (msg) {
 		bot.sendMessage(msg.channel, "Hello!");
 	}
 	else if (msg.isMentioned(bot.user)) {
-		if (msg.content.indexOf("servers") > -1) {
+		var tokens = msg.content.split(" ");
+		tokens.shift();
+		if (tokens[0] === "servers") {
 			bot.sendMessage(msg.channel,bot.servers);
-		} else if (msg.content.indexOf("channels") > -1) {
+		} else if (tokens[0] === "channels") {
 			bot.sendMessage(msg.channel,bot.channels);
+		} else if (tokens[0] === "myid") {
+			bot.sendMessage(msg.channel,msg.author.id);
+		} else if (tokens[0] === "idle") {
+			bot.setStatusIdle();
+		} else if (tokens[0] === "online") {
+			bot.setStatusOnline();
+		} else if (tokens[0] === "record") {
+			tokens.shift();
+			var user = bot.getUser("username",tokens.shift());
+			bot.sendMessage(msg.channel,user + "\n" + tokens.join(" "));
 		} else {
 			bot.sendMessage(msg.channel,msg.author + ", you called?");
 		}
@@ -129,10 +141,11 @@ bot.on("message", function (msg) {
 });
 
 //This is supposed to message on user sign on, but doessn't work
-bot.on("presence", function(user, userID, status, rawEvent) {
-	if(status === "online"){
-		bot.sendMessage();
-	}
+bot.on("presence", function(data) {
+	//if(status === "online"){
+	console.log("presence update");
+	bot.sendMessage(data.server,data.user+" went "+data.status);
+	//}
 });
 
 function get_gif(tags, func) {
