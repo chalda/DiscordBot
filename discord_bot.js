@@ -153,7 +153,7 @@ bot.on("message", function (msg) {
 		bot.sendMessage(msg.channel,"brb!",function(error,sentMsg){
 			console.log("updating...");
 	                var spawn = require('child_process').spawn;
-			spawn('sh', [ 'pullanddeploy.sh' ]);
+			spawn('sh', [ 'pullanddeploy.sh' ], {detached: true});
 			console.log("restart");
 			process.exit()
 		});
