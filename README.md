@@ -2,8 +2,8 @@
 A chat bot for discord app based off <a href="https://github.com/hydrabolt/discord.js/">discord.js</a>
 
 # Features:
-- !gif <tags> = returns a gif
-- !game <cs> or <hots>
+- !gif <query> = returns a gif
+- !game nameofgame => asks the room if anyone wants to play games! "cs" and "hots" are specially defined
 - !image => returns an image
 - !youtube => returns a youtube link
 - !say <text> => echos text
