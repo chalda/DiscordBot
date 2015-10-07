@@ -20,7 +20,7 @@ requires node (probably 0.12)
 
 pull repo
 
-edit auto.json: email/password and youtube API key
+add auth.json: email/password and youtube API key (example provided)
 
 npm install
 
