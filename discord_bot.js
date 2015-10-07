@@ -181,6 +181,12 @@ bot.on("message", function (msg) {
 				bot.sendMessage(msg.channel,"failed checking git version!");
 			}
 		});
+	} else if(msg.content.substring(0,5) === "!help") {
+		var str = "Currently available memes:\n"
+		for (var m in meme){
+			str += m + "\n"
+		}
+		bot.sendMessage(msg.channel,str);
 	}
 });
  
