@@ -2,15 +2,15 @@
 A chat bot for discord app based off <a href="https://github.com/hydrabolt/discord.js/">discord.js</a>
 
 # Features:
-- !gif <query> = returns a gif
+- !gif query = returns a gif example !gif cute cats doing stuff
 - !game nameofgame => asks the room if anyone wants to play games! "cs" and "hots" are specially defined
-- !image => returns an image
-- !youtube => returns a youtube link
-- !wiki => returns the summary of the first search result on Wikipedia
-- !say <text> => echos text
+- !image query => returns an image (careful, no adult filter)
+- !youtube query=> returns a youtube link
+- !wiki query=> returns the summary of the first search result on Wikipedia
+- !say text => echos text
 - !pullanddeploy => pulls changes from your (or this) repo and restarts node. does <strong>not</strong> work for windows!
-- !meme <memetype> <text1> <text2> => returns a meme image.
-- !help returns currently supported memes that are defined in var meme = {
+- !meme memetype "text1" "text2" => returns a meme image. notice the quotes around text, they are vitally important
+- !help => returns currently supported memes that are defined in var meme = {
 	"brace": 61546,
 	"mostinteresting": 61532,
 	"fry": 61520,
