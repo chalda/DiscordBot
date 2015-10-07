@@ -23,6 +23,24 @@ var config = {
     "permission": ["NORMAL"]
 };
 
+
+//https://api.imgflip.com/popular_meme_ids
+var meme = {
+	"brace": 61546,
+	"mostinteresting": 61532,
+	"fry": 61520,
+	"onedoesnot": 61579,
+	"yuno": 61527,
+	"success": 61544,
+	"allthethings": 61533,
+	"doge": 8072285,
+	"drevil": 40945639,
+	"skeptical": 101711,
+	"notime": 442575,
+	"yodawg": 101716
+};
+
+
 var bot = new Discord.Client();
 
 bot.on("ready", function () {
@@ -140,7 +158,20 @@ bot.on("message", function (msg) {
 			process.exit()
 		});
 	}
+	else if(msg.content.substring(0,5) === "!meme"){
+		var tags = msg.content.split('"');
+		var memetype = tags[0].split(" ")[1];
+		//bot.sendMessage(msg.channel,tags);
+		var Imgflipper = require("imgflipper");
+		var imgflipper = new Imgflipper("blahkins", "memepass");
+		imgflipper.generateMeme(meme[memetype], tags[1]?tags[1]:"", tags[3]?tags[3]:"", function(err, image){
+			//console.log(arguments);
+			bot.sendMessage(msg.channel,image);
+		});
+
+	}
 });
+ 
 
 //This is supposed to message on user sign on, but doessn't work
 bot.on("presence", function(data) {

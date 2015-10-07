@@ -25,6 +25,7 @@
     , "youtube-node": "1.2.x"
     , "google": "1.1.x"
     , "google-images": "0.1.x"
+    , "imgflipper": "*"
   },
   "main": "discord_bot.js"
 }
