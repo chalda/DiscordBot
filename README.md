@@ -71,5 +71,6 @@ node discord_bot.js
 7) Navigate to wherever you extracted the project with cd. "cd C:\Users\Alex\Downloads\DiscordBot\"
 
 8) Download requirements with "npm install" 
+	- it seems a lot of people have problems with this step, please follow this guide: http://stackoverflow.com/questions/21365714/nodejs-error-installing-with-npm
 
 9) Run the bot with "node discord_bot.js"
