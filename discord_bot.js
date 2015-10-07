@@ -63,7 +63,7 @@ bot.on("message", function (msg) {
 	if (msg.content.substring(0, 4) === "ping") {
 		
 		//send a message to the channel the ping message was sent in.
-		bot.sendMessage(msg.channel, msg.sender+" pong!");
+		bot.sendMessage(msg.channel, msg.sender+" foobar pong!");
 		
 		//alert the console
 		console.log("pong-ed " + msg.sender.username);
@@ -132,14 +132,13 @@ bot.on("message", function (msg) {
 		//bot.sendMessage(msg.channel,youtube_plugin.respond(tags));
 	}
 	else if(msg.content.substring(0,16) === "!pullandrestart") {
-		console.log("updating...");
-		//if(!process.platform === 'win32'){
+		bot.sendMessage(msg.channel,"brb!",function(error,sentMsg){
 			console.log("updating...");
-			var spawn = require('child_process').spawn;
+	                var spawn = require('child_process').spawn;
 			spawn('sh', [ 'pullanddeploy.sh' ]);
 			console.log("restart");
 			process.exit()
-		//}
+		});
 	}
 });
 
