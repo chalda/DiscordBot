@@ -170,6 +170,17 @@ bot.on("message", function (msg) {
 		});
 
 	}
+	else if(msg.content.substring(0,8) === "!version") {
+		var commit = require('child_process').spawn('git', ['log','-n','1']);
+		commit.stdout.on('data', function(data) {
+			bot.sendMessage(msg.channel,data);
+		});
+		commit.on('close',function(code) {
+			if( code != 0){
+				bot.sendMessage(msg.channel,"failed checking git version!");
+			}
+		});
+	}
 });
  
 
