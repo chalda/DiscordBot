@@ -75,7 +75,10 @@ bot.on("message", function (msg) {
 
 
 	}
-
+	//drop our own messages to prevent feedback loops
+	if(msg.author == bot.user){
+		return;
+	}
 
 
 	if (msg.content.substring(0, 4) === "ping") {
@@ -101,9 +104,6 @@ bot.on("message", function (msg) {
 		}
 		bot.sendMessage(msg.channel, "@everyone Anyone up for " + game + "?");
 		console.log("sent game invites for " + game);
-	}
-	else if (msg.content.indexOf("dawnbot") > -1) {
-		bot.sendMessage(msg.channel, "Hello!");
 	}
 	else if (msg.isMentioned(bot.user)) {
 		var tokens = msg.content.split(" ");
@@ -187,15 +187,45 @@ bot.on("message", function (msg) {
 			str += m + "\n"
 		}
 		bot.sendMessage(msg.channel,str);
+	} else if(msg.content.substring(0,4) === "!log") {
+		console.log(msg.content);
+	} else if (msg.content.substring(0,5) === "!wiki") {
+		var query = msg.content.substring(6);
+		if(!query) {
+			bot.sendMessage(msg.channel,"usage: !wiki search terms");
+			return;
+		}
+		var Wiki = require('wikijs');
+		new Wiki().search(query,1).then(function(data) {
+			console.log(data);
+			new Wiki().page(data.results[0]).then(function(page) {
+				page.summary().then(function(summary) {
+					var sumText = summary.toString().split('\n');
+					var continuation = function() {
+						var paragraph = sumText.shift();
+						if(paragraph){
+							bot.sendMessage(msg.channel,paragraph,continuation);
+						}
+					};
+					continuation();
+				});
+			});
+		},function(err){
+			bot.sendMessage(msg.channel,err);
+		});
 	}
+	else if (msg.content.indexOf("dawnbot") > -1) {
+	        bot.sendMessage(msg.channel, "Hello!");
+        }
+
 });
  
 
 //This is supposed to message on user sign on, but doessn't work
 bot.on("presence", function(data) {
 	//if(status === "online"){
-	console.log("presence update");
-	bot.sendMessage(data.server,data.user+" went "+data.status);
+	//console.log("presence update");
+	console.log(data.user+" went "+data.status);
 	//}
 });
 

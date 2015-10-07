@@ -26,6 +26,7 @@
     , "google": "1.1.x"
     , "google-images": "0.1.x"
     , "imgflipper": "*"
+    , "wikijs": "*"
   },
   "main": "discord_bot.js"
 }

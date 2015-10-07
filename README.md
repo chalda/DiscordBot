@@ -6,6 +6,7 @@ A chat bot for discord app based off <a href="https://github.com/hydrabolt/disco
 - !game nameofgame => asks the room if anyone wants to play games! "cs" and "hots" are specially defined
 - !image => returns an image
 - !youtube => returns a youtube link
+- !wiki => returns the summary of the first search result on Wikipedia
 - !say <text> => echos text
 - !pullanddeploy => pulls changes from your (or this) repo and restarts node. does <strong>not</strong> work for windows!
 - !meme <memetype> <text1> <text2> => returns a meme image.
@@ -24,7 +25,11 @@ A chat bot for discord app based off <a href="https://github.com/hydrabolt/disco
 	"yodawg": 101716
 };
 - !version => last deployed commit
-
+- @<botname> servers => returns servers this bot is in
+- @<botname> channels => returns channels this bot is in
+- @<botname> idle => sets bot status to idle
+- @<botname> online => sets bot status to online
+- ping => responds to user with pong!
 # ToDo:
 
 - Link history
@@ -35,6 +40,7 @@ A chat bot for discord app based off <a href="https://github.com/hydrabolt/disco
 - !help right now just shows our dank memes
 - automatically pull in meme codes and do a fuzzy search on meme type
 - voice intergration and DJ features!
+- All the things!
 
 # Instructions
 
