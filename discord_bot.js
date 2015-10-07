@@ -63,7 +63,7 @@ bot.on("message", function (msg) {
 	if (msg.content.substring(0, 4) === "ping") {
 		
 		//send a message to the channel the ping message was sent in.
-		bot.sendMessage(msg.channel, msg.sender+" foobar pong!");
+		bot.sendMessage(msg.channel, msg.sender+" pong!");
 		
 		//alert the console
 		console.log("pong-ed " + msg.sender.username);
