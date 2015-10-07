@@ -149,7 +149,7 @@ bot.on("message", function (msg) {
 		google_image_plugin.respond(tags,msg.channel,bot)
 		//bot.sendMessage(msg.channel,youtube_plugin.respond(tags));
 	}
-	else if(msg.content.substring(0,16) === "!pullandrestart") {
+	else if(msg.content.substring(0,16) === "!pullanddeploy") {
 		bot.sendMessage(msg.channel,"brb!",function(error,sentMsg){
 			console.log("updating...");
 	                var spawn = require('child_process').spawn;
