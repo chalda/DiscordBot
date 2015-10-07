@@ -131,12 +131,15 @@ bot.on("message", function (msg) {
 		google_image_plugin.respond(tags,msg.channel,bot)
 		//bot.sendMessage(msg.channel,youtube_plugin.respond(tags));
 	}
-	else if(msg.content.substring(0,15) === "!pullandrestart") {
-		if(!process.platform === 'win32'){
+	else if(msg.content.substring(0,16) === "!pullandrestart") {
+		console.log("updating...");
+		//if(!process.platform === 'win32'){
+			console.log("updating...");
 			var spawn = require('child_process').spawn;
-			spawn('sh', [ 'pullanddeploy.sh' ]
+			spawn('sh', [ 'pullanddeploy.sh' ]);
+			console.log("restart");
 			process.exit()
-		}
+		//}
 	}
 });
 
