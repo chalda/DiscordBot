@@ -28,8 +28,11 @@ A chat bot for discord app based off <a href="https://github.com/hydrabolt/disco
 # ToDo:
 
 - Link history
-- "pugbomb" returns x number of pug images (pug are an example)
-- !help
+- refactor discord_bot.js. split the msg string, look for command, process instead of a big if block luls (and the whole project. all of this is just quick and dirty)
+- make it a module so you can npm install
+- better plugin layout, allow for easy plugin drop ins, turn on/turn off
+- "pugbomb" returns x number of pug images (pug are an example) corgibomb etc
+- !help right now just shows our dank memes
 - automatically pull in meme codes and do a fuzzy search on meme type
 - voice intergration and DJ features!
 
