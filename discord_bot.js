@@ -153,9 +153,10 @@ bot.on("message", function (msg) {
 		bot.sendMessage(msg.channel,"brb!",function(error,sentMsg){
 			console.log("updating...");
 	                var spawn = require('child_process').spawn;
-			spawn('sh', [ 'pullanddeploy.sh' ], {detached: true});
-			console.log("restart");
-			process.exit()
+			spawn('sh', [ 'pullanddeploy.sh' ]).on("close",function(code){
+				console.log("exiting");
+				process.exit();
+			});
 		});
 	}
 	else if(msg.content.substring(0,5) === "!meme"){
