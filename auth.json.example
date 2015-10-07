@@ -1,4 +1,7 @@
 {
 	"email" : "email of the discord account here",
-	"password" : "password of the discord account here"
+	"password" : "password of the discord account here",
+	"youtube_api_key": "create one here https://console.developers.google.com,
+	"imgflip_username": "https://imgflip.com/ username",
+	"imgflip_password": "https://imgflip.com/ password"
 }
