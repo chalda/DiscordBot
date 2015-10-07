@@ -23,6 +23,7 @@ A chat bot for discord app based off <a href="https://github.com/hydrabolt/disco
 	"notime": 442575,
 	"yodawg": 101716
 };
+- !version => last deployed commit
 
 # ToDo:
 
@@ -30,6 +31,7 @@ A chat bot for discord app based off <a href="https://github.com/hydrabolt/disco
 - "pugbomb" returns x number of pug images (pug are an example)
 - !help
 - automatically pull in meme codes and do a fuzzy search on meme type
+- voice intergration and DJ features!
 
 # Instructions
 
