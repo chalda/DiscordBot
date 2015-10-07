@@ -163,7 +163,7 @@ bot.on("message", function (msg) {
 		var memetype = tags[0].split(" ")[1];
 		//bot.sendMessage(msg.channel,tags);
 		var Imgflipper = require("imgflipper");
-		var imgflipper = new Imgflipper("blahkins", "memepass");
+		var imgflipper = new Imgflipper(AuthDetails.imgflip_username, AuthDetails.imgflip_password);
 		imgflipper.generateMeme(meme[memetype], tags[1]?tags[1]:"", tags[3]?tags[3]:"", function(err, image){
 			//console.log(arguments);
 			bot.sendMessage(msg.channel,image);
