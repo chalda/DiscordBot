@@ -119,6 +119,13 @@ bot.on("message", function (msg) {
 		google_image_plugin.respond(tags,msg.channel,bot)
 		//bot.sendMessage(msg.channel,youtube_plugin.respond(tags));
 	}
+	else if(msg.content.substring(0,15) === "!pullandrestart") {
+		if(!process.platform === 'win32'){
+			var spawn = require('child_process').spawn;
+			spawn('sh', [ 'pullanddeploy.sh' ]
+			process.exit()
+		}
+	}
 });
 
 //This is supposed to message on user sign on, but doessn't work
