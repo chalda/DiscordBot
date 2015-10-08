@@ -40,6 +40,175 @@ var meme = {
 	"yodawg": 101716
 };
 
+var game_abbreviations = {
+    "cs": "Counter-Strike",
+    "hon": "Heroes of Newerth",
+    "hots": "Heroes of the Storm",
+    "sc2": "Starcraft II",
+    "gta": "Grand Theft Auto"
+};
+
+var commands = {
+	"gif": {
+		usage: "<image tags>",
+        description: "returns a random gif matching the tags passed",
+		process: function(bot, msg, suffix) {
+		    var tags = suffix.split(" ");
+		    get_gif(tags, function(id) {
+			if (typeof id !== "undefined") {
+			    bot.sendMessage(msg.channel, "http://media.giphy.com/media/" + id + "/giphy.gif [Tags: " + (tags ? tags : "Random GIF") + "]");
+			}
+			else {
+			    bot.sendMessage(msg.channel, "Invalid tags, try something different. [Tags: " + (tags ? tags : "Random GIF") + "]");
+			}
+		    });
+		}
+	},
+    "ping": {
+        description: "responds pong, useful for checking if bot is alive",
+        process: function(bot, msg, suffix) {
+            bot.sendMessage(msg.channel, msg.sender+" pong!");
+            if(suffix){
+                bot.sendMessage(msg.channel, "note that !ping takes no arguments!");
+            }
+        }
+    },
+    "game": {
+        usage: "<name of game>",
+        description: "pings channel asking if anyone wants to play",
+        process: function(bot,msg,suffix){
+            var game = game_abbreviations[suffix];
+            if(!game) {
+                game = suffix;
+            }
+            bot.sendMessage(msg.channel, "@everyone Anyone up for " + game + "?");
+            console.log("sent game invites for " + game);
+        }
+    },
+    "servers": {
+        description: "lists servers bot is connected to",
+        process: function(bot,msg){bot.sendMessage(msg.channel,bot.servers);}
+    },
+    "channels": {
+        description: "lists channels bot is connected to",
+        process: function(bot,msg) { bot.sendMessage(msg.channel,bot.channels);}
+    },
+    "myid": {
+        description: "returns the user id of the sender",
+        process: function(bot,msg){bot.sendMessage(msg.channel,msg.author.id);}
+    },
+    "idle": {
+        description: "sets bot status to idle",
+        process: function(bot,msg){ bot.setStatusIdle();}
+    },
+    "online": {
+        description: "sets bot status to online",
+        process: function(bot,msg){ bot.setStatusOnline();}
+    },
+    "youtube": {
+        usage: "<video tags>",
+        description: "gets youtube video matching tags",
+        process: function(bot,msg,suffix){
+            youtube_plugin.respond(suffix,msg.channel,bot);
+        }
+    },
+    "say": {
+        usage: "<message>",
+        description: "bot says message",
+        process: function(bot,msg,suffix){ bot.sendMessage(msg.channel,suffix);}
+    },
+    "image": {
+        usage: "<image tags>",
+        description: "gets image matching tags from google",
+        process: function(bot,msg,suffix){ google_image_plugin.respond(suffix,msg.channel,bot);}
+    },
+    "pullanddeploy": {
+        description: "bot will perform a git pull master and restart with the new code",
+        process: function(bot,msg,suffix) {
+            bot.sendMessage(msg.channel,"brb!",function(error,sentMsg){
+                console.log("updating...");
+	            var spawn = require('child_process').spawn;
+                spawn('sh', [ 'pullanddeploy.sh' ]).on("close",function(code){
+                    console.log("exiting");
+                    process.exit();
+                });
+            });
+        }
+    },
+    "meme": {
+        usage: 'meme "top text" "bottom text"',
+        process: function(bot,msg,suffix) {
+            var tags = msg.content.split('"');
+            var memetype = tags[0].split(" ")[1];
+            //bot.sendMessage(msg.channel,tags);
+            var Imgflipper = require("imgflipper");
+            var imgflipper = new Imgflipper(AuthDetails.imgflip_username, AuthDetails.imgflip_password);
+            imgflipper.generateMeme(meme[memetype], tags[1]?tags[1]:"", tags[3]?tags[3]:"", function(err, image){
+                //console.log(arguments);
+                bot.sendMessage(msg.channel,image);
+            });
+        }
+    },
+    "memehelp": { //TODO: this should be handled by !help
+        process: function(bot,msg) {
+            var str = "Currently available memes:\n"
+            for (var m in meme){
+                str += m + "\n"
+            }
+            bot.sendMessage(msg.channel,str);
+        }
+    },
+    "version": {
+        description: "returns the git commit this bot is running",
+        process: function(bot,msg,suffix) {
+            var commit = require('child_process').spawn('git', ['log','-n','1']);
+            commit.stdout.on('data', function(data) {
+                bot.sendMessage(msg.channel,data);
+            });
+            commit.on('close',function(code) {
+                if( code != 0){
+                    bot.sendMessage(msg.channel,"failed checking git version!");
+                }
+            });
+        }
+    },
+    "log": {
+        usage: "<log message>",
+        description: "logs message to bot console",
+        process: function(bot,msg,suffix){console.log(msg.content);}
+    },
+    "wiki": {
+        usage: "<search terms>",
+        description: "returns the summary of the first matching search result from Wikipedia",
+        process: function(bot,msg,suffix) {
+            var query = suffix;
+            if(!query) {
+                bot.sendMessage(msg.channel,"usage: !wiki search terms");
+                return;
+            }
+            var Wiki = require('wikijs');
+            new Wiki().search(query,1).then(function(data) {
+                console.log(data);
+                new Wiki().page(data.results[0]).then(function(page) {
+                    page.summary().then(function(summary) {
+                        var sumText = summary.toString().split('\n');
+                        var continuation = function() {
+                            var paragraph = sumText.shift();
+                            if(paragraph){
+                                bot.sendMessage(msg.channel,paragraph,continuation);
+                            }
+                        };
+                        continuation();
+                    });
+                });
+            },function(err){
+                bot.sendMessage(msg.channel,err);
+            });
+        }
+    }
+            
+};
+
 
 var bot = new Discord.Client();
 
@@ -55,173 +224,39 @@ bot.on("disconnected", function () {
 });
 
 bot.on("message", function (msg) {
-
-	//if (!help)
-
-
-	if(msg.content.substring(0, 4) === "!gif"){
-		var tags = msg.content.split(" ");
-		tags.shift();
-		//bot.sendMessage(msg.channel, tags);
-		get_gif(tags, function (id) {
-            if (typeof id !== "undefined") {
-
-           		bot.sendMessage(msg.channel, "http://media.giphy.com/media/" + id + "/giphy.gif [Tags: " + (tags ? tags : "Random GIF") + "]");
+	//check if message is a command
+	if(msg.content[0] === '!' && msg.author != bot.user){
+		var cmdTxt = msg.content.split(" ")[0].substring(1);
+		var cmd = commands[cmdTxt];
+        if(cmdTxt === "help"){
+            //help is special since it iterates over the other commands
+            for(var cmd in commands) {
+                var info = "!" + cmd + " " + commands[cmd].usage + "\n\t" + commands[cmd].description;
+                bot.sendMessage(msg.channel,info);
             }
-            else {
-            	bot.sendMessage(msg.channel, "Invalid tags, try something different. [Tags: " + (tags ? tags : "Random GIF") + "]");
-            }
-        });
-
-
-	}
-	//drop our own messages to prevent feedback loops
-	if(msg.author == bot.user){
-		return;
-	}
-
-
-	if (msg.content.substring(0, 4) === "ping") {
-		
-		//send a message to the channel the ping message was sent in.
-		bot.sendMessage(msg.channel, msg.sender+" pong!");
-		
-		//alert the console
-		console.log("pong-ed " + msg.sender.username);
-
-	}
-	else if (msg.content.substring(0,6) === "!game ") {
-		//ask if anyone wants to play the game
-		var game = msg.content.substring(6);
-		if(game === "cs") {
-			game = "Counter-Strike";
-		}
-		if(game === "hots") {
-			game = "Heroes of the Storm";
-		}
-		if(game === "sc2") {
-			game = "Starcraft II";
-		}
-		bot.sendMessage(msg.channel, "@everyone Anyone up for " + game + "?");
-		console.log("sent game invites for " + game);
-	}
-	else if (msg.isMentioned(bot.user)) {
-		var tokens = msg.content.split(" ");
-		tokens.shift();
-		if (tokens[0] === "servers") {
-			bot.sendMessage(msg.channel,bot.servers);
-		} else if (tokens[0] === "channels") {
-			bot.sendMessage(msg.channel,bot.channels);
-		} else if (tokens[0] === "myid") {
-			bot.sendMessage(msg.channel,msg.author.id);
-		} else if (tokens[0] === "idle") {
-			bot.setStatusIdle();
-		} else if (tokens[0] === "online") {
-			bot.setStatusOnline();
-		} else if (tokens[0] === "record") {
-			tokens.shift();
-			var user = bot.getUser("username",tokens.shift());
-			bot.sendMessage(msg.channel,user + "\n" + tokens.join(" "));
-		} else {
-			bot.sendMessage(msg.channel,msg.author + ", you called?");
-		}
-	}
-	else if(msg.content.substring(0,8) === "!youtube") {
-		var tags = msg.content.split(" ");
-		tags.shift();
-		tags = tags.join(" ");
-		youtube_plugin.respond(tags,msg.channel,bot)
-		//bot.sendMessage(msg.channel,youtube_plugin.respond(tags));
-	}
-
-	else if(msg.content.substring(0,4) === "!say") {
-		var tags = msg.content.split(" ");
-		tags.shift();
-		tags = tags.join(" ");
-		bot.sendMessage(msg.channel,tags);
-		//bot.sendMessage(msg.channel,youtube_plugin.respond(tags));
-	}
-
-	else if(msg.content.substring(0,6) === "!image") {
-		var tags = msg.content.split(" ");
-		tags.shift();
-		tags = tags.join(" ");
-		google_image_plugin.respond(tags,msg.channel,bot)
-		//bot.sendMessage(msg.channel,youtube_plugin.respond(tags));
-	}
-	else if(msg.content.substring(0,16) === "!pullanddeploy") {
-		bot.sendMessage(msg.channel,"brb!",function(error,sentMsg){
-			console.log("updating...");
-	                var spawn = require('child_process').spawn;
-			spawn('sh', [ 'pullanddeploy.sh' ]).on("close",function(code){
-				console.log("exiting");
-				process.exit();
-			});
-		});
-	}
-	else if(msg.content.substring(0,5) === "!meme"){
-		var tags = msg.content.split('"');
-		var memetype = tags[0].split(" ")[1];
-		//bot.sendMessage(msg.channel,tags);
-		var Imgflipper = require("imgflipper");
-		var imgflipper = new Imgflipper(AuthDetails.imgflip_username, AuthDetails.imgflip_password);
-		imgflipper.generateMeme(meme[memetype], tags[1]?tags[1]:"", tags[3]?tags[3]:"", function(err, image){
-			//console.log(arguments);
-			bot.sendMessage(msg.channel,image);
-		});
-
-	}
-	else if(msg.content.substring(0,8) === "!version") {
-		var commit = require('child_process').spawn('git', ['log','-n','1']);
-		commit.stdout.on('data', function(data) {
-			bot.sendMessage(msg.channel,data);
-		});
-		commit.on('close',function(code) {
-			if( code != 0){
-				bot.sendMessage(msg.channel,"failed checking git version!");
-			}
-		});
-	} else if(msg.content.substring(0,5) === "!help") {
-		var str = "Currently available memes:\n"
-		for (var m in meme){
-			str += m + "\n"
-		}
-		bot.sendMessage(msg.channel,str);
-	} else if(msg.content.substring(0,4) === "!log") {
-		console.log(msg.content);
-	} else if (msg.content.substring(0,5) === "!wiki") {
-		var query = msg.content.substring(6);
-		if(!query) {
-			bot.sendMessage(msg.channel,"usage: !wiki search terms");
-			return;
-		}
-		var Wiki = require('wikijs');
-		new Wiki().search(query,1).then(function(data) {
-			console.log(data);
-			new Wiki().page(data.results[0]).then(function(page) {
-				page.summary().then(function(summary) {
-					var sumText = summary.toString().split('\n');
-					var continuation = function() {
-						var paragraph = sumText.shift();
-						if(paragraph){
-							bot.sendMessage(msg.channel,paragraph,continuation);
-						}
-					};
-					continuation();
-				});
-			});
-		},function(err){
-			bot.sendMessage(msg.channel,err);
-		});
-	}
-	else if (msg.content.indexOf("dawnbot") > -1) {
-	        bot.sendMessage(msg.channel, "Hello!");
         }
-
+		else if(cmd) {
+            console.log(cmd);
+            var suffix = msg.content.substring(cmdTxt.length+2);//add one for the ! and one for the space
+            cmd.process(bot,msg,suffix);
+		} else {
+			bot.sendMessage(msg.channel, "Invalid command " + cmdTxt);
+		}
+	} else {
+		//message isn't a command or is from us
+        //drop our own messages to prevent feedback loops
+        if(msg.author == bot.user){
+            return;
+        }
+        
+        if (msg.author != bot.user && (msg.isMentioned(bot.user) || msg.content.indexOf(bot.user.username) > -1)) {
+                bot.sendMessage(msg.channel,msg.author + ", you called?");
+        }
+    }
 });
  
 
-//This is supposed to message on user sign on, but doessn't work
+//Log user status changes
 bot.on("presence", function(data) {
 	//if(status === "online"){
 	//console.log("presence update");
