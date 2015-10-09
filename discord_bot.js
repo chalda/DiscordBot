@@ -372,8 +372,13 @@ bot.on("disconnected", function () {
 
 bot.on("message", function (msg) {
 	//check if message is a command
-	if(msg.content[0] === '!' && msg.author != bot.user){
+	if(msg.author != bot.user && (msg.content[0] === '!' || msg.content.indexOf(bot.user.mention()) == 0)){
 		var cmdTxt = msg.content.split(" ")[0].substring(1);
+        var suffix = msg.content.substring(cmdTxt.length+2);//add one for the ! and one for the space
+        if(msg.content.indexOf(bot.user.mention()) == 0){
+            cmdTxt = msg.content.split(" ")[1];
+            suffix = msg.content.substring(bot.user.mention().length+cmdTxt.length+2);
+        }
 		var cmd = commands[cmdTxt];
         if(cmdTxt === "help"){
             //help is special since it iterates over the other commands
@@ -391,7 +396,6 @@ bot.on("message", function (msg) {
             }
         }
 		else if(cmd) {
-            var suffix = msg.content.substring(cmdTxt.length+2);//add one for the ! and one for the space
             cmd.process(bot,msg,suffix);
 		} else {
 			bot.sendMessage(msg.channel, "Invalid command " + cmdTxt);
