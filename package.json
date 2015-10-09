@@ -27,6 +27,7 @@
     , "google-images": "0.1.x"
     , "imgflipper": "*"
     , "wikijs": "*"
+    , "yahoo-finance": "*"
   },
   "main": "discord_bot.js"
 }
