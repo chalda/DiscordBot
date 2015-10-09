@@ -12,6 +12,9 @@ var youtube_plugin = new yt();
 var gi = require("./google_image_plugin");
 var google_image_plugin = new gi();
 
+var wa = require("./wolfram_plugin");
+var wolfram_plugin = new wa();
+
 // Get the email and password
 var AuthDetails = require("./auth.json");
 var qs = require("querystring");
@@ -303,6 +306,16 @@ var commands = {
             });
         }
     },
+	"wolfram": {
+		usage: "<search terms>",
+        description: "gives results from wolframalpha using search terms",
+        process: function(bot,msg,suffix){
+			if(!suffix){
+				bot.sendMessage(msg.channel,"Usage: !wolfram <search terms> (Ex. !wolfram integrate 4x)");
+			}
+            wolfram_plugin.respond(suffix,msg.channel,bot);
+        }
+	},
     "hotspatch": {
         description: "gets the latest patch notes for Heroes of the Storm from blizzpro",
         process: function(bot,msg,suffix) {
