@@ -262,6 +262,7 @@ var commands = {
             });
         }
     },
+<<<<<<< HEAD
 	"wolfram": {
 		usage: "<search terms>",
         description: "gives results from wolframalpha using search terms",
@@ -272,6 +273,26 @@ var commands = {
             wolfram_plugin.respond(suffix,msg.channel,bot);
         }
 	}
+=======
+    "stock": {
+        usage: "<stock to fetch>",
+        process: function(bot,msg,suffix) {
+            var yahooFinance = require('yahoo-finance');
+            yahooFinance.snapshot({
+              symbol: suffix,
+              fields: ['s', 'n', 'd1', 'l1', 'y', 'r'],
+            }, function (error, snapshot) {
+                if(error){
+                    bot.sendMessage(msg.channel,"couldn't get stock: " + error);
+                } else {
+                    //bot.sendMessage(msg.channel,JSON.stringify(snapshot));
+                    bot.sendMessage(msg.channel,snapshot.name
+                        + "\nprice: $" + snapshot.lastTradePriceOnly);
+                }  
+            });
+        }
+    }
+>>>>>>> chalda/master
 };
 
 
