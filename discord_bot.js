@@ -16,6 +16,8 @@ var google_image_plugin = new gi();
 var AuthDetails = require("./auth.json");
 var qs = require("querystring");
 
+var htmlToText = require('html-to-text');
+
 var config = {
     "api_key": "dc6zaTOxFJmzC",
     "rating": "pg-13",
@@ -276,8 +278,59 @@ var commands = {
                 }  
             });
         }
+    },
+    "hotspatch": {
+        description: "gets the latest patch notes for Heroes of the Storm from blizzpro",
+        process: function(bot,msg,suffix) {
+            //http://heroesofthestorm.blizzpro.com/tag/patch-notes/feed/
+            rssfeed("heroesofthestorm.blizzpro.com","/tag/patch-notes/feed/",bot,msg,suffix);
+        }
+    },
+    "reddit": {
+        usage: "[subreddit]",
+        description: "Returns the top post on reddit. Can optionally pass a subreddit to get the top psot there instead",
+        process: function(bot,msg,suffix) {
+            var path = "/.rss"
+            if(suffix){
+                path = "/r/"+suffix+path;
+            }
+            rssfeed("www.reddit.com",path,bot,msg,"");
+        }
     }
 };
+
+function rssfeed(host,path,bot,msg,suffix){
+    var http = require('http');
+    http.get({
+        host:host,
+        path:path
+    }, function(response) {
+        var stream = this;
+        var FeedParser = require('feedparser');
+        var feedparser = new FeedParser();
+        response.pipe(feedparser);
+        feedparser.on('error', function(error){
+            bot.sendMessage(msg.channel,"failed reading feed: " + error);
+        });
+        feedparser.on('readable',function() {
+            var stream = this;
+            if(stream.alreadyRead){
+                return;
+            }
+            var item = stream.read();
+            bot.sendMessage(msg.channel,item.title + " - " + item.link, function() {
+                if(suffix === "full"){
+                    var text = htmlToText.fromString(item.description,{
+                        wordwrap:false,
+                        ignoreHref:true
+                    });
+                    bot.sendMessage(msg.channel,text);
+                }
+            });
+            stream.alreadyRead = true;
+        });
+    });
+}
 
 
 var bot = new Discord.Client();
