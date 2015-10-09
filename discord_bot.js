@@ -150,6 +150,7 @@ var commands = {
         }
     },
     "memehelp": { //TODO: this should be handled by !help
+        description: "returns available memes for !meme",
         process: function(bot,msg) {
             var str = "Currently available memes:\n"
             for (var m in meme){
@@ -188,7 +189,6 @@ var commands = {
             }
             var Wiki = require('wikijs');
             new Wiki().search(query,1).then(function(data) {
-                console.log(data);
                 new Wiki().page(data.results[0]).then(function(page) {
                     page.summary().then(function(summary) {
                         var sumText = summary.toString().split('\n');
@@ -205,8 +205,60 @@ var commands = {
                 bot.sendMessage(msg.channel,err);
             });
         }
+    },
+    "join-server": {
+        usage: "<invite>",
+        description: "joins the server it's invited to",
+        process: function(bot,msg,suffix) {
+            console.log(suffix);
+            console.log(bot.joinServer(suffix,function(error,server) {
+                console.log("callback: " + arguments);
+                if(error){
+                    bot.sendMessage(msg.channel,"failed to join: " + error);
+                } else {
+                    console.log("Joined server " + server);
+                    bot.sendMessage(msg.channel,"Successfully joined " + server);
+                }
+            }));
+        }
+    },
+    "create": {
+        usage: "<text|voice> <channel name>",
+        description: "creates a channel with the given type and name.",
+        process: function(bot,msg,suffix) {
+            var args = suffix.split(" ");
+            var type = args.shift();
+            if(type != "text" && type != "voice"){
+                bot.sendMessage(msg.channel,"you must specify either voice or text!");
+                return;
+            }
+            bot.createChannel(msg.channel.server,args.join(" "),type, function(error,channel) {
+                if(error){
+                    bot.sendMessage(msg.channel,"failed to create channel: " + error);
+                } else {
+                    bot.sendMessage(msg.channel,"created " + channel);
+                }
+            });
+        }
+    },
+    "delete": {
+        usage: "<channel name>",
+        description: "deletes the specified channel",
+        process: function(bot,msg,suffix) {
+            var channel = bot.getChannel("name",suffix);
+            bot.sendMessage(msg.channel.server.defaultChannel, "deleting channel " + suffix + " at " +msg.author + "'s request");
+            if(msg.channel.server.defaultChannel != msg.channel){
+                bot.sendMessage(msg.channel,"deleting " + channel);
+            }
+            bot.deleteChannel(channel,function(error,channel){
+                if(error){
+                    bot.sendMessage(msg.channel,"couldn't delete channel: " + error);
+                } else {
+                    console.log("deleted " + suffix + " at " + msg.author + "'s request");
+                }
+            });
+        }
     }
-            
 };
 
 
@@ -231,12 +283,19 @@ bot.on("message", function (msg) {
         if(cmdTxt === "help"){
             //help is special since it iterates over the other commands
             for(var cmd in commands) {
-                var info = "!" + cmd + " " + commands[cmd].usage + "\n\t" + commands[cmd].description;
+                var info = "!" + cmd;
+                var usage = commands[cmd].usage;
+                if(usage){
+                    info += " " + usage;
+                }
+                var description = commands[cmd].description;
+                if(description){
+                    info += "\n\t" + description;
+                }
                 bot.sendMessage(msg.channel,info);
             }
         }
 		else if(cmd) {
-            console.log(cmd);
             var suffix = msg.content.substring(cmdTxt.length+2);//add one for the ! and one for the space
             cmd.process(bot,msg,suffix);
 		} else {
@@ -249,7 +308,7 @@ bot.on("message", function (msg) {
             return;
         }
         
-        if (msg.author != bot.user && (msg.isMentioned(bot.user) || msg.content.indexOf(bot.user.username) > -1)) {
+        if (msg.author != bot.user && msg.isMentioned(bot.user)) {
                 bot.sendMessage(msg.channel,msg.author + ", you called?");
         }
     }
