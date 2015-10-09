@@ -19,6 +19,8 @@ var wolfram_plugin = new wa();
 var AuthDetails = require("./auth.json");
 var qs = require("querystring");
 
+var htmlToText = require('html-to-text');
+
 var config = {
     "api_key": "dc6zaTOxFJmzC",
     "rating": "pg-13",
@@ -128,12 +130,36 @@ var commands = {
     "pullanddeploy": {
         description: "bot will perform a git pull master and restart with the new code",
         process: function(bot,msg,suffix) {
-            bot.sendMessage(msg.channel,"brb!",function(error,sentMsg){
+            bot.sendMessage(msg.channel,"fetching updates...",function(error,sentMsg){
                 console.log("updating...");
 	            var spawn = require('child_process').spawn;
-                spawn('sh', [ 'pullanddeploy.sh' ]).on("close",function(code){
-                    console.log("exiting");
-                    process.exit();
+                var log = function(err,stdout,stderr){
+                    if(stdout){console.log(stdout);}
+                    if(stderr){console.log(stderr);}
+                };
+                var fetch = spawn('git', ['fetch']);
+                fetch.stdout.on('data',function(data){
+                    console.log(data.toString());
+                });
+                fetch.on("close",function(code){
+                    var reset = spawn('git', ['reset','--hard','origin/master']);
+                    reset.stdout.on('data',function(data){
+                        console.log(data.toString());
+                    });
+                    reset.on("close",function(code){
+                        var npm = spawn('npm', ['install']);
+                        npm.stdout.on('data',function(data){
+                            console.log(data.toString());
+                        });
+                        npm.on("close",function(code){
+                            console.log("goodbye");
+                            bot.sendMessage(msg.channel,"brb!",function(){
+                                bot.logout(function(){
+                                    process.exit();
+                                });
+                            });
+                        });
+                    });
                 });
             });
         }
@@ -289,8 +315,59 @@ var commands = {
 			}
             wolfram_plugin.respond(suffix,msg.channel,bot);
         }
-	}
+	},
+    "hotspatch": {
+        description: "gets the latest patch notes for Heroes of the Storm from blizzpro",
+        process: function(bot,msg,suffix) {
+            //http://heroesofthestorm.blizzpro.com/tag/patch-notes/feed/
+            rssfeed("heroesofthestorm.blizzpro.com","/tag/patch-notes/feed/",bot,msg,suffix);
+        }
+    },
+    "reddit": {
+        usage: "[subreddit]",
+        description: "Returns the top post on reddit. Can optionally pass a subreddit to get the top psot there instead",
+        process: function(bot,msg,suffix) {
+            var path = "/.rss"
+            if(suffix){
+                path = "/r/"+suffix+path;
+            }
+            rssfeed("www.reddit.com",path,bot,msg,"");
+        }
+    }
 };
+
+function rssfeed(host,path,bot,msg,suffix){
+    var http = require('http');
+    http.get({
+        host:host,
+        path:path
+    }, function(response) {
+        var stream = this;
+        var FeedParser = require('feedparser');
+        var feedparser = new FeedParser();
+        response.pipe(feedparser);
+        feedparser.on('error', function(error){
+            bot.sendMessage(msg.channel,"failed reading feed: " + error);
+        });
+        feedparser.on('readable',function() {
+            var stream = this;
+            if(stream.alreadyRead){
+                return;
+            }
+            var item = stream.read();
+            bot.sendMessage(msg.channel,item.title + " - " + item.link, function() {
+                if(suffix === "full"){
+                    var text = htmlToText.fromString(item.description,{
+                        wordwrap:false,
+                        ignoreHref:true
+                    });
+                    bot.sendMessage(msg.channel,text);
+                }
+            });
+            stream.alreadyRead = true;
+        });
+    });
+}
 
 
 var bot = new Discord.Client();
@@ -308,8 +385,13 @@ bot.on("disconnected", function () {
 
 bot.on("message", function (msg) {
 	//check if message is a command
-	if(msg.content[0] === '!' && msg.author != bot.user){
+	if(msg.author != bot.user && (msg.content[0] === '!' || msg.content.indexOf(bot.user.mention()) == 0)){
 		var cmdTxt = msg.content.split(" ")[0].substring(1);
+        var suffix = msg.content.substring(cmdTxt.length+2);//add one for the ! and one for the space
+        if(msg.content.indexOf(bot.user.mention()) == 0){
+            cmdTxt = msg.content.split(" ")[1];
+            suffix = msg.content.substring(bot.user.mention().length+cmdTxt.length+2);
+        }
 		var cmd = commands[cmdTxt];
         if(cmdTxt === "help"){
             //help is special since it iterates over the other commands
@@ -327,7 +409,6 @@ bot.on("message", function (msg) {
             }
         }
 		else if(cmd) {
-            var suffix = msg.content.substring(cmdTxt.length+2);//add one for the ! and one for the space
             cmd.process(bot,msg,suffix);
 		} else {
 			bot.sendMessage(msg.channel, "Invalid command " + cmdTxt);

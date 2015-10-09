@@ -28,6 +28,8 @@
     , "imgflipper": "*"
     , "wikijs": "*"
     , "yahoo-finance": "*"
+    , "feedparser": "*"
+    , "html-to-text": "*"
   },
   "main": "discord_bot.js"
 }
