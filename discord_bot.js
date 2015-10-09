@@ -262,18 +262,6 @@ var commands = {
             });
         }
     },
-<<<<<<< HEAD
-	"wolfram": {
-		usage: "<search terms>",
-        description: "gives results from wolframalpha using search terms",
-        process: function(bot,msg,suffix){
-			if(!suffix){
-				bot.sendMessage(msg.channel,"Usage: !wolfram <search terms> (Ex. !wolfram integrate 4x)");
-			}
-            wolfram_plugin.respond(suffix,msg.channel,bot);
-        }
-	}
-=======
     "stock": {
         usage: "<stock to fetch>",
         process: function(bot,msg,suffix) {
@@ -291,8 +279,17 @@ var commands = {
                 }  
             });
         }
-    }
->>>>>>> chalda/master
+    },
+	"wolfram": {
+		usage: "<search terms>",
+        description: "gives results from wolframalpha using search terms",
+        process: function(bot,msg,suffix){
+			if(!suffix){
+				bot.sendMessage(msg.channel,"Usage: !wolfram <search terms> (Ex. !wolfram integrate 4x)");
+			}
+            wolfram_plugin.respond(suffix,msg.channel,bot);
+        }
+	}
 };
 
 
