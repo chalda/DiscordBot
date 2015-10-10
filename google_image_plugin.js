@@ -1,11 +1,9 @@
 var util = require('util');
 var winston = require('winston');
-var images = require('google-images');
-
 
 
 function GoogleImagePlugin () {
-	this.images = images
+	this.request = require('request');
 }
 
 // Return true if a message was sent
@@ -19,22 +17,25 @@ GoogleImagePlugin.prototype._respondToChatMessage = function(roomId, chatterId, 
 }
 
 GoogleImagePlugin.prototype.respond = function(query, channel, bot) {
-
-	this.images.search(query, function(error, result) {
-			if (error) {
-				//winston.error("Error querying youtube: " + error);
-				bot.sendMessage(channel, "¯\\_(ツ)_/¯");
-			}
-			else {
-				if (!result || result.length < 1) {
-					//winston.error("No results from youtube");
-					bot.sendMessage(channel, "¯\\_(ツ)_/¯");
-				} else {
-					bot.sendMessage(channel, result[0].unescapedUrl);
-				}
-			}
-		});
-
+	//just gets the first result
+	var page = 0; //looks like 4 results each 'page'
+	this.request("http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=" + (query.replace(/\s/g, '+')) + "&start=" + page, function(err, res, body) {
+		var data, error;
+		try {
+			data = JSON.parse(body);
+		} catch (error) {
+			console.log(error)
+			return;
+		}
+		if (data.responseData.results.length == 0){
+			bot.sendMessage(channel, "No result for '" + query + "'");
+			return
+		}
+		else if("unescapedUrl" in data.responseData.results[0]){
+			bot.sendMessage(channel, data.responseData.results[0].unescapedUrl);
+		}
+	});
+	
 }
 
 GoogleImagePlugin.prototype._stripCommand = function(message) {
