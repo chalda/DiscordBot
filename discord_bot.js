@@ -9,9 +9,6 @@ var Discord = require("discord.js");
 var yt = require("./youtube_plugin");
 var youtube_plugin = new yt();
 
-var gi = require("./google_image_plugin");
-var google_image_plugin = new gi();
-
 var wa = require("./wolfram_plugin");
 var wolfram_plugin = new wa();
 
@@ -121,11 +118,6 @@ var commands = {
         usage: "<message>",
         description: "bot says message",
         process: function(bot,msg,suffix){ bot.sendMessage(msg.channel,suffix);}
-    },
-    "image": {
-        usage: "<image tags>",
-        description: "gets image matching tags from google",
-        process: function(bot,msg,suffix){ google_image_plugin.respond(suffix,msg.channel,bot);}
     },
     "pullanddeploy": {
         description: "bot will perform a git pull master and restart with the new code",
@@ -336,6 +328,35 @@ var commands = {
     }
 };
 
+var fs = require('fs'),
+	path = require('path');
+function getDirectories(srcpath) {
+	return fs.readdirSync(srcpath).filter(function(file) {
+		return fs.statSync(path.join(srcpath, file)).isDirectory();
+	});
+}
+function load_plugins(){
+	var plugin_folders = getDirectories("./plugins");
+	for (var i = 0; i < plugin_folders.length; i++) {
+		var plugin;
+		try{
+			var plugin = require("./plugins/" + plugin_folders[i])
+		} catch (err){
+			console.log("Improper setup of the '" + plugin_folders[i] +"' plugin. : " + err);
+		}
+		if (plugin){
+			if("commands" in plugin){
+				for (var j = 0; j < plugin.commands.length; j++) {
+					if (plugin.commands[j] in plugin){
+						commands[plugin.commands[j]] = plugin[plugin.commands[j]];
+					}
+				}
+			}
+		}
+	}
+	console.log("Loaded " + Object.keys(commands).length + " chat commands type !help in Discord for a commands list.")
+}
+
 function rssfeed(host,path,bot,msg,suffix){
     var http = require('http');
     http.get({
@@ -374,6 +395,7 @@ var bot = new Discord.Client();
 
 bot.on("ready", function () {
 	console.log("Ready to begin! Serving in " + bot.channels.length + " channels");
+	load_plugins();
 });
 
 bot.on("disconnected", function () {
@@ -409,7 +431,9 @@ bot.on("message", function (msg) {
             }
         }
 		else if(cmd) {
-            cmd.process(bot,msg,suffix);
+            if ("process" in cmd ){ 
+				cmd.process(bot,msg,suffix);
+			}
 		} else {
 			bot.sendMessage(msg.channel, "Invalid command " + cmdTxt);
 		}
