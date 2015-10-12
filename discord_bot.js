@@ -24,7 +24,7 @@ var htmlToText = require('html-to-text');
 var config = {
     "api_key": "dc6zaTOxFJmzC",
     "rating": "pg-13",
-    "url": "http://api.giphy.com/v1/gifs/random",
+    "url": "http://api.giphy.com/v1/gifs/search",
     "permission": ["NORMAL"]
 };
 
