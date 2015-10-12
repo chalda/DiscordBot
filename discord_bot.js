@@ -23,7 +23,7 @@ var htmlToText = require('html-to-text');
 
 var config = {
     "api_key": "dc6zaTOxFJmzC",
-    "rating": "pg-13",
+    "rating": "r",
     "url": "http://api.giphy.com/v1/gifs/search",
     "permission": ["NORMAL"]
 };
@@ -454,7 +454,7 @@ var request = require("request");
                 console.error("giphy: Got error: " + body);
             }
             else {
-                func(JSON.parse(body).data.id);
+                func(JSON.parse(body).data[0].id);
             }
         }.bind(this));
     }
