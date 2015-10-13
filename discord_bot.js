@@ -436,10 +436,12 @@ bot.on("presence", function(data) {
 });
 
 function get_gif(tags, func) {
+        //limit=1 will only return 1 gif
         var params = {
             "api_key": config.api_key,
             "rating": config.rating,
-            "format": "json"
+            "format": "json",
+            "limit": 1
         };
         var query = qs.stringify(params);
 
