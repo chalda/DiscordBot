@@ -441,20 +441,31 @@ function get_gif(tags, func) {
             "rating": config.rating,
             "format": "json"
         };
+        var query = qs.stringify(params);
+
         if (tags !== null) {
-            params.tag = tags;
+            query += "&q=" + tags.join('+')
         }
 
-        var query = qs.stringify(params);
-//wouldnt see request lib if defined at the top for some reason:\
-var request = require("request");
+        //wouldnt see request lib if defined at the top for some reason:\
+        var request = require("request");
+        //console.log(query)
 
         request(config.url + "?" + query, function (error, response, body) {
+            //console.log(arguments)
             if (error || response.statusCode !== 200) {
                 console.error("giphy: Got error: " + body);
+                console.log(error);
+                //console.log(response)
             }
             else {
-                func(JSON.parse(body).data[0].id);
+                var responseObj = JSON.parse(body)
+                console.log(responseObj.data[0])
+                if(responseObj.data.length){
+                    func(responseObj.data[0].id);
+                } else {
+                    func(undefined);
+                }
             }
         }.bind(this));
     }
