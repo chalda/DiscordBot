@@ -22,6 +22,9 @@ A chat bot for discord app based off <a href="https://github.com/hydrabolt/disco
 - !delete => deletes a channel
 - @botname => responds when @mentioned
 
+## RSS:
+    you can create an rss.json file adding rss feeds as commands. See rss.json.example for details
+
 # ToDo:
 
 - Permissions!

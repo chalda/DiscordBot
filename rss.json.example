@@ -1,0 +1,14 @@
+{
+    "hotspatch": {
+        "description" : "gets the latest patch notes for Heroes of the Storm from blizzpro",
+        "url" : "http://heroesofthestorm.blizzpro.com/tag/patch-notes/feed/"
+    },
+    "slashdot": {
+        "description": "see the top articles on slashdot",
+        "url": "http://rss.slashdot.org/Slashdot/slashdotMain"
+    },
+    "gnews": {
+        "description": "see top news articles on Google News",
+        "url": "http://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=h&num=3&output=rss"
+    }
+}

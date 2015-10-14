@@ -239,7 +239,6 @@ var commands = {
         usage: "<invite>",
         description: "joins the server it's invited to",
         process: function(bot,msg,suffix) {
-            console.log(suffix);
             console.log(bot.joinServer(suffix,function(error,server) {
                 console.log("callback: " + arguments);
                 if(error){
@@ -316,11 +315,18 @@ var commands = {
             wolfram_plugin.respond(suffix,msg.channel,bot);
         }
 	},
-    "hotspatch": {
-        description: "gets the latest patch notes for Heroes of the Storm from blizzpro",
+    "rss": {
+        description: "lists available rss feeds",
         process: function(bot,msg,suffix) {
-            //http://heroesofthestorm.blizzpro.com/tag/patch-notes/feed/
-            rssfeed("heroesofthestorm.blizzpro.com","/tag/patch-notes/feed/",bot,msg,suffix);
+            /*var args = suffix.split(" ");
+            var count = args.shift();
+            var url = args.join(" ");
+            rssfeed(bot,msg,url,count,full);*/
+            bot.sendMessage(msg.channel,"Available feeds:", function(){
+                for(var c in rssFeeds){
+                    bot.sendMessage(msg.channel,c + ": " + rssFeeds[c].url);
+                }
+            });
         }
     },
     "reddit": {
@@ -331,41 +337,58 @@ var commands = {
             if(suffix){
                 path = "/r/"+suffix+path;
             }
-            rssfeed("www.reddit.com",path,bot,msg,"");
+            rssfeed(bot,msg,"https://www.reddit.com"+path,1,false);
         }
     }
 };
-
-function rssfeed(host,path,bot,msg,suffix){
-    var http = require('http');
-    http.get({
-        host:host,
-        path:path
-    }, function(response) {
-        var stream = this;
-        var FeedParser = require('feedparser');
-        var feedparser = new FeedParser();
-        response.pipe(feedparser);
-        feedparser.on('error', function(error){
-            bot.sendMessage(msg.channel,"failed reading feed: " + error);
-        });
-        feedparser.on('readable',function() {
-            var stream = this;
-            if(stream.alreadyRead){
-                return;
-            }
-            var item = stream.read();
-            bot.sendMessage(msg.channel,item.title + " - " + item.link, function() {
-                if(suffix === "full"){
-                    var text = htmlToText.fromString(item.description,{
-                        wordwrap:false,
-                        ignoreHref:true
-                    });
-                    bot.sendMessage(msg.channel,text);
+try{
+var rssFeeds = require("./rss.json");
+function loadFeeds(){
+    for(var cmd in rssFeeds){
+        commands[cmd] = {
+            usage: "[count]",
+            description: rssFeeds[cmd].description,
+            url: rssFeeds[cmd].url,
+            process: function(bot,msg,suffix){
+                var count = 1;
+                if(suffix != null && suffix != "" && !isNaN(suffix)){
+                    count = suffix;
                 }
-            });
-            stream.alreadyRead = true;
+                rssfeed(bot,msg,this.url,count,false);
+            }
+        };
+    }
+}
+} catch(e) {
+    console.log("Couldn't load rss.json. See rss.json.example if you want rss feed commands. error: " + e);
+}
+
+function rssfeed(bot,msg,url,count,full){
+    var FeedParser = require('feedparser');
+    var feedparser = new FeedParser();
+    var request = require('request');
+    request(url).pipe(feedparser);
+    feedparser.on('error', function(error){
+        bot.sendMessage(msg.channel,"failed reading feed: " + error);
+    });
+    var shown = 0;
+    feedparser.on('readable',function() {
+        var stream = this;
+        shown += 1
+        if(shown > count){
+            return;
+        }
+        var item = stream.read();
+        bot.sendMessage(msg.channel,item.title + " - " + item.link, function() {
+            if(full === true){
+                var text = htmlToText.fromString(item.description,{
+                    wordwrap:false,
+                    ignoreHref:true
+                });
+                bot.sendMessage(msg.channel,text);
+            }
         });
+        stream.alreadyRead = true;
     });
 }
 
@@ -373,6 +396,7 @@ function rssfeed(host,path,bot,msg,suffix){
 var bot = new Discord.Client();
 
 bot.on("ready", function () {
+    loadFeeds();
 	console.log("Ready to begin! Serving in " + bot.channels.length + " channels");
 });
 
@@ -385,7 +409,8 @@ bot.on("disconnected", function () {
 
 bot.on("message", function (msg) {
 	//check if message is a command
-	if(msg.author != bot.user && (msg.content[0] === '!' || msg.content.indexOf(bot.user.mention()) == 0)){
+	if(msg.author.id != bot.user.id && (msg.content[0] === '!' || msg.content.indexOf(bot.user.mention()) == 0)){
+        console.log("treating " + msg.content + " from " + msg.author + " as command");
 		var cmdTxt = msg.content.split(" ")[0].substring(1);
         var suffix = msg.content.substring(cmdTxt.length+2);//add one for the ! and one for the space
         if(msg.content.indexOf(bot.user.mention()) == 0){
