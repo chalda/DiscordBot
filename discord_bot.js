@@ -120,7 +120,7 @@ var commands = {
     "say": {
         usage: "<message>",
         description: "bot says message",
-        process: function(bot,msg,suffix){ bot.sendMessage(msg.channel,suffix);}
+        process: function(bot,msg,suffix){ bot.sendMessage(msg.channel,suffix,true);}
     },
     "image": {
         usage: "<image tags>",
