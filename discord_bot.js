@@ -353,11 +353,17 @@ var commands = {
 		process: function(bot,msg,suffix) {
 			var args = suffix.split(" ");
 			var name = args.shift();
-			var command = args.shift();
-			aliases[name] = [command, args.join(" ")];
-			//now save the new alias
-			require("fs").writeFile("./alias.json",JSON.stringify(aliases,null,2), null);
-			bot.sendMessage(msg.channel,"created alias " + name);
+			if(!name){
+				bot.sendMessage(msg.channel,"!alias " + this.usage + "\n" + this.description);
+			} else if(commands[name] || name === "help"){
+				bot.sendMessage(msg.channel,"overwriting commands with aliases is not allowed!");
+			} else {
+				var command = args.shift();
+				aliases[name] = [command, args.join(" ")];
+				//now save the new alias
+				require("fs").writeFile("./alias.json",JSON.stringify(aliases,null,2), null);
+				bot.sendMessage(msg.channel,"created alias " + name);
+			}
 		}
 	}
 };
