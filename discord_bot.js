@@ -122,6 +122,11 @@ var commands = {
     "say": {
         usage: "<message>",
         description: "bot says message",
+        process: function(bot,msg,suffix){ bot.sendMessage(msg.channel,suffix);}
+    },
+	"announce": {
+        usage: "<message>",
+        description: "bot says message with text to speech",
         process: function(bot,msg,suffix){ bot.sendMessage(msg.channel,suffix,true);}
     },
     "image": {
