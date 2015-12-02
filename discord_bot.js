@@ -53,6 +53,8 @@ var game_abbreviations = {
     "gta": "Grand Theft Auto"
 };
 
+var aliases;
+
 var commands = {
 	"gif": {
 		usage: "<image tags>",
@@ -339,7 +341,20 @@ var commands = {
             }
             rssfeed(bot,msg,"https://www.reddit.com"+path,1,false);
         }
-    }
+    },
+	"alias": {
+		usage: "<name> <actual command>",
+		description: "Creates command aliases. Useful for making simple commands on the fly",
+		process: function(bot,msg,suffix) {
+			var args = suffix.split(" ");
+			var name = args.shift();
+			var command = args.shift();
+			aliases[name] = [command, args.join(" ")];
+			//now save the new alias
+			require("fs").writeFile("./alias.json",JSON.stringify(aliases,null,2), null);
+			bot.sendMessage(msg.channel,"created alias " + name);
+		}
+	}
 };
 try{
 var rssFeeds = require("./rss.json");
@@ -361,6 +376,13 @@ function loadFeeds(){
 }
 } catch(e) {
     console.log("Couldn't load rss.json. See rss.json.example if you want rss feed commands. error: " + e);
+}
+
+try{
+	aliases = require("./alias.json");
+} catch(e) {
+	//No aliases defined
+	aliases = {};
 }
 
 function rssfeed(bot,msg,url,count,full){
@@ -417,6 +439,11 @@ bot.on("message", function (msg) {
             cmdTxt = msg.content.split(" ")[1];
             suffix = msg.content.substring(bot.user.mention().length+cmdTxt.length+2);
         }
+		alias = aliases[cmdTxt];
+		if(alias){
+			cmdTxt = alias[0];
+			suffix = alias[1] + " " + suffix;
+		}
 		var cmd = commands[cmdTxt];
         if(cmdTxt === "help"){
             //help is special since it iterates over the other commands

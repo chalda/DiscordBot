@@ -31,3 +31,4 @@ auth.json
 
 #other runtime config files
 rss.json
+alias.json
