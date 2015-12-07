@@ -1,6 +1,6 @@
 var util = require('util');
 var winston = require('winston');
-
+var AuthDetails = require("./auth.json");
 
 function GoogleImagePlugin () {
 	this.request = require('request');
@@ -17,9 +17,12 @@ GoogleImagePlugin.prototype._respondToChatMessage = function(roomId, chatterId, 
 }
 
 GoogleImagePlugin.prototype.respond = function(query, channel, bot) {
+	if(!AuthDetails || !AuthDetails.youtube_api_key || !AuthDetails.google_custom_search){
+		bot.sendMessage(channel, "Image search requires both a YouTube API key and a Google Custom Search key!");
+		return;
+	}
 	//just gets the first result
-	var page = 0; //looks like 4 results each 'page'
-	this.request("http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=" + (query.replace(/\s/g, '+')) + "&start=" + page, function(err, res, body) {
+	this.request("https://www.googleapis.com/customsearch/v1?key=" + AuthDetails.youtube_api_key + "&cx=" + AuthDetails.google_custom_search + "&q=" + (query.replace(/\s/g, '+')) + "&searchType=image&alt=json&num=1&start=1", function(err, res, body) {
 		var data, error;
 		try {
 			data = JSON.parse(body);
@@ -28,6 +31,7 @@ GoogleImagePlugin.prototype.respond = function(query, channel, bot) {
 			return;
 		}
 		if(!data.responseData){
+			console.log(data);
 			bot.sendMessage(channel, "Error:\n" + data.responseDetails);
 		}
 		else if (!data.responseData || data.responseData.results.length == 0){

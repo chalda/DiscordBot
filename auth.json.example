@@ -2,6 +2,7 @@
 	"email" : "email of the discord account here",
 	"password" : "password of the discord account here",
 	"youtube_api_key": "create one here https://console.developers.google.com",
+	"google_custom_search": "Create one here https://cse.google.com/cse/",
 	"imgflip_username": "https://imgflip.com/ username",
 	"imgflip_password": "https://imgflip.com/ password",
 	"wolfram_api_key": "go here and click sign up http://products.wolframalpha.com/api/"
