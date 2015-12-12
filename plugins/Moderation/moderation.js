@@ -1,7 +1,10 @@
 exports.commands = [
+	"perm",
 	"votekick",
 	"kick",
-	"bans"
+	"bans",
+	"ban",
+	"unban"
 ]
 
 var votekicks = {};
@@ -12,6 +15,33 @@ function usersOnline(server){
 		if(server.members[i].status != 'offline') online += 1;
 	}
 	return online;
+}
+
+function resolveUser(msgContext,usertxt){
+	var userid = usertxt;
+	if(usertxt.startsWith('<@')){
+		userid = usertxt.substr(2,suffix.length-3);
+	}
+	var user = msg.channel.server.members.get("id",userid);
+	if(!user){
+		var users = msg.channel.server.members.getAll("username",suffix);
+		if(users.length == 1){
+			user = users[0];
+		}
+	}
+	return user;
+}
+
+exports.perm = {
+	usage: "[user]",
+	description: "Returns the user's permissions in this channel",
+	process: function(bot,msg,suffix) {
+		var user = resolveUser(msg,suffix);
+		if(!user){
+			user = msg.author;
+		}
+		bot.sendMessage(msg.channel,"permissions of " + user + ':\n' + JSON.stringify(msg.channel.permissionsOf(user).serialize(),null,2));
+	}
 }
 
 exports.votekick = {
@@ -112,5 +142,39 @@ exports.bans = {
 				bot.sendMessage(msg.channel,response);
 			}
 		});
+	}
+}
+
+exports.ban = {
+	usage: "<user> [days of messages to delete]",
+	description: "bans the user, optionally deleting messages from them in the last x days",
+	process: function(bot,msg,suffix){
+		var args = suffix.split(' ');
+		var usertxt = args.shift();
+		var days = args.shift();
+		var user = resolveUser(msg,usertxt);
+		if(user){
+			bot.banMember(user,msg.server,days,function(){
+				bot.sendMessage(msg.channel,"banned user " + user + " id:" + user.id);
+			});
+		} else {
+			bot.sendMessage(msg.channel,"couldn't uniquely resolve " + usertxt);
+		}
+	}
+}
+
+exports.unban = {
+	usage: "<user>",
+	description: "unbans the user.",
+	process: function(bot,msg,suffix){
+		var args = suffix.split(' ');
+		var usertxt = args.shift();
+		var days = args.shift();
+		var user = resolveUser(msg,usertxt);
+		if(user){
+			bot.unbanMember(user,msg.server);
+		} else {
+			bot.sendMessage("couldn't uniquely resolve " + usertxt);
+		}
 	}
 }
