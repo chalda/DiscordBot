@@ -21,6 +21,13 @@ And much more! Try !help to get a full list of available commands
 ## RSS:
 you can create an rss.json file adding rss feeds as commands. See rss.json.example for details
 
+## Image
+
+the !image and !ggif commands use Google Custom Search to provide results.
+Setup is somewhat complex, please follow instructions at
+https://stackoverflow.com/questions/34035422/google-image-search-says-api-no-longer-available
+the api key and custom search key must be set in auth.json for the commands to work.
+
 # ToDo:
 - Permissions!
 - Link history
