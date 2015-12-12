@@ -64,6 +64,7 @@ var meme = {
 };
 
 var aliases;
+var messagebox;
 
 var commands = {
 	"gif": {
@@ -418,7 +419,28 @@ var commands = {
 			bot.sendMessage(msg.channel,msg.author + " rolled a " + val);
 		}
 	},
-	
+	"msg": {
+		usage: "<user> <message to leave user>",
+		description: "leaves a message for a user the next time they come online",
+		process: function(bot,msg,suffix) {
+			var args = suffix.split(' ');
+			var user = args.shift();
+			var message = args.join(' ');
+			if(user.startsWith('<@')){
+				user = user.substr(2,user.length-3);
+			}
+			var target = msg.channel.server.members.get("id",user);
+			if(!target){
+				target = msg.channel.server.members.get("username",user);
+			}
+			messagebox[target.id] = {
+				channel: msg.channel.id,
+				content: target + ", " + msg.author + " said: " + message
+			};
+			updateMessagebox();
+			bot.sendMessage(msg.channel,"message saved.")
+		}
+	}
 };
 try{
 var rssFeeds = require("./rss.json");
@@ -447,6 +469,16 @@ try{
 } catch(e) {
 	//No aliases defined
 	aliases = {};
+}
+
+try{
+	messagebox = require("./messagebox.json");
+} catch(e) {
+	//no stored messages
+	messagebox = {};
+}
+function updateMessagebox(){
+	require("fs").writeFile("./messagebox.json",JSON.stringify(messagebox,null,2), null);
 }
 
 var fs = require('fs'),
@@ -588,11 +620,23 @@ bot.on("message", function (msg) {
  
 
 //Log user status changes
-bot.on("presence", function(data) {
+bot.on("presence", function(user,status,gameId) {
 	//if(status === "online"){
 	//console.log("presence update");
-	console.log(data.user+" went "+data.status);
+	console.log(user+" went "+status);
 	//}
+	try{
+	if(status != 'offline'){
+		if(messagebox.hasOwnProperty(user.id)){
+			console.log("found message for " + user.id);
+			var message = messagebox[user.id];
+			var channel = bot.channels.get("id",message.channel);
+			delete messagebox[user.id];
+			updateMessagebox();
+			bot.sendMessage(channel,message.content);
+		}
+	}
+	}catch(e){}
 });
 
 function get_gif(tags, func) {
