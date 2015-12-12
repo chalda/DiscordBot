@@ -12,8 +12,12 @@ var youtube_plugin = new yt();
 var gi = require("./google_image_plugin");
 var google_image_plugin = new gi();
 
+try {
 var wa = require("./wolfram_plugin");
 var wolfram_plugin = new wa();
+} catch(e){
+	console.log("couldn't load wolfram plugin!\n"+e.stack);
+}
 
 // Get the email and password
 var AuthDetails = require("./auth.json");
@@ -316,11 +320,11 @@ var commands = {
 		usage: "<search terms>",
         description: "gives results from wolframalpha using search terms",
         process: function(bot,msg,suffix){
-			if(!suffix){
-				bot.sendMessage(msg.channel,"Usage: !wolfram <search terms> (Ex. !wolfram integrate 4x)");
-			}
-            wolfram_plugin.respond(suffix,msg.channel,bot);
-        }
+				if(!suffix){
+					bot.sendMessage(msg.channel,"Usage: !wolfram <search terms> (Ex. !wolfram integrate 4x)");
+				}
+	            wolfram_plugin.respond(suffix,msg.channel,bot);
+       	    }
 	},
     "rss": {
         description: "lists available rss feeds",
@@ -477,7 +481,11 @@ bot.on("message", function (msg) {
             }
         }
 		else if(cmd) {
+		try{
             cmd.process(bot,msg,suffix);
+	    	} catch(e){
+			bot.sendMessage(msg.channel, "command " + cmdTxt + " failed :(\n" + e.stack);
+		}
 		} else {
 			bot.sendMessage(msg.channel, "Invalid command " + cmdTxt);
 		}
