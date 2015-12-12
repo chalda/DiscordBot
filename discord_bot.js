@@ -1,9 +1,3 @@
-/*
-	this bot is a ping pong bot, and every time a message
-	beginning with "ping" is sent, it will reply with
-	"pong".
-*/
-
 var Discord = require("discord.js");
 
 var yt = require("./youtube_plugin");
@@ -18,6 +12,26 @@ try {
 
 // Get the email and password
 var AuthDetails = require("./auth.json");
+
+var Permissions = require("./permissions.json");
+Permissions.checkPermission = function (user,permission){
+	try {
+		var allowed = false;
+		try{
+			if(Permissions.global.hasOwnProperty(permission)){
+				allowed = Permissions.global[permission] == true;
+			}
+		} catch(e){}
+		try{
+			if(Permissions.users[user.id].hasOwnProperty(permission)){
+				allowed = Permissions.users[user.id][permission] == true;
+			}
+		} catch(e){}
+		return allowed;
+	} catch(e){}
+	return false;
+}
+
 var qs = require("querystring");
 
 var htmlToText = require('html-to-text');
@@ -44,14 +58,6 @@ var meme = {
 	"skeptical": 101711,
 	"notime": 442575,
 	"yodawg": 101716
-};
-
-var game_abbreviations = {
-    "cs": "Counter-Strike",
-    "hon": "Heroes of Newerth",
-    "hots": "Heroes of the Storm",
-    "sc2": "Starcraft II",
-    "gta": "Grand Theft Auto"
 };
 
 var aliases;
@@ -85,11 +91,7 @@ var commands = {
         usage: "<name of game>",
         description: "pings channel asking if anyone wants to play",
         process: function(bot,msg,suffix){
-            var game = game_abbreviations[suffix];
-            if(!game) {
-                game = suffix;
-            }
-            bot.sendMessage(msg.channel, "@everyone Anyone up for " + game + "?");
+            bot.sendMessage(msg.channel, "@everyone Anyone up for " + suffix + "?");
             console.log("sent game invites for " + game);
         }
     },
@@ -128,12 +130,7 @@ var commands = {
 	"announce": {
         usage: "<message>",
         description: "bot says message with text to speech",
-        process: function(bot,msg,suffix){ bot.sendMessage(msg.channel,suffix,true);}
-    },
-    "image": {
-        usage: "<image tags>",
-        description: "gets image matching tags from google",
-        process: function(bot,msg,suffix){ google_image_plugin.respond(suffix,msg.channel,bot);}
+        process: function(bot,msg,suffix){ bot.sendMessage(msg.channel,suffix,{tts:true});}
     },
     "pullanddeploy": {
         description: "bot will perform a git pull master and restart with the new code",
@@ -366,7 +363,59 @@ var commands = {
 				bot.sendMessage(msg.channel,"created alias " + name);
 			}
 		}
-	}
+	},
+	"userid": {
+		usage: "[user to get id of]",
+		description: "Returns the unique id of a user. This is useful for permissions.",
+		process: function(bot,msg,suffix) {
+			if(suffix){
+				var users = msg.channel.server.members.getAll("username",suffix);
+				if(users.length == 1){
+					bot.sendMessage(msg.channel, "The id of " + users[0] + " is " + users[0].id)
+				} else if(users.length > 1){
+					var response = "multiple users found:";
+					for(var i=0;i<users.length;i++){
+						var user = users[i];
+						response += "\nThe id of " + user + " is " + user.id;
+					}
+					bot.sendMessage(msg.channel,response);
+				} else {
+					bot.sendMessage(msg.channel,"No user " + suffix + " found!");
+				}
+			} else {
+				bot.sendMessage(msg.channel, "The id of " + msg.author + " is " + msg.author.id);
+			}
+		}
+	},
+	"eval": {
+		usage: "<command>",
+		description: 'Executes arbitrary javascript in the bot process. User must have "eval" permission',
+		process: function(bot,msg,suffix) {
+			if(Permissions.checkPermission(msg.author,"eval")){
+				bot.sendMessage(msg.channel, eval(suffix,bot));
+			} else {
+				bot.sendMessage(msg.channel, msg.author + " doesn't have permission to execute eval!");
+			}
+		}
+	},
+	"topic": {
+		usage: "[topic]",
+		description: 'Sets the topic for the channel. No topic removes the topic.',
+		process: function(bot,msg,suffix) {
+			bot.setTopic(msg.channel,suffix);
+		}
+	},
+	"roll": {
+		usage: "[max value]",
+		description: "returns a random number between 1 and max value. If no max is specified it is 10",
+		process: function(bot,msg,suffix) {
+			var max = 10;
+			if(suffix) max = suffix;
+			var val = Math.floor(Math.random() * max) + 1;
+			bot.sendMessage(msg.channel,msg.author + " rolled a " + val);
+		}
+	},
+	
 };
 try{
 var rssFeeds = require("./rss.json");

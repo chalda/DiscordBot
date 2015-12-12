@@ -26,9 +26,8 @@ build/Release
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules
 
-#auth file shouldn't be checked in!
+#config files
 auth.json
-
-#other runtime config files
 rss.json
 alias.json
+permissions.json

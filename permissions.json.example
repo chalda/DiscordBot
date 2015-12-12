@@ -1,0 +1,10 @@
+{
+	"global":{
+		"eval": false
+	},
+	"users":{
+		"userid":{
+			"eval": false
+		}
+	}
+}
