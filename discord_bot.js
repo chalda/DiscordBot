@@ -13,7 +13,10 @@ try {
 // Get the email and password
 var AuthDetails = require("./auth.json");
 
-var Permissions = require("./permissions.json");
+var Permissions = {};
+try{
+	Permissions = require("./permissions.json");
+} catch(e){}
 Permissions.checkPermission = function (user,permission){
 	try {
 		var allowed = false;
