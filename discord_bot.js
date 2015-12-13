@@ -1,12 +1,7 @@
 var Discord = require("discord.js");
 
 var yt = require("./youtube_plugin");
-var youtube_plugin = new yt()
-
-var cleverbot = require("cleverbot-node");
-    talkbot = new cleverbot;
-    cleverbot.prepare();
-    
+var youtube_plugin = new yt();
 
 try {
 	var wa = require("./wolfram_plugin");
@@ -466,17 +461,7 @@ var commands = {
 			updateMessagebox();
 			bot.sendMessage(msg.channel,"message saved.")
 		}
-	},
-	"talk" = {
-      		usage : "<message>",
-      		description : "Talk directly to the bot",
-      		process : function(bot,msg, suffix) {
-      	    		var conv = suffix.split(" ");
-      	    		talkbot.write(conv, function (response) {
-            		bot.sendMessage(msg.channel, response.message)
-            		})
-         	}
-        }
+	}
 };
 try{
 var rssFeeds = require("./rss.json");
