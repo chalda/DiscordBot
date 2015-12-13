@@ -19,7 +19,6 @@
     , "winston": "1.0.x"
     , "sinon": "1.14.x"
     , "nock": "1.7.x"
-    , "cleverbot-node": "0.2.x"
     , "wolfram": "0.3.x"
     , "tumblr.js": "0.0.x"
     , "youtube-node": "1.2.x"
