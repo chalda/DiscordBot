@@ -260,40 +260,61 @@ var commands = {
         }
     },
     "create": {
-        usage: "<text|voice> <channel name>",
-        description: "creates a channel with the given type and name.",
+        usage: "<channel name>",
+        description: "creates a new text channel with the given name.",
         process: function(bot,msg,suffix) {
-            var args = suffix.split(" ");
-            var type = args.shift();
-            if(type != "text" && type != "voice"){
-                bot.sendMessage(msg.channel,"you must specify either voice or text!");
-                return;
-            }
-            bot.createChannel(msg.channel.server,args.join(" "),type, function(error,channel) {
-                if(error){
-                    bot.sendMessage(msg.channel,"failed to create channel: " + error);
-                } else {
-                    bot.sendMessage(msg.channel,"created " + channel);
-                }
-            });
+            bot.createChannel(msg.channel.server,suffix,"text").then(function(channel) {
+                bot.sendMessage(msg.channel,"created " + channel);
+            }).catch(function(error){
+				bot.sendMessage(msg.channel,"failed to create channel: " + error);
+			});
         }
     },
+	"voice": {
+		usage: "<channel name>",
+		description: "creates a new voice channel with the give name.",
+		process: function(bot,msg,suffix) {
+            bot.createChannel(msg.channel.server,suffix,"voice").then(function(channel) {
+                bot.sendMessage(msg.channel,"created " + channel.id);
+				console.log("created " + channel);
+            }).catch(function(error){
+				bot.sendMessage(msg.channel,"failed to create channel: " + error);
+			});
+        }
+	},
     "delete": {
         usage: "<channel name>",
         description: "deletes the specified channel",
         process: function(bot,msg,suffix) {
-            var channel = bot.getChannel("name",suffix);
+			var channel = bot.channels.get("id",suffix);
+			if(suffix.startsWith('<#')){
+				channel = bot.channels.get("id",suffix.substr(2,suffix.length-3));
+			}
+            if(!channel){
+				var channels = bot.channels.getAll("name",suffix);
+				if(channels.length > 1){
+					var response = "Multiple channels match, please use id:";
+					for(var i=0;i<channels.length;i++){
+						response += channels[i] + ": " + channels[i].id;
+					}
+					bot.sendMessage(msg.channel,response);
+					return;
+				}else if(channels.length == 1){
+					channel = channels[0];
+				} else {
+					bot.sendMessage(msg.channel, "Couldn't find channel " + suffix + " to delete!");
+					return;
+				}
+			}
             bot.sendMessage(msg.channel.server.defaultChannel, "deleting channel " + suffix + " at " +msg.author + "'s request");
             if(msg.channel.server.defaultChannel != msg.channel){
                 bot.sendMessage(msg.channel,"deleting " + channel);
             }
-            bot.deleteChannel(channel,function(error,channel){
-                if(error){
-                    bot.sendMessage(msg.channel,"couldn't delete channel: " + error);
-                } else {
-                    console.log("deleted " + suffix + " at " + msg.author + "'s request");
-                }
-            });
+            bot.deleteChannel(channel).then(function(channel){
+				console.log("deleted " + suffix + " at " + msg.author + "'s request");
+            }).catch(function(error){
+				bot.sendMessage(msg.channel,"couldn't delete channel: " + error);
+			});
         }
     },
     "stock": {
