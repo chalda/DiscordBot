@@ -75,3 +75,16 @@ need to have those in your path to run npm install successfully. This is mostly 
 - it seems a lot of people have problems with this step, please follow this guide: http://stackoverflow.com/questions/21365714/nodejs-error-installing-with-npm
 
 9) Run the bot with "node discord_bot.js"
+
+# Special instructions for setting up google search and youtube APIs (thanks @SchwererKonigstiger):
+
+Create a Custom Search at:
+https://cse.google.com/cse/create/new
+Leave the first line blank, and name the search engine anything you wish.
+Click "Advanced Options" and then type ImageObject.
+Hit create.
+On this new page, enable the Image Search in the menu.
+Then press "Search engine ID" under the Details header.
+Copy this into the auth.json's "google_custom_search" section.
+
+Make sure you also have your google server API key, which goes in the "youtube_api_key" section, or the search will fail.
