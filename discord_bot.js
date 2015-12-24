@@ -1,7 +1,16 @@
-var Discord = require("discord.js");
+try {
+	var Discord = require("discord.js");
+} catch (e){
+	console.log("Please run npm install and ensure it passes with no errors!");
+	process.exit();
+}
 
-var yt = require("./youtube_plugin");
-var youtube_plugin = new yt();
+try {
+	var yt = require("./youtube_plugin");
+	var youtube_plugin = new yt();
+} catch(e){
+	console.log("couldn't load youtube plugin!\n"+e.stack);
+}
 
 try {
 	var wa = require("./wolfram_plugin");
@@ -10,9 +19,15 @@ try {
 	console.log("couldn't load wolfram plugin!\n"+e.stack);
 }
 
-// Get the email and password
-var AuthDetails = require("./auth.json");
+// Get authentication data
+try {
+	var AuthDetails = require("./auth.json");
+} catch (e){
+	console.log("Please create an auth.json like auth.json.example with at least an email and password.");
+	process.exit();
+}
 
+// Load custom permissions
 var Permissions = {};
 try{
 	Permissions = require("./permissions.json");
@@ -35,11 +50,20 @@ Permissions.checkPermission = function (user,permission){
 	return false;
 }
 
+//load config data
+var Config = {};
+try{
+	Config = require("./config.json");
+} catch(e){ //no config file, use defaults
+	Config.debug = false;
+	Config.respondToInvalid = false;
+}
+
 var qs = require("querystring");
 
 var htmlToText = require('html-to-text');
 
-var config = {
+var giphy_config = {
     "api_key": "dc6zaTOxFJmzC",
     "rating": "r",
     "url": "http://api.giphy.com/v1/gifs/search",
@@ -89,14 +113,6 @@ var commands = {
             if(suffix){
                 bot.sendMessage(msg.channel, "note that !ping takes no arguments!");
             }
-        }
-    },
-    "game": {
-        usage: "<name of game>",
-        description: "pings channel asking if anyone wants to play",
-        process: function(bot,msg,suffix){
-            bot.sendMessage(msg.channel, "@everyone Anyone up for " + suffix + "?");
-            console.log("sent game invites for " + game);
         }
     },
     "servers": {
@@ -615,16 +631,17 @@ bot.on("message", function (msg) {
 			});
         }
 		else if(cmd) {
-		try{
-            cmd.process(bot,msg,suffix);
-	    	} catch(e){
-			bot.sendMessage(msg.channel, "command " + cmdTxt + " failed :(\n" + e.stack);
-		}
-            //if ("process" in cmd ){ 
-			//	cmd.process(bot,msg,suffix);
-			//}
+			try{
+				cmd.process(bot,msg,suffix);
+			} catch(e){
+				if(Config.debug){
+					bot.sendMessage(msg.channel, "command " + cmdTxt + " failed :(\n" + e.stack);
+				}
+			}
 		} else {
-			bot.sendMessage(msg.channel, "Invalid command " + cmdTxt);
+			if(Config.respondToInvalid){
+				bot.sendMessage(msg.channel, "Invalid command " + cmdTxt);
+			}
 		}
 	} else {
 		//message isn't a command or is from us
@@ -663,8 +680,8 @@ bot.on("presence", function(user,status,gameId) {
 function get_gif(tags, func) {
         //limit=1 will only return 1 gif
         var params = {
-            "api_key": config.api_key,
-            "rating": config.rating,
+            "api_key": giphy_config.api_key,
+            "rating": giphy_config.rating,
             "format": "json",
             "limit": 1
         };
@@ -678,7 +695,7 @@ function get_gif(tags, func) {
         var request = require("request");
         //console.log(query)
 
-        request(config.url + "?" + query, function (error, response, body) {
+        request(giphy_config.url + "?" + query, function (error, response, body) {
             //console.log(arguments)
             if (error || response.statusCode !== 200) {
                 console.error("giphy: Got error: " + body);

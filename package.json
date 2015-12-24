@@ -12,9 +12,9 @@
   },
   "license": "GNU",
   "dependencies": {
-    "discord.js": "*",
+    "discord.js": "<=5.2.x",
     "request": ">=2.58.0",
-    "querystring": "*"
+    "querystring": "0.2.x"
     , "underscore": "1.8.x"
     , "winston": "1.0.x"
     , "sinon": "1.14.x"
@@ -24,11 +24,11 @@
     , "youtube-node": "1.2.x"
     , "google": "1.1.x"
     , "google-images": "0.1.x"
-    , "imgflipper": "*"
-    , "wikijs": "*"
-    , "yahoo-finance": "*"
-    , "feedparser": "*"
-    , "html-to-text": "*"
+    , "imgflipper": "1.0.x"
+    , "wikijs": "0.1.x"
+    , "yahoo-finance": "0.2.x"
+    , "feedparser": "1.1.x"
+    , "html-to-text": "1.5.x"
   },
   "main": "discord_bot.js"
 }

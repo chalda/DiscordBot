@@ -1,4 +1,5 @@
 exports.commands = [
+	"myid",
 	"perm",
 	"votekick",
 	"kick",
@@ -20,16 +21,21 @@ function usersOnline(server){
 function resolveUser(msgContext,usertxt){
 	var userid = usertxt;
 	if(usertxt.startsWith('<@')){
-		userid = usertxt.substr(2,suffix.length-3);
+		userid = usertxt.substr(2,usertxt.length-3);
 	}
 	var user = msg.channel.server.members.get("id",userid);
 	if(!user){
-		var users = msg.channel.server.members.getAll("username",suffix);
+		var users = msg.channel.server.members.getAll("username",usertxt);
 		if(users.length == 1){
 			user = users[0];
 		}
 	}
 	return user;
+}
+
+exports.myid = {
+	description: "returns the user id of the sender",
+	process: function(bot,msg){bot.sendMessage(msg.channel,msg.author.id);}
 }
 
 exports.perm = {
