@@ -18,6 +18,7 @@ A chat bot for discord app based off <a href="https://github.com/hydrabolt/disco
 And much more! Try !help to get a full list of available commands
 
 # Installation
+
 This bot is written to run on top of node.js. Please see https://nodejs.org/en/download/
 
 Once you have node installed running `npm install` from the bot directory should install all the needed packages. If this command prints errors the bot won't work!
@@ -31,13 +32,28 @@ Please note that you must have a working C compiler and Python in your path for
 * [Python 2.7](https://www.python.org/downloads/)
 
 
-## RSS:
+## RSS
 You can create an rss.json file adding rss feeds as commands. See rss.json.example for details.
 
-## Image
-The !image and !ggif commands use Google Custom Search to provide results.
-Setup is somewhat complex, please follow instructions at
-https://stackoverflow.com/questions/34035422/google-image-search-says-api-no-longer-available
+## Special instructions for setting up google search and youtube APIs:
+
+(thanks @SchwererKonigstiger)
+
+1) Create a Custom Search at: https://cse.google.com/cse/create/new
+
+2) Leave the first line blank, and name the search engine anything you wish.
+
+3) Click "Advanced Options" and then type ImageObject.
+
+4) Hit create.
+
+5) On this new page, enable the Image Search in the menu.
+
+6) Then press "Search engine ID" under the Details header.
+
+7) Copy this into the auth.json's "google_custom_search" section.
+
+Make sure you also have your google server API key, which goes in the "youtube_api_key" section, or the search will fail.
 
 # Running
 Before first run you will need to create an `auth.json` file. The email and password for a discord account are required. The other credentials are not required for the bot to run, but highly recommended as commands that depend on them will malfunction. See `auth.json.example`.
