@@ -2,10 +2,7 @@ exports.commands = [
 	"myid",
 	"perm",
 	"votekick",
-	"kick",
-	"bans",
-	"ban",
-	"unban"
+	"kick"
 ]
 
 var votekicks = {};
