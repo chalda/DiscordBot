@@ -29,6 +29,7 @@
     , "yahoo-finance": "0.2.x"
     , "feedparser": "1.1.x"
     , "html-to-text": "1.5.x"
+	, "cleverbot-node": "0.2.x"
   },
   "main": "discord_bot.js"
 }
