@@ -308,7 +308,7 @@ var commands = {
 			}
             if(!channel){
 				var channels = bot.channels.getAll("name",suffix);
-				if(channels.length > 1){
+				if(channels.length > 1){https://github.com/chalda/DiscordBot/issues/new
 					var response = "Multiple channels match, please use id:";
 					for(var i=0;i<channels.length;i++){
 						response += channels[i] + ": " + channels[i].id;
@@ -443,7 +443,7 @@ var commands = {
 		usage: "[topic]",
 		description: 'Sets the topic for the channel. No topic removes the topic.',
 		process: function(bot,msg,suffix) {
-			bot.setTopic(msg.channel,suffix);
+			bot.setChannelTopic(msg.channel,suffix);
 		}
 	},
 	"roll": {
