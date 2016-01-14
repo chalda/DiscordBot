@@ -496,6 +496,27 @@ var commands = {
 				}
 			});
 		}
+	},
+	"xkcd": {
+		usage: "[comic number]",
+		description: "displays a given xkcd comic number (or the latest if nothing specified",
+		process: function(bot,msg,suffix){
+			var url = "http://xkcd.com/";
+			if(suffix != "") url += suffix+"/";
+			url += "info.0.json";
+			require("request")(url,function(err,res,body){
+				try{
+					var comic = JSON.parse(body);
+					bot.sendMessage(msg.channel,
+						comic.title+"\n"+comic.img,function(){
+							bot.sendMessage(msg.channel,comic.alt)
+					});
+				}catch(e){
+					bot.sendMessage(msg.channel,
+						"Couldn't fetch an XKCD for "+suffix);
+				}
+			});
+		}
 	}
 };
 try{
