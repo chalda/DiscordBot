@@ -477,6 +477,25 @@ var commands = {
 			updateMessagebox();
 			bot.sendMessage(msg.channel,"message saved.")
 		}
+	},
+	"twitch": {
+		usage: "<stream>",
+		description: "checks if the given stream is online",
+		process: function(bot,msg,suffix){
+			require("request")("https://api.twitch.tv/kraken/streams/"+suffix,
+			function(err,res,body){
+				var stream = JSON.parse(body);
+				if(stream.stream){
+					bot.sendMessage(msg.channel, suffix
+						+" is online, playing "
+						+stream.stream.game
+						+"\n"+stream.stream.channel.status
+						+"\n"+stream.stream.preview.large)
+				}else{
+					bot.sendMessage(msg.channel, suffix+" is offline")
+				}
+			});
+		}
 	}
 };
 try{
