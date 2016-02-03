@@ -517,7 +517,18 @@ var commands = {
 				}
 			});
 		}
-	}
+	},
+    "watchtogether": {
+        usage: "[video url (Youtube, Vimeo)",
+        description: "Generate a watch2gether room with your video to watch with your little friends!",
+        process: function(bot,msg,suffix){
+            var watch2getherUrl = "https://www.watch2gether.com/go#";
+            bot.sendMessage(msg.channel,
+                "watch2gether link",function(){
+                    bot.sendMessage(msg.channel,watch2getherUrl + suffix)
+                })
+        }
+    }
 };
 try{
 var rssFeeds = require("./rss.json");
