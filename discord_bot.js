@@ -61,6 +61,8 @@ try{
 
 var qs = require("querystring");
 
+var d20 = require("d20");
+
 var htmlToText = require('html-to-text');
 
 var giphy_config = {
@@ -447,15 +449,13 @@ var commands = {
 		}
 	},
 	"roll": {
-		usage: "[max value]",
-		description: "returns a random number between 1 and max value. If no max is specified it is 10",
-		process: function(bot,msg,suffix) {
-			var max = 10;
-			if(suffix) max = suffix;
-			var val = Math.floor(Math.random() * max) + 1;
-			bot.sendMessage(msg.channel,msg.author + " rolled a " + val);
-		}
-	},
+        usage: "[# of sides] or [# of dice]d[# of sides]( + [# of dice]d[# of sides] + ...)",
+        description: "roll one die with x sides, or multiple dice using d20 syntax. Default value is 10",
+        process: function(bot,msg,suffix) {
+            var val = d20.roll(suffix || "10");
+            bot.sendMessage(msg.channel,msg.author + " rolled a " + val);
+        }
+    },
 	"msg": {
 		usage: "<user> <message to leave user>",
 		description: "leaves a message for a user the next time they come online",
