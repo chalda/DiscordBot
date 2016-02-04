@@ -3,8 +3,7 @@
   "version": "0.1.1",
   "description": "Bot for Discord app",
   "readme": "README.md",
-  "maintainers": [
-  ],
+  "maintainers": [],
   "author": "",
   "repository": {
     "type": "git",
@@ -12,6 +11,7 @@
   },
   "license": "GNU",
   "dependencies": {
+    "d20": "^1.4.0",
     "discord.js": "<=5.2.x",
     "querystring": "0.2.x"
     , "underscore": "1.8.x"

@@ -61,6 +61,8 @@ try{
 
 var qs = require("querystring");
 
+var d20 = require("d20");
+
 var htmlToText = require('html-to-text');
 
 var giphy_config = {
@@ -447,15 +449,28 @@ var commands = {
 		}
 	},
 	"roll": {
-		usage: "[max value]",
-		description: "returns a random number between 1 and max value. If no max is specified it is 10",
-		process: function(bot,msg,suffix) {
-			var max = 10;
-			if(suffix) max = suffix;
-			var val = Math.floor(Math.random() * max) + 1;
-			bot.sendMessage(msg.channel,msg.author + " rolled a " + val);
-		}
-	},
+        usage: "[# of sides] or [# of dice]d[# of sides]( + [# of dice]d[# of sides] + ...)",
+        description: "roll one die with x sides, or multiple dice using d20 syntax. Default value is 10",
+        process: function(bot,msg,suffix) {
+            if (suffix.split("d").length <= 1) {
+                bot.sendMessage(msg.channel,msg.author + " rolled a " + d20.roll(suffix || "10"));
+            }  
+            else if (suffix.split("d").length > 1) {
+                var eachDie = suffix.split("+");
+                var passing = 0;
+                for (var i = 0; i < eachDie.length; i++){
+                    if (eachDie[i].split("d")[0] < 50) {
+                        passing += 1;
+                    };
+                }
+                if (passing == eachDie.length) {
+                    bot.sendMessage(msg.channel,msg.author + " rolled a " + d20.roll(suffix));
+                }  else {
+                    bot.sendMessage(msg.channel,msg.author + " tried to roll too many dice at once!");
+                }
+            }
+        }
+    },
 	"msg": {
 		usage: "<user> <message to leave user>",
 		description: "leaves a message for a user the next time they come online",
@@ -517,7 +532,18 @@ var commands = {
 				}
 			});
 		}
-	}
+	},
+    "watchtogether": {
+        usage: "[video url (Youtube, Vimeo)",
+        description: "Generate a watch2gether room with your video to watch with your little friends!",
+        process: function(bot,msg,suffix){
+            var watch2getherUrl = "https://www.watch2gether.com/go#";
+            bot.sendMessage(msg.channel,
+                "watch2gether link",function(){
+                    bot.sendMessage(msg.channel,watch2getherUrl + suffix)
+                })
+        }
+    }
 };
 try{
 var rssFeeds = require("./rss.json");
