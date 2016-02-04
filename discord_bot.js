@@ -565,12 +565,59 @@ function getDirectories(srcpath) {
 		return fs.statSync(path.join(srcpath, file)).isDirectory();
 	});
 }
+
+function createNpmDependenciesArray (packageFilePath) {
+    var p = require(packageFilePath);
+    if (!p.dependencies) return [];
+
+    var deps = [];
+    for (var mod in p.dependencies) {
+        deps.push(mod + "@" + p.dependencies[mod]);
+    }
+
+    return deps;
+}
+
+function preload_plugins(){
+    var plugin_folders = getDirectories("./plugins");
+    var deps = [];
+    var npm = require("npm");
+    for (var i = 0; i < plugin_folders.length; i++) {
+        try{
+            require("./plugins/" + plugin_folders[i]);
+        } catch(e) {
+            deps = deps.concat(createNpmDependenciesArray("./plugins/" + plugin_folders[i] + "/package.json"));
+        }
+    }
+    if(deps.length > 0) {
+        npm.load({
+            loaded: false
+        }, function (err) {
+            // catch errors
+            npm.commands.install(deps, function (er, data) {
+                if(er){
+                    console.log(er);
+                }
+                console.log("Plugin preload complete");
+                load_plugins()
+            });
+
+            if (err) {
+                console.log("preload_plugins: " + err);
+            }
+        });
+    } else {
+        console.log("Plugin preload complete");
+        load_plugins()
+    }
+}
+
 function load_plugins(){
 	var plugin_folders = getDirectories("./plugins");
 	for (var i = 0; i < plugin_folders.length; i++) {
 		var plugin;
 		try{
-			var plugin = require("./plugins/" + plugin_folders[i])
+			plugin = require("./plugins/" + plugin_folders[i])
 		} catch (err){
 			console.log("Improper setup of the '" + plugin_folders[i] +"' plugin. : " + err);
 		}
@@ -622,7 +669,7 @@ var bot = new Discord.Client();
 bot.on("ready", function () {
     loadFeeds();
 	console.log("Ready to begin! Serving in " + bot.channels.length + " channels");
-	load_plugins();
+	preload_plugins();
 });
 
 bot.on("disconnected", function () {

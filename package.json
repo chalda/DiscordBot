@@ -13,7 +13,6 @@
   "license": "GNU",
   "dependencies": {
     "discord.js": "<=5.2.x",
-    "request": ">=2.58.0",
     "querystring": "0.2.x"
     , "underscore": "1.8.x"
     , "winston": "1.0.x"
@@ -29,7 +28,7 @@
     , "yahoo-finance": "0.2.x"
     , "feedparser": "1.1.x"
     , "html-to-text": "1.5.x"
-	, "cleverbot-node": "0.2.x"
+	, "npm":""
   },
   "main": "discord_bot.js"
 }
