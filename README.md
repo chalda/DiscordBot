@@ -68,3 +68,8 @@ issues with this, you can try deleting your node_modules folder and then running
 
 # ToDo:
 All the things!
+
+# Help
+Please check github issues page on this project. We get a lot of the same questions, its very likely yours has already been answered. And yes we need to roll those into an official FAQ.
+
+If you still need help join us on [discord.](https://discordapp.com/channels/101830623957639168/101830623957639168)
