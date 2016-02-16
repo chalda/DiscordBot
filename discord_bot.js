@@ -1,6 +1,8 @@
 try {
 	var Discord = require("discord.js");
 } catch (e){
+	console.log(e.stack);
+	console.log(process.version);
 	console.log("Please run npm install and ensure it passes with no errors!");
 	process.exit();
 }
@@ -23,7 +25,7 @@ try {
 try {
 	var AuthDetails = require("./auth.json");
 } catch (e){
-	console.log("Please create an auth.json like auth.json.example with at least an email and password.");
+	console.log("Please create an auth.json like auth.json.example with at least an email and password.\n"+e.stack);
 	process.exit();
 }
 
@@ -64,6 +66,8 @@ var qs = require("querystring");
 var d20 = require("d20");
 
 var htmlToText = require('html-to-text');
+
+var startTime = Date.now();
 
 var giphy_config = {
     "api_key": "dc6zaTOxFJmzC",
@@ -543,6 +547,36 @@ var commands = {
                     bot.sendMessage(msg.channel,watch2getherUrl + suffix)
                 })
         }
+    },
+    "uptime": {
+    	usage: "",
+	description: "returns the amount of time since the bot started",
+	process: function(bot,msg,suffix){
+		var now = Date.now();
+		var msec = now - startTime;
+		console.log("Uptime is " + msec + " milliseconds");
+		var days = Math.floor(msec / 1000 / 60 / 60 / 24);
+		msec -= days * 1000 * 60 * 60 * 24;
+		var hours = Math.floor(msec / 1000 / 60 / 60);
+		msec -= hours * 1000 * 60 * 60;
+		var mins = Math.floor(msec / 1000 / 60);
+		msec -= mins * 1000 * 60;
+		var secs = Math.floor(msec / 1000);
+		var timestr = "";
+		if(days > 0) {
+			timestr += days + " days ";
+		}
+		if(hours > 0) {
+			timestr += hours + " hours ";
+		}
+		if(mins > 0) {
+			timestr += mins + " minutes ";
+		}
+		if(secs > 0) {
+			timestr += secs + " seconds ";
+		}
+		bot.sendMessage(msg.channel,"Uptime: " + timestr);
+	}
     }
 };
 try{
@@ -675,6 +709,7 @@ bot.on("message", function (msg) {
         }
 		alias = aliases[cmdTxt];
 		if(alias){
+			console.log(cmdTxt + " is an alias, constructed command is " + alias.join(" ") + " " + suffix);
 			cmdTxt = alias[0];
 			suffix = alias[1] + " " + suffix;
 		}
