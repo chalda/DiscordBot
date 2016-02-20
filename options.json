@@ -1,6 +1,0 @@
-{
-  "allowedPlugins":{
-    "Moderation": true
-    ,"ExamplePlugin/": true
-  }
-}
