@@ -618,35 +618,6 @@ function updateMessagebox(){
 	require("fs").writeFile("./messagebox.json",JSON.stringify(messagebox,null,2), null);
 }
 
-var fs = require('fs'),
-	path = require('path');
-function getDirectories(srcpath) {
-	return fs.readdirSync(srcpath).filter(function(file) {
-		return fs.statSync(path.join(srcpath, file)).isDirectory();
-	});
-}
-function load_plugins(){
-	var plugin_folders = getDirectories("./plugins");
-	for (var i = 0; i < plugin_folders.length; i++) {
-		var plugin;
-		try{
-			var plugin = require("./plugins/" + plugin_folders[i])
-		} catch (err){
-			console.log("Improper setup of the '" + plugin_folders[i] +"' plugin. : " + err);
-		}
-		if (plugin){
-			if("commands" in plugin){
-				for (var j = 0; j < plugin.commands.length; j++) {
-					if (plugin.commands[j] in plugin){
-						commands[plugin.commands[j]] = plugin[plugin.commands[j]];
-					}
-				}
-			}
-		}
-	}
-	console.log("Loaded " + Object.keys(commands).length + " chat commands type !help in Discord for a commands list.")
-}
-
 function rssfeed(bot,msg,url,count,full){
     var FeedParser = require('feedparser');
     var feedparser = new FeedParser();
@@ -682,7 +653,7 @@ var bot = new Discord.Client();
 bot.on("ready", function () {
     loadFeeds();
 	console.log("Ready to begin! Serving in " + bot.channels.length + " channels");
-	load_plugins();
+	require("./plugins.js").init();
 });
 
 bot.on("disconnected", function () {
@@ -813,5 +784,15 @@ function get_gif(tags, func) {
             }
         }.bind(this));
     }
+exports.addCommand = function(commandName, commandObject){
+    try {
+        commands[commandName] = commandObject;
+    } catch(err){
+        console.log(err);
+    }
+}
+exports.commandCount = function(){
+    return Object.keys(commands).length;
+}
 
 bot.login(AuthDetails.email, AuthDetails.password);
