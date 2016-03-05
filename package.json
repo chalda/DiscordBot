@@ -27,6 +27,8 @@
     , "wikijs": "0.1.x"
     , "yahoo-finance": "0.2.x"
     , "feedparser": "1.1.x"
+    , "leet": "^1.2.7"
+    , "urban": "^0.3.0"
     , "html-to-text": "1.5.x"
 	, "npm":""
   },

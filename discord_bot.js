@@ -8,6 +8,18 @@ try {
 }
 
 try {
+	var urban = require("urban");
+} catch (e){
+	console.log("couldn't load urban plugin!\n"+e.stack);
+}
+
+try {
+	var leet = require("leet");
+} catch (e){
+	console.log("couldn't load leet plugin!\n"+e.stack);
+}
+
+try {
 	var yt = require("./youtube_plugin");
 	var youtube_plugin = new yt();
 } catch(e){
@@ -90,7 +102,8 @@ var meme = {
 	"drevil": 40945639,
 	"skeptical": 101711,
 	"notime": 442575,
-	"yodawg": 101716
+	"yodawg": 101716,
+	"awkwardpenguin": 61584
 };
 
 var aliases;
@@ -153,7 +166,7 @@ var commands = {
         description: "bot says message",
         process: function(bot,msg,suffix){ bot.sendMessage(msg.channel,suffix);}
     },
-	"announce": {
+		"announce": {
         usage: "<message>",
         description: "bot says message with text to speech",
         process: function(bot,msg,suffix){ bot.sendMessage(msg.channel,suffix,{tts:true});}
@@ -353,7 +366,7 @@ var commands = {
                     //bot.sendMessage(msg.channel,JSON.stringify(snapshot));
                     bot.sendMessage(msg.channel,snapshot.name
                         + "\nprice: $" + snapshot.lastTradePriceOnly);
-                }  
+                }
             });
         }
     },
@@ -458,7 +471,7 @@ var commands = {
         process: function(bot,msg,suffix) {
             if (suffix.split("d").length <= 1) {
                 bot.sendMessage(msg.channel,msg.author + " rolled a " + d20.roll(suffix || "10"));
-            }  
+            }
             else if (suffix.split("d").length > 1) {
                 var eachDie = suffix.split("+");
                 var passing = 0;
@@ -495,6 +508,31 @@ var commands = {
 			};
 			updateMessagebox();
 			bot.sendMessage(msg.channel,"message saved.")
+		}
+	},
+	"urban": {
+			usage: "<word>",
+			description: "looks up a word on Urban Dictionary",
+			process: function(bot,msg,suffix){
+					var targetWord = suffix == "" ? urban.random() : urban(suffix);
+					targetWord.first(function(json) {
+							if (json) {
+								var message = "Urban Dictionary: **" +json.word + "**\n\n" + json.definition;
+								if (json.example) {
+										message = message + "\n\n__Example__:\n" + json.example;
+								}
+						    bot.sendMessage(msg.channel,message);
+							} else {
+								bot.sendMessage(msg.channel,"No matches found");
+							}
+					});
+			}
+	},
+	"leet": {
+		usage: "<message>",
+		description: "converts boring regular text to 1337",
+		process: function(bot,msg,suffix){
+				bot.sendMessage(msg.channel,leet.convert(suffix));
 		}
 	},
 	"twitch": {
@@ -660,7 +698,7 @@ bot.on("disconnected", function () {
 
 	console.log("Disconnected!");
 	process.exit(1); //exit node.js with an error
-	
+
 });
 
 bot.on("message", function (msg) {
@@ -721,13 +759,13 @@ bot.on("message", function (msg) {
         if(msg.author == bot.user){
             return;
         }
-        
+
         if (msg.author != bot.user && msg.isMentioned(bot.user)) {
                 bot.sendMessage(msg.channel,msg.author + ", you called?");
         }
     }
 });
- 
+
 
 //Log user status changes
 bot.on("presence", function(user,status,gameId) {
