@@ -25,7 +25,7 @@ try {
 try {
 	var AuthDetails = require("./auth.json");
 } catch (e){
-	console.log("Please create an auth.json like auth.json.example with at least an email and password.\n"+e.stack);
+	console.log("Please create an auth.json like auth.json.example with a bot token or an email and password.\n"+e.stack);
 	process.exit();
 }
 
@@ -794,5 +794,10 @@ exports.addCommand = function(commandName, commandObject){
 exports.commandCount = function(){
     return Object.keys(commands).length;
 }
-
-bot.login(AuthDetails.email, AuthDetails.password);
+if(AuthDetails.bot_token){
+	console.log("logging in with token");
+	bot.loginWithToken(AuthDetails.bot_token);
+} else {
+	console.log("Logging in as a user account. Consider switching to an official bot account instead!");
+	bot.login(AuthDetails.email, AuthDetails.password);
+}

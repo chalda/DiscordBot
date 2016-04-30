@@ -12,7 +12,7 @@
   "license": "GNU",
   "dependencies": {
     "d20": "^1.4.0",
-    "discord.js": "<=5.2.x",
+    "discord.js": "7.0.x",
     "querystring": "0.2.x"
     , "underscore": "1.8.x"
     , "winston": "1.0.x"
