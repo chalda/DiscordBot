@@ -497,6 +497,25 @@ var commands = {
 			bot.sendMessage(msg.channel,"message saved.")
 		}
 	},
+       "beam": {
+        usage: "<stream>",
+        description: "checks if the given Beam stream is online",
+        process: function(bot,msg,suffix){
+            require("request")("https://beam.pro/api/v1/channels/"+suffix,
+            function(err,res,body){
+                var data = JSON.parse(body);
+                if(data.user){
+                    bot.sendMessage(msg.channel, suffix
+                        +" is online, playing "
+                        +"\n"+data.type.name
+                        +"\n"+data.online 
+                        +"\n"+data.thumbnail.url)
+                }else{
+                    bot.sendMessage(msg.channel, suffix+" is offline")
+                }
+            });
+        }
+    },
 	"twitch": {
 		usage: "<stream>",
 		description: "checks if the given stream is online",
