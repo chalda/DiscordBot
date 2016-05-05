@@ -353,7 +353,7 @@ var commands = {
                     //bot.sendMessage(msg.channel,JSON.stringify(snapshot));
                     bot.sendMessage(msg.channel,snapshot.name
                         + "\nprice: $" + snapshot.lastTradePriceOnly);
-                }  
+                }
             });
         }
     },
@@ -671,6 +671,7 @@ var bot = new Discord.Client();
 
 bot.on("ready", function () {
     loadFeeds();
+		JoinServers();
 	console.log("Ready to begin! Serving in " + bot.channels.length + " channels");
 	require("./plugins.js").init();
 });
@@ -679,7 +680,7 @@ bot.on("disconnected", function () {
 
 	console.log("Disconnected!");
 	process.exit(1); //exit node.js with an error
-	
+
 });
 
 bot.on("message", function (msg) {
@@ -740,13 +741,13 @@ bot.on("message", function (msg) {
         if(msg.author == bot.user){
             return;
         }
-        
+
         if (msg.author != bot.user && msg.isMentioned(bot.user)) {
                 bot.sendMessage(msg.channel,msg.author + ", you called?");
         }
     }
 });
- 
+
 
 //Log user status changes
 bot.on("presence", function(user,status,gameId) {
@@ -813,5 +814,12 @@ exports.addCommand = function(commandName, commandObject){
 exports.commandCount = function(){
     return Object.keys(commands).length;
 }
+
+function JoinServers(){
+	for (var index in AuthDetails.servers_to_join){
+    bot.joinServer(AuthDetails.servers_to_join[index], function(error, server){
+      if (error) {console.log("Couldn't join a server (" + error + ")");}
+      if (server) {console.log("Joined " + server.name);}
+});}}
 
 bot.login(AuthDetails.email, AuthDetails.password);
