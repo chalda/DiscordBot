@@ -9,7 +9,7 @@
     "type": "git",
     "url": "git+https://github.com/chalda/DiscordBot.git"
   },
-  "license": "GNU",
+  "license": "MIT",
   "dependencies": {
     "d20": "^1.4.0",
     "discord.js": "7.0.x",
