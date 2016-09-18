@@ -12,13 +12,12 @@
   "license": "MIT",
   "dependencies": {
     "d20": "^1.4.0",
-    "discord.js": "7.0.x",
+    "discord.js": "9.1.x",
     "querystring": "0.2.x"
     , "underscore": "1.8.x"
-    , "winston": "1.0.x"
+    , "node-wolfram": "0.0.1"
     , "sinon": "1.14.x"
     , "nock": "1.7.x"
-    , "wolfram": "0.3.x"
     , "tumblr.js": "0.0.x"
     , "youtube-node": "1.2.x"
     , "google": "1.1.x"

@@ -12,7 +12,7 @@ exports.image = {
 	description: "gets the top matching image from google",
 	process: function(bot, msg, args) {
 		if(!AuthDetails || !AuthDetails.youtube_api_key || !AuthDetails.google_custom_search){
-			bot.sendMessage(msg.channel, "Image search requires both a YouTube API key and a Google Custom Search key!");
+			msg.channel.sendMessage("Image search requires both a YouTube API key and a Google Custom Search key!");
 			return;
 		}
 		//gets us a random result in first 5 pages
@@ -27,16 +27,16 @@ exports.image = {
 			}
 			if(!data){
 				console.log(data);
-				bot.sendMessage(msg.channel, "Error:\n" + JSON.stringify(data));
+				msg.channel.sendMessage( "Error:\n" + JSON.stringify(data));
 				return;
 			}
 			else if (!data.items || data.items.length == 0){
 				console.log(data);
-				bot.sendMessage(msg.channel, "No result for '" + args + "'");
+				msg.channel.sendMessage( "No result for '" + args + "'");
 				return;
 			}
 			var randResult = data.items[0];
-			bot.sendMessage(msg.channel, randResult.title + '\n' + randResult.link);
+			msg.channel.sendMessage( randResult.title + '\n' + randResult.link);
 		});
 	}
 }
@@ -46,7 +46,7 @@ exports.rimage = {
 	description: "gets a random image matching tags from google",
 	process: function(bot, msg, args) {
 		if(!AuthDetails || !AuthDetails.youtube_api_key || !AuthDetails.google_custom_search){
-			bot.sendMessage(msg.channel, "Image search requires both a YouTube API key and a Google Custom Search key!");
+			msg.channel.sendMessage( "Image search requires both a YouTube API key and a Google Custom Search key!");
 			return;
 		}
 		//gets us a random result in first 5 pages
@@ -61,16 +61,16 @@ exports.rimage = {
 			}
 			if(!data){
 				console.log(data);
-				bot.sendMessage(msg.channel, "Error:\n" + JSON.stringify(data));
+				msg.channel.sendMessage( "Error:\n" + JSON.stringify(data));
 				return;
 			}
 			else if (!data.items || data.items.length == 0){
 				console.log(data);
-				bot.sendMessage(msg.channel, "No result for '" + args + "'");
+				msg.channel.sendMessage( "No result for '" + args + "'");
 				return;
 			}
 			var randResult = data.items[Math.floor(Math.random() * data.items.length)];
-			bot.sendMessage(msg.channel, randResult.title + '\n' + randResult.link);
+			msg.channel.sendMessage( randResult.title + '\n' + randResult.link);
 		});
 	}
 }
@@ -91,17 +91,17 @@ exports.ggif = {
 			}
 			if(!data){
 				console.log(data);
-				bot.sendMessage(msg.channel, "Error:\n" + JSON.stringify(data));
+				msg.channel.sendMessage( "Error:\n" + JSON.stringify(data));
 				return;
 			}
 			else if (!data.items || data.items.length == 0){
 				console.log(data);
-				bot.sendMessage(msg.channel, "No result for '" + args + "'");
+				msg.channel.sendMessage( "No result for '" + args + "'");
 				return;
 			}
 			var randResult = data.items[Math.floor(Math.random() * data.items.length)];
-			bot.sendMessage(msg.channel, randResult.title + '\n' + randResult.link);
+			msg.channel.sendMessage( randResult.title + '\n' + randResult.link);
 		});
-		
+
 	}
 }
