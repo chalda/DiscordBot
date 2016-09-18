@@ -97,6 +97,15 @@ var aliases;
 var messagebox;
 
 var commands = {
+	"aliases": {
+		description: "lists all recorded aliases",
+		process: function(bot, msg, suffix) {
+			var text = "current aliases:\n";                                                                                     for(var a in aliases){                                                                                                       if(typeof a === 'string')
+				text += a + " ";
+			}
+			msg.channel.sendMessage(text);
+		}
+	},
 	"gif": {
 		usage: "<image tags>",
         description: "returns a random gif matching the tags passed",
