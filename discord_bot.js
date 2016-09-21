@@ -46,17 +46,24 @@ var Permissions = {};
 try{
 	Permissions = require("./permissions.json");
 } catch(e){}
+var dangerousCommands = ["eval","pullanddeploy"];
+for( var i=0; i<dangerousCommands.length;i++ ){
+	var cmd = dangerousCommands[i];
+	if(!Permissions.global.hasOwnProperty(cmd)){
+		Permissions.global[cmd] = false;
+	}
+}
 Permissions.checkPermission = function (user,permission){
 	try {
-		var allowed = false;
+		var allowed = true;
 		try{
 			if(Permissions.global.hasOwnProperty(permission)){
-				allowed = Permissions.global[permission] == true;
+				allowed = Permissions.global[permission] === true;
 			}
 		} catch(e){}
 		try{
 			if(Permissions.users[user.id].hasOwnProperty(permission)){
-				allowed = Permissions.users[user.id][permission] == true;
+				allowed = Permissions.users[user.id][permission] === true;
 			}
 		} catch(e){}
 		return allowed;
@@ -70,7 +77,15 @@ try{
 	Config = require("./config.json");
 } catch(e){ //no config file, use defaults
 	Config.debug = false;
-	Config.respondToInvalid = false;
+	Config.commandPrefix = '!';
+	var fs = require('fs');
+	try{
+		if(fs.lstatSync("./config.json").isFile()){
+			console.log("WARNING: config.json found but we couldn't read it!\n" + e.stack);
+		}
+	} catch(e2){
+		fs.writeFile("./config.json",JSON.stringify(Config,null,2));
+	}
 }
 
 var qs = require("querystring");
@@ -257,7 +272,7 @@ var commands = {
         process: function(bot,msg,suffix) {
             var query = suffix;
             if(!query) {
-                msg.channel.sendMessage("usage: !wiki search terms");
+                msg.channel.sendMessage("usage: " + Config.commandPrefix + "wiki search terms");
                 return;
             }
             var Wiki = require('wikijs');
@@ -360,7 +375,7 @@ var commands = {
         description: "gives results from wolframalpha using search terms",
         process: function(bot,msg,suffix){
 				if(!suffix){
-					msg.channel.sendMessage("Usage: !wolfram <search terms> (Ex. !wolfram integrate 4x)");
+					msg.channel.sendMessage("Usage: " + Config.commandPrefix + "wolfram <search terms> (Ex. " + Config.commandPrefix + "wolfram integrate 4x)");
 				}
 				msg.channel.sendMessage("working...").then(message => {
         	wolfram_plugin.respond(suffix,msg.channel,bot,message);
@@ -399,7 +414,7 @@ var commands = {
 			var args = suffix.split(" ");
 			var name = args.shift();
 			if(!name){
-				msg.channel.sendMessage("!alias " + this.usage + "\n" + this.description);
+				msg.channel.sendMessage(Config.commandPrefix + "alias " + this.usage + "\n" + this.description);
 			} else if(commands[name] || name === "help"){
 				msg.channel.sendMessage("overwriting commands with aliases is not allowed!");
 			} else {
@@ -696,7 +711,7 @@ bot.on("ready", function () {
     loadFeeds();
 	console.log("Ready to begin! Serving in " + bot.channels.length + " channels");
 	require("./plugins.js").init();
-	bot.user.setStatus("online","!help");
+	bot.user.setStatus("online",Config.commandPrefix+"help");
 });
 
 bot.on("disconnected", function () {
@@ -708,7 +723,7 @@ bot.on("disconnected", function () {
 
 function checkMessageForCommand(msg) {
 	//check if message is a command
-	if(msg.author.id != bot.user.id && (msg.content[0] === '!')){
+	if(msg.author.id != bot.user.id && (msg.content[0] === Config.commandPrefix)){
         console.log("treating " + msg.content + " from " + msg.author + " as command");
 		var cmdTxt = msg.content.split(" ")[0].substring(1);
         var suffix = msg.content.substring(cmdTxt.length+2);//add one for the ! and one for the space
@@ -735,7 +750,7 @@ function checkMessageForCommand(msg) {
 							var info = "";
 							for(var i=0;i<cmds.length;i++) {
 								var cmd = cmds[i];
-								info += "!" + cmd;
+								info += Config.commandPrefix + cmd;
 								var usage = commands[cmd].usage;
 								if(usage){
 									info += " " + usage;
@@ -753,7 +768,7 @@ function checkMessageForCommand(msg) {
 						} else {
 							msg.author.sendMessage("Available Commands:").then(function(){
 								for(var cmd in commands) {
-									var info = "!" + cmd;
+									var info = Config.commandPrefix + cmd;
 									var usage = commands[cmd].usage;
 									if(usage){
 										info += " " + usage;
@@ -768,14 +783,18 @@ function checkMessageForCommand(msg) {
 					}
         }
 		else if(cmd) {
-			try{
-				cmd.process(bot,msg,suffix);
-			} catch(e){
-				var msgTxt = "command " + cmdTxt + " failed :(";
-				if(Config.debug){
-					 msgTxt += "\n" + e.stack;
+			if(Permissions.checkPermission(msg.author,cmdTxt)){
+				try{
+					cmd.process(bot,msg,suffix);
+				} catch(e){
+					var msgTxt = "command " + cmdTxt + " failed :(";
+					if(Config.debug){
+						 msgTxt += "\n" + e.stack;
+					}
+					msg.channel.sendMessage(msgTxt);
 				}
-				msg.channel.sendMessage(msgTxt);
+			} else {
+				msg.channel.sendMessage("You are not allowed to run " + cmdTxt + "!");
 			}
 		} else {
 			msg.channel.sendMessage(cmdTxt + " not recognized as a command!").then((message => message.delete(5000)))

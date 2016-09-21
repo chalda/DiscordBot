@@ -1,10 +1,12 @@
 {
 	"global":{
-		"eval": false
+		"eval": false,
+		"pullanddeploy": false
 	},
 	"users":{
 		"userid":{
-			"eval": false
+			"eval": false,
+			"pullanddeploy": true
 		}
 	}
 }
