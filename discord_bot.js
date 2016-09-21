@@ -87,6 +87,9 @@ try{
 		fs.writeFile("./config.json",JSON.stringify(Config,null,2));
 	}
 }
+if(!Config.hasOwnProperty("commandPrefix")){
+	Config.commandPrefix = '!';
+}
 
 var qs = require("querystring");
 
