@@ -8,6 +8,18 @@ try {
 }
 
 try {
+	var urban = require("urban");
+} catch (e){
+	console.log("couldn't load urban plugin!\n"+e.stack);
+}
+
+try {
+	var leet = require("leet");
+} catch (e){
+	console.log("couldn't load leet plugin!\n"+e.stack);
+}
+
+try {
 	var yt = require("./youtube_plugin");
 	var youtube_plugin = new yt();
 } catch(e){
@@ -90,7 +102,8 @@ var meme = {
 	"drevil": 40945639,
 	"skeptical": 101711,
 	"notime": 442575,
-	"yodawg": 101716
+	"yodawg": 101716,
+	"awkwardpenguin": 61584
 };
 
 var aliases;
@@ -156,7 +169,7 @@ var commands = {
         description: "bot says message",
         process: function(bot,msg,suffix){ msg.channel.sendMessage(suffix);}
     },
-	"announce": {
+		"announce": {
         usage: "<message>",
         description: "bot says message with text to speech",
         process: function(bot,msg,suffix){ msg.channel.sendMessage(suffix,{tts:true});}
@@ -501,6 +514,31 @@ var commands = {
 		    });
 		}
 	},
+	"urban": {
+			usage: "<word>",
+			description: "looks up a word on Urban Dictionary",
+			process: function(bot,msg,suffix){
+					var targetWord = suffix == "" ? urban.random() : urban(suffix);
+					targetWord.first(function(json) {
+							if (json) {
+								var message = "Urban Dictionary: **" +json.word + "**\n\n" + json.definition;
+								if (json.example) {
+										message = message + "\n\n__Example__:\n" + json.example;
+								}
+						    msg.channel.sendMessage( message);
+							} else {
+								msg.channel.sendMessage( "No matches found");
+							}
+					});
+			}
+	},
+	"leet": {
+		usage: "<message>",
+		description: "converts boring regular text to 1337",
+		process: function(bot,msg,suffix){
+				msg.channel.sendMessage( leet.convert(suffix));
+		}
+	},
 	"twitch": {
 		usage: "<stream>",
 		description: "checks if the given stream is online",
@@ -760,7 +798,7 @@ function checkMessageForCommand(msg) {
 bot.on("message", checkMessageForCommand);
 bot.on("messageUpdate", (oldMessage, newMessage) => {
 	checkMessageForCommand(newMessage);
-})
+});
 
 //Log user status changes
 bot.on("presence", function(user,status,gameId) {
