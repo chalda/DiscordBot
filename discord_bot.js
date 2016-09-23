@@ -234,7 +234,7 @@ var commands = {
 				description: function() {
             var str = "Currently available memes:\n"
             for (var m in meme){
-                str += m + "\n"
+                str += "\t\t" + m + "\n"
             }
             return str;
         },
@@ -380,7 +380,7 @@ var commands = {
 				if(!suffix){
 					msg.channel.sendMessage("Usage: " + Config.commandPrefix + "wolfram <search terms> (Ex. " + Config.commandPrefix + "wolfram integrate 4x)");
 				}
-				msg.channel.sendMessage("working...").then(message => {
+				msg.channel.sendMessage("*Querying Wolfram Alpha...*").then(message => {
         	wolfram_plugin.respond(suffix,msg.channel,bot,message);
 				});
  	    }
@@ -635,7 +635,7 @@ var commands = {
 		if(secs > 0) {
 			timestr += secs + " seconds ";
 		}
-		msg.channel.sendMessage("Uptime: " + timestr);
+		msg.channel.sendMessage("**Uptime**: " + timestr);
 	}
     }
 };
@@ -714,6 +714,7 @@ bot.on("ready", function () {
     loadFeeds();
 	console.log("Ready to begin! Serving in " + bot.channels.length + " channels");
 	require("./plugins.js").init();
+	console.log("type "+Config.commandPrefix+"help in Discord for a commands list.");
 	bot.user.setStatus("online",Config.commandPrefix+"help");
 });
 
@@ -753,7 +754,7 @@ function checkMessageForCommand(msg) {
 							var info = "";
 							for(var i=0;i<cmds.length;i++) {
 								var cmd = cmds[i];
-								info += Config.commandPrefix + cmd;
+								info += "**"+Config.commandPrefix + cmd+"**";
 								var usage = commands[cmd].usage;
 								if(usage){
 									info += " " + usage;
@@ -769,18 +770,33 @@ function checkMessageForCommand(msg) {
 							}
 							msg.channel.sendMessage(info);
 						} else {
-							msg.author.sendMessage("Available Commands:").then(function(){
-								for(var cmd in commands) {
-									var info = Config.commandPrefix + cmd;
+							msg.author.sendMessage("**Available Commands:**").then(function(){
+								var batch = "";
+								var sortedCommands = Object.keys(commands).sort();
+								for(var i in sortedCommands) {
+									var cmd = sortedCommands[i];
+									var info = "**"+Config.commandPrefix + cmd+"**";
 									var usage = commands[cmd].usage;
 									if(usage){
 										info += " " + usage;
 									}
 									var description = commands[cmd].description;
+									if(description instanceof Function){
+										description = description();
+									}
 									if(description){
 										info += "\n\t" + description;
 									}
-									msg.author.sendMessage(info);
+									var newBatch = batch + "\n" + info;
+									if(newBatch.length > (1024 - 8)){ //limit message length
+										msg.author.sendMessage(batch);
+										batch = info;
+									} else {
+										batch = newBatch
+									}
+								}
+								if(batch.length > 0){
+									msg.author.sendMessage(batch);
 								}
 						});
 					}
