@@ -1,0 +1,6 @@
+{
+  "main": "player.js",
+  "dependencies": {
+    "youtube-dl": "^1.11.1"
+  }
+}
