@@ -736,7 +736,7 @@ bot.on("disconnected", function () {
 
 });
 
-function checkMessageForCommand(msg) {
+function checkMessageForCommand(msg, isEdit) {
 	//check if message is a command
 	if(msg.author.id != bot.user.id && (msg.content[0] === Config.commandPrefix)){
         console.log("treating " + msg.content + " from " + msg.author + " as command");
@@ -815,7 +815,7 @@ function checkMessageForCommand(msg) {
 		else if(cmd) {
 			if(Permissions.checkPermission(msg.author,cmdTxt)){
 				try{
-					cmd.process(bot,msg,suffix);
+					cmd.process(bot,msg,suffix,isEdit);
 				} catch(e){
 					var msgTxt = "command " + cmdTxt + " failed :(";
 					if(Config.debug){
@@ -844,9 +844,9 @@ function checkMessageForCommand(msg) {
     }
 }
 
-bot.on("message", checkMessageForCommand);
+bot.on("message", (msg) => checkMessageForCommand(msg, false));
 bot.on("messageUpdate", (oldMessage, newMessage) => {
-	checkMessageForCommand(newMessage);
+	checkMessageForCommand(newMessage,true);
 });
 
 //Log user status changes

@@ -38,7 +38,8 @@ let options = false;
 exports.play = {
 		usage: "<search terms|URL>",
 		description: "Plays the given video in the user's voice channel. Supports YouTube and many others: http://rg3.github.io/youtube-dl/supportedsites.html",
-		process :function(client, msg, suffix) {
+		process :function(client, msg, suffix, isEdit){
+		if(isEdit) return;
 		var arr = msg.guild.channels.filter((v)=>v.type == "voice").filter((v)=>v.members.exists("id",msg.author.id));
 		// Make sure the user is in a voice channel.
 		if (arr.length == 0) return msg.channel.sendMessage( wrap('You\'re not in a voice channel.'));
