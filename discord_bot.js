@@ -45,7 +45,7 @@ try {
 }
 
 // Load custom permissions
-var dangerousCommands = ["eval","pullanddeploy"];
+var dangerousCommands = ["eval","pullanddeploy","setUsername"];
 var Permissions = {};
 try{
 	Permissions = require("./permissions.json");
@@ -236,6 +236,12 @@ var commands = {
             });
         }
     },
+		"setUsername":{
+			description: "sets the username of the bot. Note this can only be done twice an hour!",
+			process: function(bot,msg,suffix) {
+				bot.user.setUsername(suffix);
+			}
+		},
     "meme": {
         usage: 'meme "top text" "bottom text"',
 				description: function() {
