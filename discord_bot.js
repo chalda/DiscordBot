@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 try {
 	var Discord = require("discord.js");
 } catch (e){
@@ -43,11 +45,15 @@ try {
 }
 
 // Load custom permissions
+var dangerousCommands = ["eval","pullanddeploy"];
 var Permissions = {};
 try{
 	Permissions = require("./permissions.json");
-} catch(e){}
-var dangerousCommands = ["eval","pullanddeploy"];
+} catch(e){
+	Permissions.global = {};
+	Permissions.users = {};
+}
+
 for( var i=0; i<dangerousCommands.length;i++ ){
 	var cmd = dangerousCommands[i];
 	if(!Permissions.global.hasOwnProperty(cmd)){
@@ -71,6 +77,7 @@ Permissions.checkPermission = function (user,permission){
 	} catch(e){}
 	return false;
 }
+fs.writeFile("./permissions.json",JSON.stringify(Permissions,null,2));
 
 //load config data
 var Config = {};
@@ -79,7 +86,6 @@ try{
 } catch(e){ //no config file, use defaults
 	Config.debug = false;
 	Config.commandPrefix = '!';
-	var fs = require('fs');
 	try{
 		if(fs.lstatSync("./config.json").isFile()){
 			console.log("WARNING: config.json found but we couldn't read it!\n" + e.stack);
