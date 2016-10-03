@@ -5,7 +5,8 @@ exports.commands = [
 	"skip",
 	"queue",
 	"pause",
-	"resume"
+	"resume",
+	"volume"
 ]
 
 let options = false;
@@ -182,6 +183,42 @@ exports.resume = {
 		// Resume.
 		msg.channel.sendMessage( wrap('Playback resumed.'));
 		if (voiceConnection.player.dispatcher) voiceConnection.player.dispatcher.resume();
+	}
+}
+
+/*
+ * Set Volume command.
+ *
+ * @param msg Original message.
+ * @param suffix Command suffix.
+ */
+exports.volume = {
+	usage: "<volume|volume%|volume dB>",
+	description: "set music playback volume as a fraction, a percent, or in dB",
+	process: function(client, msg, suffix) {
+		// Get the voice connection.
+		const voiceConnection = client.voiceConnections.get(msg.guild.id);
+		if (voiceConnection == null) return msg.channel.sendMessage( wrap('No music being played.'));
+		// Set the volume
+		if (voiceConnection.player.dispatcher) {
+			if(suffix == ""){
+				var displayVolume = Math.pow(voiceConnection.player.dispatcher.volume,0.6020600085251697) * 100.0;
+				msg.channel.sendMessage(wrap("volume: " + displayVolume + "%"));
+			} else {
+				if(suffix.toLowerCase().indexOf("db") == -1){
+					if(suffix.indexOf("%") == -1){
+						if(suffix > 1) suffix /= 100.0;
+						voiceConnection.player.dispatcher.setVolumeLogarithmic(suffix);
+					} else {
+						var num = suffix.split("%")[0];
+						voiceConnection.player.dispatcher.setVolumeLogarithmic(num/100.0);
+					}
+				} else {
+					var value = suffix.toLowerCase().split("db")[0];
+					voiceConnection.player.dispatcher.setVolumeDecibels(value);
+				}
+			}
+		}
 	}
 }
 
