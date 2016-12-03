@@ -23,6 +23,8 @@ This bot is written to run on top of node.js. Please see https://nodejs.org/en/d
 
 Once you have node installed running `npm install` from the bot directory should install all the needed packages. If this command prints errors the bot won't work!
 
+
+
 ## Windows Users
 Please note that you must have a working C compiler and Python in your path for
 `npm install` to work. The bot has been tested to work on Windows using Visual Studio 2015 Community and Python 2.7, except for `!pullanddeploy`.
@@ -31,6 +33,7 @@ Please note that you must have a working C compiler and Python in your path for
 * [Visual Studio Community 2015](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx)
 * [Python 2.7](https://www.python.org/downloads/)
 
+[Tuck 64 was kind enough to make a video walkthrough of the setup process](https://www.youtube.com/watch?v=H-82S2jFOII)
 
 ## RSS
 You can create an rss.json file adding rss feeds as commands. See rss.json.example for details.
