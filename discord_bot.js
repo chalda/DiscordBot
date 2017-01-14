@@ -144,6 +144,18 @@ var commands = {
 			msg.channel.sendMessage(text);
 		}
 	},
+	"cn": {
+        usage: "<joke>",
+        description: "Gives a Random Chuck norris Joke",
+        process: function(bot, msg, suffix) {
+            require("request")("http://api.icndb.com/jokes/random"
+                function(err, res, body) {
+                    var data = JSON.parse(body);
+                    if (data && data.value && data.value.joke) {
+                        msg.channel.sendMessage(data.value.joke)}
+                });
+        }
+    },
 	"gif": {
 		usage: "<image tags>",
         description: "returns a random gif matching the tags passed",
