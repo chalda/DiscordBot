@@ -157,6 +157,59 @@ var commands = {
 			});
 		}
 	    },
+	
+	        "ym": {
+                usage: "<joke>",
+                description: "Gives a Random Yo Momma Joke",
+                process: function(bot, msg, suffix) {
+                    require("request")("http://api.yomomma.info/",
+                        function(err, res, body) {
+                            var data = JSON.parse(body);
+                            if (data && data.joke) {
+                                msg.channel.sendMessage(data.joke)}
+                        });
+                }
+            },
+
+            "rd": {
+                    usage: "<random date>",
+                    description: "Gives a Random Date Fact",
+                    process: function(bot, msg, suffix) {
+                        require("request")("http://numbersapi.com/random/date?json",
+                            function(err, res, body) {
+                                var data = JSON.parse(body);
+                                if (data && data.text) {
+                                    msg.channel.sendMessage(data.text)}
+                            });
+                    }
+                },
+	
+	            "ry": {
+                    usage: "<random year>",
+                    description: "Gives a Random Year Fact",
+                    process: function(bot, msg, suffix) {
+                        require("request")("http://numbersapi.com/random/year?json",
+                            function(err, res, body) {
+                                var data = JSON.parse(body);
+                                if (data && data.text) {
+                                    msg.channel.sendMessage(data.text)}
+                            });
+                    }
+                },
+	
+		            "rmath": {
+                    usage: "<random math>",
+                    description: "Gives a Random Math Fact",
+                    process: function(bot, msg, suffix) {
+                        require("request")("http://numbersapi.com/random/math?json",
+                            function(err, res, body) {
+                                var data = JSON.parse(body);
+                                if (data && data.text) {
+                                    msg.channel.sendMessage(data.text)}
+                            });
+                    }
+                },
+
 	"gif": {
 		usage: "<image tags>",
         description: "returns a random gif matching the tags passed",
