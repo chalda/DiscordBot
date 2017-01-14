@@ -751,7 +751,7 @@ bot.on("ready", function () {
 	console.log("Logged in! Serving in " + bot.guilds.array().length + " servers");
 	require("./plugins.js").init();
 	console.log("type "+Config.commandPrefix+"help in Discord for a commands list.");
-	bot.user.setStatus("online",Config.commandPrefix+"help");
+	bot.user.setStatus("online", Config.commandPrefix + "help | " + bot.guilds.array().length + " Servers");
 });
 
 bot.on("disconnected", function () {
