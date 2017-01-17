@@ -1,0 +1,6 @@
+{
+  "main": "leet.js",
+  "dependencies": {
+    "leet": "^1.2.7"
+  }
+}

@@ -1,10 +1,17 @@
 var request = require("request");
 var AuthDetails = require("../../auth.json");
+try {
+	var yt = require("./youtube_plugin");
+	var youtube_plugin = new yt();
+} catch(e){
+	console.log("couldn't load youtube plugin!\n"+e.stack);
+}
 
 exports.commands = [
 	"image", //gives top image from google search
 	"rimage", //gives random image from google search
-	"ggif" //gives random gif from google search
+	"ggif", //gives random gif from google search
+	"youtube"
 ];
 
 exports.image = {
@@ -103,5 +110,13 @@ exports.ggif = {
 			msg.channel.sendMessage( randResult.title + '\n' + randResult.link);
 		});
 
+	}
+}
+
+exports.youtube = {
+	usage: "<video tags>",
+	description: "gets youtube video matching tags",
+	process: function(bot,msg,suffix){
+		youtube_plugin.respond(suffix,msg.channel,bot);
 	}
 }
