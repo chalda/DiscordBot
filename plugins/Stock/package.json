@@ -1,0 +1,6 @@
+{
+  "main": "stock.js",
+  "dependencies": {
+    "yahoo-finance": "0.2.x"
+  }
+}

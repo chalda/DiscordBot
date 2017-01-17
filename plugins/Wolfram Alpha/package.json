@@ -1,0 +1,6 @@
+{
+  "main": "wolfram.js",
+  "dependencies": {
+    "node-wolfram": "0.0.1"
+  }
+}

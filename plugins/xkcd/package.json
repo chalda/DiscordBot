@@ -1,0 +1,6 @@
+{
+  "main": "xkcd.js",
+  "dependencies": {
+    "request": "2.x.x"
+  }
+}

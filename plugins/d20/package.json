@@ -1,0 +1,6 @@
+{
+  "main": "dice.js",
+  "dependencies": {
+    "d20": "^1.4.0"
+  }
+}
