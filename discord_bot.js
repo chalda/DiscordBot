@@ -943,6 +943,5 @@ if(AuthDetails.bot_token){
 	console.log("logging in with token");
 	bot.login(AuthDetails.bot_token);
 } else {
-	console.log("Logging in as a user account. Consider switching to an official bot account instead!");
-	bot.login(AuthDetails.email, AuthDetails.password);
+	console.log("Logging in with user credentials is no longer supported!\nYou can use token based log in with a user account, see\nhttps://discord.js.org/#/docs/main/master/general/updating");
 }
