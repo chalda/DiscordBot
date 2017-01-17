@@ -41,7 +41,7 @@ exports.play = {
 		description: "Plays the given video in the user's voice channel. Supports YouTube and many others: http://rg3.github.io/youtube-dl/supportedsites.html",
 		process :function(client, msg, suffix, isEdit){
 		if(isEdit) return;
-		var arr = msg.guild.channels.filter((v)=>v.type == "voice").filter((v)=>v.members.exists("id",msg.author.id));
+		var arr = msg.guild.channels.filter((v)=>v.type == "voice").filter((v)=>v.members.has(msg.author.id));
 		// Make sure the user is in a voice channel.
 		if (arr.length == 0) return msg.channel.sendMessage( wrap('You\'re not in a voice channel.'));
 
@@ -251,7 +251,7 @@ function executeQueue(client, msg, queue) {
 				if (voiceChannel != null) {
 					voiceChannel.join().then(connection => {
 						resolve(connection);
-					}).catch(() => {});
+					}).catch(console.error);
 				} else {
 					// Otherwise, clear the queue and do nothing.
 					queue.splice(0, queue.length);
@@ -289,12 +289,12 @@ function executeQueue(client, msg, queue) {
 						}, 1000);
 					});
 				//}).catch((ex) => {msg.channel.sendMessage("playStream fail: " + ex)});//*/
-			}).catch((ex) => {msg.channel.sendMessage("wat: "); console.log(ex); console.log(typeof(ex))});
-		}).catch(() => {msg.channel.sendMessage("wat2")});
+			}).catch(console.error);
+		}).catch(console.error);
 	}
 
 function getAuthorVoiceChannel(msg) {
-	var voiceChannelArray = msg.guild.channels.filter((v)=>v.type == "voice").filter((v)=>v.members.exists("id",msg.author.id)).array();
+	var voiceChannelArray = msg.guild.channels.filter((v)=>v.type == "voice").filter((v)=>v.members.has(msg.author.id)).array();
 	if(voiceChannelArray.length == 0) return null;
 	else return voiceChannelArray[0];
 }
