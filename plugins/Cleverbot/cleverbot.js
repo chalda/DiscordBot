@@ -1,3 +1,4 @@
+
 exports.commands = [
 	"talk"
 ]
@@ -12,7 +13,17 @@ exports.talk = {
 	process : function(bot,msg, suffix) {
 			var conv = suffix.split(" ");
 			talkbot.write(conv, function (response) {
-			msg.channel.sendMessage(response.message)
+			msg.channel.sendMessage("", {
+          embed: {
+              color: 0x8698FE,
+              author: {
+                  name: msg.author.username,
+                  icon_url: msg.author.avatarURL
+              },
+              description: response.message,
+          }
+      }).catch(console.error);
+			msg.react('👌');
 			})
 	}
 }
