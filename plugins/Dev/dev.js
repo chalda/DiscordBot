@@ -64,9 +64,26 @@ exports.version = {
 exports.myid = {
 	description: "returns the user id of the sender",
 	process: function(bot,msg){
-		msg.channel.sendMessage(msg.author.id);
+		msg.channel.sendMessage("",{
+				embed: {
+						color: 0x8698FE,
+						author: {
+								name: msg.author.username,
+								icon_url: msg.author.avatarURL
+						},
+						description: "**Your**",
+						fields: [
+    {
+      name: '**Discord ID**',
+      value: msg.author.id
+    }
+	],
+	timestamp: new Date(),
+				}
+		});
 	}
 }
+
 
 exports.userid = {
 	usage: "[user to get id of]",
