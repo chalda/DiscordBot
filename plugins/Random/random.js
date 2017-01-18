@@ -2,6 +2,7 @@
 exports.commands = [
 	"rd",
 	"ry",
+	"joke",
 	"rmath"
 ]
 
@@ -30,6 +31,21 @@ function(err, res, body) {
 });
 }
 },
+
+							"joke": {
+										usage: "<random date>",
+										description: "Gives a Random Date Fact",
+										process: function(bot, msg, suffix) {
+												require("request")("http://tambal.azurewebsites.net/joke/random",
+														function(err, res, body) {
+																var data = JSON.parse(body);
+																if (data && data.joke) {
+																		msg.channel.sendMessage(data.joke)}
+														});
+										}
+								},
+
+
 
 
 				exports.rd = {
