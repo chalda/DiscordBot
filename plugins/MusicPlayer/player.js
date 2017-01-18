@@ -4,6 +4,7 @@ exports.commands = [
 	"play",
 	"skip",
 	"queue",
+	"dequeue",
 	"pause",
 	"resume",
 	"volume"
@@ -145,6 +146,63 @@ exports.queue = {
 
 		// Send the queue and status.
 		msg.channel.sendMessage( wrap('Queue (' + queueStatus + '):\n' + text));
+	}
+}
+
+	/*
+	 * Dequeue command.
+	 *
+	 * @param msg Original message.
+	 * @param suffix Command suffix.
+	 */
+exports.dequeue = {
+	description: "Dequeues the given song index from the song queue.  Use the queue command to get the list of songs in the queue.",
+	process: function(client, msg, suffix) {
+		// Define a usage string to print out on errors
+		const usageString = 'The format is "!dequeue <index>".  Use !queue to find the indices of each song in the queue.';
+		
+		// Get the queue.
+		const queue = getQueue(msg.guild.id);
+
+		// Make sure the suffix exists.
+		if (!suffix)
+			return msg.channel.sendMessage( wrap('You need to specify an index to remove from the queue.  ' + usageString));
+
+		// Get the arguments
+		var split = suffix.split(/(\s+)/);
+
+		// Make sure there's only 1 index 
+		if (split.length > 1)
+			return msg.channel.sendMessage( wrap('There are too many arguments.  ' + usageString));
+		
+		// Remove the index
+		var index = parseInt(split[0]);
+		var songRemoved = ''; // To be filled out below
+		if (!isNaN(index)) {
+			index = index - 1;
+			
+			if (index >= 0 && index < queue.length) {
+				songRemoved = queue[index].title;
+				
+				if (index == 0) {
+					// If it was the first one, skip it
+					const voiceConnection = client.voiceConnections.get(msg.guild.id);
+					if (voiceConnection.player.dispatcher) 
+						voiceConnection.player.dispatcher.resume();
+					voiceConnection.player.dispatcher.end();
+				} else {
+					// Otherwise, just remove it from the queue
+					queue.splice(index, 1);
+				}				
+			} else {
+				return msg.channel.sendMessage( wrap('The index is out of range.  ' + usageString));
+			}
+		} else {
+			return msg.channel.sendMessage( wrap('That index isn\'t a number.  ' + usageString));
+		}
+		
+		// Send the queue and status.
+		msg.channel.sendMessage( wrap('Removed \'' + songRemoved + '\' (index ' + split[0] + ') from the queue.'));
 	}
 }
 
