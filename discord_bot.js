@@ -126,12 +126,18 @@ var commands = {
     "idle": {
 				usage: "[status]",
         description: "sets bot status to idle",
-        process: function(bot,msg,suffix){ bot.user.setStatus("idle",suffix);}
+        process: function(bot,msg,suffix){ 
+	    bot.user.setStatus("idle");
+	    bot.user.setGame(suffix);
+	}
     },
     "online": {
 				usage: "[status]",
         description: "sets bot status to online",
-        process: function(bot,msg,suffix){ bot.user.setStatus("online",suffix);}
+        process: function(bot,msg,suffix){ 
+	    bot.user.setStatus("online");
+	    bot.user.setGame(suffix);
+	}
     },
     "say": {
         usage: "<message>",
@@ -204,7 +210,7 @@ bot.on("ready", function () {
 	console.log("Logged in! Serving in " + bot.guilds.array().length + " servers");
 	require("./plugins.js").init();
 	console.log("type "+Config.commandPrefix+"help in Discord for a commands list.");
-	bot.user.setGame(Config.commandPrefix+"help |" + bot.guilds.array().length +" Severs"); 
+	bot.user.setGame(Config.commandPrefix+"help | " + bot.guilds.array().length +" Servers"); 
 });
 
 bot.on("disconnected", function () {
