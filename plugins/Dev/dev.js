@@ -2,8 +2,7 @@ exports.commands = [
 	"pullanddeploy",
 	"version",
 	"myid",
-	"userid",
-	"eval"
+	"userid"
 ]
 
 //a collection of commands primarily useful for developers
@@ -92,14 +91,3 @@ exports.userid = {
 	}
 }
 
-exports["eval"] = {
-	usage: "<command>",
-	description: 'Executes arbitrary javascript in the bot process. User must have "eval" permission',
-	process: function(bot,msg,suffix) {
-		if(Permissions.checkPermission(msg.author,"eval")){
-			msg.channel.sendMessage( eval(suffix,bot));
-		} else {
-			msg.channel.sendMessage( msg.author + " doesn't have permission to execute eval!");
-		}
-	}
-}

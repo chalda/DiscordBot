@@ -165,6 +165,17 @@ var commands = {
 			msg.channel.sendMessage("message saved.")
 		}
 	},
+	"eval": {
+		usage: "<command>",
+		description: 'Executes arbitrary javascript in the bot process. User must have "eval" permission',
+		process: function(bot,msg,suffix) {
+			if(Permissions.checkPermission(msg.author,"eval")){
+				msg.channel.sendMessage( eval(suffix,bot));
+			} else {
+				msg.channel.sendMessage( msg.author + " doesn't have permission to execute eval!");
+			}
+		}
+	}
 };
 
 if(AuthDetails.hasOwnProperty("client_id")){
