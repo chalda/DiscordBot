@@ -1,11 +1,11 @@
 exports.commands = [
-    "rd",
-    "ry",
+    "date_fact",
+    "year_fact",
     "joke",
-    "rmath"
+    "math_fact"
 ]
 
-exports.rmath = {
+exports.math_fact = {
         usage: "<random math>",
         description: "Gives a Random Math Fact",
         process: function(bot, msg, suffix) {
@@ -19,8 +19,7 @@ exports.rmath = {
         }
     },
 
-    exports.ry = {
-        usage: "<random year>",
+    exports.year_fact = {
         description: "Gives a Random Year Fact",
         process: function(bot, msg, suffix) {
             require("request")("http://numbersapi.com/random/year?json",
@@ -34,8 +33,7 @@ exports.rmath = {
     },
 
     exports.joke = {
-        usage: "<random date>",
-        description: "Gives a Random Date Fact",
+        description: "Gives a Random Joke",
         process: function(bot, msg, suffix) {
             require("request")("http://tambal.azurewebsites.net/joke/random",
                 function(err, res, body) {
@@ -47,11 +45,7 @@ exports.rmath = {
         }
     },
 
-
-
-
-    exports.rd = {
-        usage: "<random date>",
+    exports.date_fact = {
         description: "Gives a Random Date Fact",
         process: function(bot, msg, suffix) {
             require("request")("http://numbersapi.com/random/date?json",

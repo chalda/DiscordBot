@@ -16,9 +16,10 @@ exports.talk = {
                 embed: {
                     color: 0x8698FE,
                     author: {
-                        name: msg.author.username,
-                        icon_url: msg.author.avatarURL
+                        name: "Cleverbot",
+                        icon_url: "https://lh5.ggpht.com/DiNbF90a-ecMdyG7c49ARdKdm2mlhLDyNswLcmDm3WM6yDADmMMWtTO1XL96-LCEXIc=w300"
                     },
+		    timestamp: new Date(),
                     description: response.message,
                 }
             }).catch(console.error);
