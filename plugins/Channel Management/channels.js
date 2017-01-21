@@ -2,6 +2,7 @@ exports.commands = [
 	"create",
 	"voice",
 	"delete",
+	"servers",
 	"topic"
 ]
 
@@ -16,6 +17,16 @@ exports.create = {
 		});
 	}
 }
+
+exports.servers = {
+description: "Tells you what servers the bot is in",
+process: function(bot,msg) {
+	msg.channel.sendMessage(`__**${bot.user.username} is currently on the following servers:**__ \n\n${bot.guilds.map(g => `${g.name} - **${g.memberCount} Members**`).join(`\n`)}`, {split: true});
+}
+},
+
+
+
 exports.voice = {
 	usage: "<channel name>",
 	description: "creates a new voice channel with the give name.",

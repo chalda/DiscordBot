@@ -1,0 +1,6 @@
+{
+  "main": "random.js",
+  "dependencies": {
+    "request": "latest"
+  }
+}
