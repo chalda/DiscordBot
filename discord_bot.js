@@ -126,12 +126,13 @@ var commands = {
     "rip": {
         description: "Rests something in pepperoni",
         process: function(bot, msg, suffix) {
-            msg.channel.sendMessage( "rest in pepperoni, ");
-            if(suffix){
-                msg.channel.sendMessage( suffix);
-		    } else {
-			msg.channel.sendMessage( msg.author);
-            }
+	    var riparoo = "";
+		if(suffix){
+                riparoo = suffix;
+		} else {
+		riparoo = msg.author;
+            };
+            msg.channel.sendMessage( "rest in pepperoni, " + riparoo);
         }
     },
     "idle": {
@@ -276,7 +277,7 @@ function checkMessageForCommand(msg, isEdit) {
 							}
 							msg.channel.sendMessage(info);
 						} else {
-							msg.author.sendMessage("**Available Commands:**").then(function(){
+							msg.channel.sendMessage("**Available Commands:**").then(function(){
 								var batch = "";
 								var sortedCommands = Object.keys(commands).sort();
 								for(var i in sortedCommands) {
