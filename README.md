@@ -74,5 +74,3 @@ All the things!
 
 # Help
 Please check github issues page on this project. We get a lot of the same questions, its very likely yours has already been answered. And yes we need to roll those into an official FAQ.
-
-If you still need help join us on [discord.](https://discord.gg/m29GJBN)
