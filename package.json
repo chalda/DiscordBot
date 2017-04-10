@@ -11,6 +11,8 @@
   },
   "license": "GPL-2.0",
   "dependencies": {
+    "bindings": "1.2.1",
+    "nan": "2.6.1",
     "erlpack": "",
     "opusscript": "",
     "uws": "",
