@@ -1,1 +1,1 @@
-web: npm install erlpack node-opus opusscript uws
+web: npm install erlpack node-opus opusscript
