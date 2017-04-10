@@ -61,7 +61,7 @@ try{
 	Config = require("./config.json");
 } catch(e){ //no config file, use defaults
 	Config.debug = false;
-	Config.commandPrefix = '!';
+	Config.commandPrefix = '+';
 	try{
 		if(fs.lstatSync("./config.json").isFile()){
 			console.log("WARNING: config.json found but we couldn't read it!\n" + e.stack);
@@ -71,7 +71,7 @@ try{
 	}
 }
 if(!Config.hasOwnProperty("commandPrefix")){
-	Config.commandPrefix = '!';
+	Config.commandPrefix = '+';
 }
 
 var messagebox;
