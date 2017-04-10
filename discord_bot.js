@@ -123,6 +123,17 @@ var commands = {
             }
         }
     },
+    "rip": {
+        description: "Rests something in pepperoni",
+        process: function(bot, msg, suffix) {
+            msg.channel.sendMessage( "rest in pepperoni, ");
+            if(suffix){
+                msg.channel.sendMessage( suffix);
+		    } else {
+			msg.channel.sendMessage( msg.author);
+            }
+        }
+    },
     "idle": {
 				usage: "[status]",
         description: "sets bot status to idle",
