@@ -117,9 +117,9 @@ var commands = {
     "ping": {
         description: "responds pong, useful for checking if bot is alive",
         process: function(bot, msg, suffix) {
-            msg.channel.sendMessage( msg.author+" pong!");
+            msg.channel.sendMessage( "pong!");
             if(suffix){
-                msg.channel.sendMessage( "note that !ping takes no arguments!");
+                msg.author.sendMessage( "+ping takes no arguments!");
             }
         }
     },
@@ -222,7 +222,7 @@ bot.on("ready", function () {
 	console.log("Logged in! Serving in " + bot.guilds.array().length + " servers");
 	require("./plugins.js").init();
 	console.log("type "+Config.commandPrefix+"help in Discord for a commands list.");
-	bot.user.setGame(Config.commandPrefix+"help | " + bot.guilds.array().length +" Servers"); 
+	bot.user.setGame("the +help game"); 
 });
 
 bot.on("disconnected", function () {
