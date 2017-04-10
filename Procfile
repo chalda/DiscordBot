@@ -1,1 +1,1 @@
-web: npm
+web: npm install
