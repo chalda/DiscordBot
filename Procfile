@@ -1,1 +1,4 @@
-web: npm install erlpack && npm install node-opus && npm install opusscript && npm install
+web: npm install erlpack
+web: npm install node-opus
+web: npm install opusscript
+web: npm install
