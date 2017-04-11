@@ -129,8 +129,8 @@ var commands = {
             if(suffix){
                 msg.author.sendMessage( "+ping takes no arguments!");
             }
-	    if (msg.channel.id == "300808172371836928") {
-		msg.channel.sendMessage("@here The FitnessGram™ Pacer Test is a multistage aerobic capacity test that progressively gets more difficult as it continues. The 20 meter pacer test will begin in 30 seconds. Line up at the start. The running speed starts slowly, but gets faster each minute after you hear this signal. [beep] A single lap should be completed each time you hear this sound. [ding] Remember to run in a straight line, and run as long as possible. The second time you fail to complete a lap before the sound, your test is over. The test will begin on the word start. On your mark, get ready, start.");
+	    if (msg.channel.id == "300808172371836928") { // This ID belongs to a channel in a random server. If you say +ping in that channel, it responds as below.
+		msg.channel.sendMessage("The FitnessGram™ Pacer Test is a multistage aerobic capacity test that progressively gets more difficult as it continues. The 20 meter pacer test will begin in 30 seconds. Line up at the start. The running speed starts slowly, but gets faster each minute after you hear this signal. [beep] A single lap should be completed each time you hear this sound. [ding] Remember to run in a straight line, and run as long as possible. The second time you fail to complete a lap before the sound, your test is over. The test will begin on the word start. On your mark, get ready, start.");
             }
 	}
     },
@@ -144,13 +144,22 @@ var commands = {
 		} else {
 		riparoo = msg.author;
             	};
-	    var restArray = ['riparoony', 'riparoo', 'rest', 'rip', 'reset', 'remember', 'ripadoodle'];
-	    var peaceArray = ['peace', 'pepperoni', 'pepperoncini', 'pizza', 'pieces', 'prezzies', 'potatoes', 'pasta', 'pastaroni'];
+	    var restArray = ['riparoony', 'riparoo', 'rest', 'rip', 'reset', 'remember', 'ripadoodle', 'restaroony', 'resta'];
+	    var peaceArray = ['peace', 'pepperoni', 'pepperoncini', 'pizza', 'pieces', 'prezzies', 'potatoes', 'pasta', 'pastaroni', 'poopymon'];
 		var randRest = Math.floor(Math.random() * restArray.length); var rrip = restArray[randRest];
 		var randPeace = Math.floor(Math.random() * peaceArray.length); var prip = peaceArray[randPeace];
 		
             msg.channel.sendMessage( rrip + " in " + prip + ", " + riparoo).then((message => msg.delete(1000)));
         }
+    },
+	"features": {
+        description: "Lists features and commands.",
+        process: function(bot, msg, suffix) {
+            msg.channel.sendMessage( "FEATURES:\n +rip (content): Rests some content in pepperoni.\nThis feature is still being worked on. Check back later.");
+	    if (msg.channel.id == "301360041473081346") { // LOGIC: If the ID of the channel belongs to #trick-room of BlakiniLive, send the message.
+		msg.channel.sendMessage("The FitnessGram™ Pacer Test is a multistage aerobic capacity test that progressively gets more difficult as it continues. The 20 meter pacer test will begin in 30 seconds. Line up at the start. The running speed starts slowly, but gets faster each minute after you hear this signal. [beep] A single lap should be completed each time you hear this sound. [ding] Remember to run in a straight line, and run as long as possible. The second time you fail to complete a lap before the sound, your test is over. The test will begin on the word start. On your mark, get ready, start.");
+            }
+	}
     },
     "idle": {
 	usage: "[status]",
@@ -178,28 +187,6 @@ var commands = {
         description: "bot says message with text to speech",
         process: function(bot,msg,suffix){ msg.channel.sendMessage(suffix,{tts:true});}
     },
-	"msg": {
-		usage: "<user> <message to leave user>",
-		description: "leaves a message for a user the next time they come online",
-		process: function(bot,msg,suffix) {
-			var args = suffix.split(' ');
-			var user = args.shift();
-			var message = args.join(' ');
-			if(user.startsWith('<@')){
-				user = user.substr(2,user.length-3);
-			}
-			var target = msg.channel.guild.members.find("id",user);
-			if(!target){
-				target = msg.channel.guild.members.find("username",user);
-			}
-			messagebox[target.id] = {
-				channel: msg.channel.id,
-				content: target + ", " + msg.author + " said: " + message
-			};
-			updateMessagebox();
-			msg.channel.sendMessage("message saved.")
-		}
-	},
 	"eval": {
 		usage: "<command>",
 		description: 'Executes arbitrary javascript in the bot process. User must have "eval" permission',
