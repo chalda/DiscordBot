@@ -160,7 +160,7 @@ var commands = {
 	}
     },
     "online": {
-				usage: "[status]",
+	usage: "[status]",
         description: "sets bot status to online",
         process: function(bot,msg,suffix){ 
 	    bot.user.setStatus("online");
@@ -210,7 +210,7 @@ var commands = {
 			}
 		}
 	}
-},
+}
 
 if(AuthDetails.hasOwnProperty("client_id")){
 	commands["invite"] = {
