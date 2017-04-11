@@ -210,7 +210,7 @@ var commands = {
 			}
 		}
 	}
-}
+},
 
 if(AuthDetails.hasOwnProperty("client_id")){
 	commands["invite"] = {
