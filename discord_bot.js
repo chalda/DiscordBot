@@ -144,8 +144,8 @@ var commands = {
 		} else {
 		riparoo = msg.author;
             	};
-	    var restArray = ['riparoony', 'riparoo', 'rest', 'rip', 'reset'];
-	    var peaceArray = ['peace', 'pepperoni', 'pepperoncini', 'pizza'];
+	    var restArray = ['riparoony', 'riparoo', 'rest', 'rip', 'reset', 'remember', 'ripadoodle'];
+	    var peaceArray = ['peace', 'pepperoni', 'pepperoncini', 'pizza', 'pieces', 'prezzies', 'potatoes', 'pasta', 'pastaroni'];
 		var randRest = Math.floor(Math.random() * restArray.length); var rrip = restArray[randRest];
 		var randPeace = Math.floor(Math.random() * peaceArray.length); var prip = peaceArray[randPeace];
 		
