@@ -2,8 +2,8 @@ var http = require('http');
 var fs = require('fs');
 var path = require('path');
 
- http.createServer.listen(config.port, function () {
-  console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
+ http.createServer.listen(process.env.PORT, function () {
+  console.log('Express server listening on %d, in %s mode', process.env.PORT, app.get('env'));
 });
 
  console.log('Server running at http://127.0.0.1:5000/');
