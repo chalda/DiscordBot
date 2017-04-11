@@ -140,7 +140,7 @@ var commands = {
 		} else {
 		riparoo = msg.author;
             };
-            msg.channel.sendMessage( "rest in pepperoni, " + riparoo).then((msg => msg.delete(1000)));
+            msg.channel.sendMessage( "rest in pepperoni, " + riparoo).then((message => msg.delete(1000)));
         }
     },
     "idle": {
