@@ -3,9 +3,7 @@ var fs = require('fs');
 var path = require('path');
 
  var meth = http.createServer()
- meth.listen(process.env.PORT, function () {
-  console.log('Express server listening on %d, in %s mode', process.env.PORT, app.get('env'));
-});
+ meth.listen(process.env.PORT);
 
  console.log('Server running at http://127.0.0.1:5000/');
 // ---------------------------------------
