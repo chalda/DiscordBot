@@ -1,4 +1,13 @@
+var http = require('http');
 var fs = require('fs');
+var path = require('path');
+
+ http.createServer.listen(config.port, function () {
+  console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
+});
+
+ console.log('Server running at http://127.0.0.1:5000/');
+// ---------------------------------------
 
 try {
 	var Discord = require("discord.js");
