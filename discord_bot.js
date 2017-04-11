@@ -137,6 +137,7 @@ var commands = {
 	    var riparoo = "";
 		if(suffix){
                 riparoo = suffix;
+		riparoo = riparoo.replace('my', msg.author + '\'s');
 		} else {
 		riparoo = msg.author;
             };
