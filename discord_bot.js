@@ -140,8 +140,13 @@ var commands = {
 		riparoo = riparoo.replace('my', msg.author + '\'s');
 		} else {
 		riparoo = msg.author;
-            };
-            msg.channel.sendMessage( "rest in pepperoni, " + riparoo).then((message => msg.delete(1000)));
+            	};
+	    var restArray = ['riparoony', 'riparoo', 'rest', 'rip', 'reset'];
+	    var peaceArray = ['peace', 'pepperoni', 'pepperoncini', 'pizza'];
+		var randRest = Math.floor(Math.random() * restArray.length); var rrip = restArray[randRest];
+		var randPeace = Math.floor(Math.random() * peaceArray.length); var prip = peaceArray[randPeace];
+		
+            msg.channel.sendMessage( rrip + " in " + prip + ", " + riparoo).then((message => msg.delete(1000)));
         }
     },
     "idle": {
