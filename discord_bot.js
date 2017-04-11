@@ -132,11 +132,11 @@ var commands = {
 		} else {
 		riparoo = msg.author;
             };
-            msg.channel.sendMessage( "rest in pepperoni, " + riparoo);
+            msg.channel.sendMessage( "rest in pepperoni, " + riparoo).then((msg => msg.delete(1000)));
         }
     },
     "idle": {
-				usage: "[status]",
+	usage: "[status]",
         description: "sets bot status to idle",
         process: function(bot,msg,suffix){ 
 	    bot.user.setStatus("idle");
