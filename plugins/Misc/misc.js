@@ -4,14 +4,15 @@ exports.commands = [
 	"chuckNorris",
 	"watchtogether"
 ]
-
+var clientid = '?client_id=Clientid'
+//To Use The Client Find More info Here https://dev.twitch.tv/docs/v5/guides/authentication/
 //a collection of simple self contained commands with no dependencies beyond request
 
 exports.twitch = {
 	usage: "<stream>",
 	description: "checks if the given stream is online",
 	process: function(bot,msg,suffix){
-		require("request")("https://api.twitch.tv/kraken/streams/"+suffix,
+		require("request")("https://api.twitch.tv/kraken/streams/"+suffix+clientid,
 		function(err,res,body){
 			var stream = JSON.parse(body);
 			if(stream.stream){
