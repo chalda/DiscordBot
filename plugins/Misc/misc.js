@@ -1,6 +1,6 @@
 exports.commands = [
 	"twitch",
-	"beam",
+	"mixer",
 	"chuckNorris",
 	"watchtogether"
 ]
@@ -27,11 +27,11 @@ exports.twitch = {
 	}
 }
 
-exports.beam = {
+exports.mixer = {
 	usage: "<stream>",
-	description: "checks if the given Beam stream is online",
+	description: "checks if the given Mixer stream is online",
 	process: function(bot,msg,suffix){
-		require("request")("https://beam.pro/api/v1/channels/"+suffix,
+		require("request")("https://mixer.com/api/v1/channels/"+suffix,
 		function(err,res,body){
 			var data = JSON.parse(body);
 			if(data && data.online){
