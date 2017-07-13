@@ -1,5 +1,5 @@
 exports.commands = [
-    "talk"
+//    "talk"
 ]
 
 var cleverbot = require("cleverbot-node");

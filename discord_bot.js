@@ -1,5 +1,10 @@
 var fs = require('fs');
 
+process.on('unhandledRejection', (reason) => {
+  console.error(reason);
+  process.exit(1);
+});
+
 try {
 	var Discord = require("discord.js");
 } catch (e){
@@ -91,15 +96,15 @@ var commands = {
 			var args = suffix.split(" ");
 			var name = args.shift();
 			if(!name){
-				msg.channel.sendMessage(Config.commandPrefix + "alias " + this.usage + "\n" + this.description);
+				msg.channel.send(Config.commandPrefix + "alias " + this.usage + "\n" + this.description);
 			} else if(commands[name] || name === "help"){
-				msg.channel.sendMessage("overwriting commands with aliases is not allowed!");
+				msg.channel.send("overwriting commands with aliases is not allowed!");
 			} else {
 				var command = args.shift();
 				aliases[name] = [command, args.join(" ")];
 				//now save the new alias
 				require("fs").writeFile("./alias.json",JSON.stringify(aliases,null,2), null);
-				msg.channel.sendMessage("created alias " + name);
+				msg.channel.send("created alias " + name);
 			}
 		}
 	},
@@ -111,15 +116,15 @@ var commands = {
 				if(typeof a === 'string')
 					text += a + " ";
 			}
-			msg.channel.sendMessage(text);
+			msg.channel.send(text);
 		}
 	},
     "ping": {
         description: "responds pong, useful for checking if bot is alive",
         process: function(bot, msg, suffix) {
-            msg.channel.sendMessage( msg.author+" pong!");
+            msg.channel.send( msg.author+" pong!");
             if(suffix){
-                msg.channel.sendMessage( "note that !ping takes no arguments!");
+                msg.channel.send( "note that !ping takes no arguments!");
             }
         }
     },
@@ -142,12 +147,12 @@ var commands = {
     "say": {
         usage: "<message>",
         description: "bot says message",
-        process: function(bot,msg,suffix){ msg.channel.sendMessage(suffix);}
+        process: function(bot,msg,suffix){ msg.channel.send(suffix);}
     },
 	"announce": {
         usage: "<message>",
         description: "bot says message with text to speech",
-        process: function(bot,msg,suffix){ msg.channel.sendMessage(suffix,{tts:true});}
+        process: function(bot,msg,suffix){ msg.channel.send(suffix,{tts:true});}
     },
 	"msg": {
 		usage: "<user> <message to leave user>",
@@ -168,7 +173,7 @@ var commands = {
 				content: target + ", " + msg.author + " said: " + message
 			};
 			updateMessagebox();
-			msg.channel.sendMessage("message saved.")
+			msg.channel.send("message saved.")
 		}
 	},
 	"eval": {
@@ -176,9 +181,9 @@ var commands = {
 		description: 'Executes arbitrary javascript in the bot process. User must have "eval" permission',
 		process: function(bot,msg,suffix) {
 			if(Permissions.checkPermission(msg.author,"eval")){
-				msg.channel.sendMessage( eval(suffix,bot));
+				msg.channel.send( eval(suffix,bot));
 			} else {
-				msg.channel.sendMessage( msg.author + " doesn't have permission to execute eval!");
+				msg.channel.send( msg.author + " doesn't have permission to execute eval!");
 			}
 		}
 	}
@@ -188,7 +193,7 @@ if(AuthDetails.hasOwnProperty("client_id")){
 	commands["invite"] = {
 		description: "generates an invite link you can use to invite the bot to your server",
 		process: function(bot,msg,suffix){
-			msg.channel.sendMessage("invite link: https://discordapp.com/oauth2/authorize?&client_id=" + AuthDetails.client_id + "&scope=bot&permissions=470019135");
+			msg.channel.send("invite link: https://discordapp.com/oauth2/authorize?&client_id=" + AuthDetails.client_id + "&scope=bot&permissions=470019135");
 		}
 	}
 }
@@ -231,7 +236,7 @@ function checkMessageForCommand(msg, isEdit) {
 				cmdTxt = msg.content.split(" ")[1];
 				suffix = msg.content.substring(bot.user.mention().length+cmdTxt.length+Config.commandPrefix.length+1);
 			} catch(e){ //no command
-				msg.channel.sendMessage("Yes?");
+				msg.channel.send("Yes?");
 				return;
 			}
         }
@@ -263,9 +268,9 @@ function checkMessageForCommand(msg, isEdit) {
 								}
 								info += "\n"
 							}
-							msg.channel.sendMessage(info);
+							msg.channel.send(info);
 						} else {
-							msg.author.sendMessage("**Available Commands:**").then(function(){
+							msg.author.send("**Available Commands:**").then(function(){
 								var batch = "";
 								var sortedCommands = Object.keys(commands).sort();
 								for(var i in sortedCommands) {
@@ -284,14 +289,14 @@ function checkMessageForCommand(msg, isEdit) {
 									}
 									var newBatch = batch + "\n" + info;
 									if(newBatch.length > (1024 - 8)){ //limit message length
-										msg.author.sendMessage(batch);
+										msg.author.send(batch);
 										batch = info;
 									} else {
 										batch = newBatch
 									}
 								}
 								if(batch.length > 0){
-									msg.author.sendMessage(batch);
+									msg.author.send(batch);
 								}
 						});
 					}
@@ -305,13 +310,13 @@ function checkMessageForCommand(msg, isEdit) {
 					if(Config.debug){
 						 msgTxt += "\n" + e.stack;
 					}
-					msg.channel.sendMessage(msgTxt);
+					msg.channel.send(msgTxt);
 				}
 			} else {
-				msg.channel.sendMessage("You are not allowed to run " + cmdTxt + "!");
+				msg.channel.send("You are not allowed to run " + cmdTxt + "!");
 			}
 		} else {
-			msg.channel.sendMessage(cmdTxt + " not recognized as a command!").then((message => message.delete(5000)))
+			msg.channel.send(cmdTxt + " not recognized as a command!").then((message => message.delete(5000)))
 		}
 	} else {
 		//message isn't a command or is from us
@@ -321,7 +326,7 @@ function checkMessageForCommand(msg, isEdit) {
         }
 
         if (msg.author != bot.user && msg.isMentioned(bot.user)) {
-                msg.channel.sendMessage(msg.author + ", you called?");
+                msg.channel.send("yes?"); //using a mention here can lead to looping
         } else {
 
 				}
@@ -347,7 +352,7 @@ bot.on("presence", function(user,status,gameId) {
 			var channel = bot.channels.get("id",message.channel);
 			delete messagebox[user.id];
 			updateMessagebox();
-			bot.sendMessage(channel,message.content);
+			bot.send(channel,message.content);
 		}
 	}
 	}catch(e){}
