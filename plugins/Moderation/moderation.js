@@ -25,7 +25,6 @@ function resolveMention(usertxt){
 			userid = usertxt.substr(2,usertxt.length-3);
 		}
 	}
-	console.log(userid)
 	return userid;
 }
 
@@ -138,29 +137,20 @@ exports.kick = {
 			}
 			var targetId = resolveMention(args[0]);
 			let target = msg.guild.members.get(targetId);
-			/*var users = msg.guild.members.findAll("username",suffix);
-			if(users.length > 1){
-				msg.channel.send("Multiple people match " + suffix + "!")
-			} else if(users.length == 1){
-				msg.channel.send("Kicking " + users[0] + " from " + msg.channel.server + "!",
-				function() {
-					bot.kickMember(users[0],msg.channel.server);
-				});
-			} else {
-				msg.channel.send("I couldn't find a user " + suffix);
-			}*/
 			if(target != undefined){
+				if(!target.kickable){
+					msg.channel.send("You can't kick " + target);
+					return;
+				}
 				if(args.length > 1) {
 					let reason = args.slice(1).join(" ");
-					msg.channel.send("Kicking " + target + " from " + msg.guild + " for " + reason + "!",
-						function() {
-						target.kick(reason);
-					});
+					target.kick(reason).then(x => {
+						msg.channel.send("Kicking " + target + " from " + msg.guild + " for " + reason + "!");
+					}).catch(err => msg.channel.send("Kicking " + target + " failed:\n"));
 				} else {
-					msg.channel.send("Kicking " + target + " from " + msg.guild + "!",
-					function() {
-						target.kick();
-					});
+					target.kick().then(x => {
+						msg.channel.send("Kicking " + target + " from " + msg.guild + "!");
+					}).catch(err => msg.channel.send("Kicking " + target + " failed:\n"));
 				}
 			} else {
 				msg.channel.send("I couldn't find a user " + args[0]);
