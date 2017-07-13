@@ -139,7 +139,7 @@ exports.kick = {
 			let target = msg.guild.members.get(targetId);
 			if(target != undefined){
 				if(!target.kickable){
-					msg.channel.send("You can't kick " + target + ". Do they have the same or a higher role than you?");
+					msg.channel.send("I can't kick " + target + ". Do they have the same or a higher role than me?");
 					return;
 				}
 				if(args.length > 1) {
