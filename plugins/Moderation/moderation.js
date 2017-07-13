@@ -1,10 +1,10 @@
 //None of these commands actually work. Disabling them for now
-/*exports.commands = [
+exports.commands = [
 	"myid",
-	"perm",
-	"votekick",
+	//"perm",
+	//"votekick",
 	"kick"
-]*/
+]
 
 var votekicks = {};
 
@@ -16,24 +16,43 @@ function usersOnline(server){
 	return online;
 }
 
+function resolveMention(usertxt){
+	var userid = usertxt;
+	if(usertxt.startsWith('<@!')){
+		userid = usertxt.substr(3,usertxt.length-4);
+	} else {
+		if(usertxt.startsWith('<@')){
+			userid = usertxt.substr(2,usertxt.length-3);
+		}
+	}
+	console.log(userid)
+	return userid;
+}
+
 function resolveUser(msgContext,usertxt){
+	try {
 	var userid = usertxt;
 	if(usertxt.startsWith('<@')){
 		userid = usertxt.substr(2,usertxt.length-3);
 	}
-	var user = msg.channel.server.members.get("id",userid);
-	if(!user){
-		var users = msg.channel.server.members.getAll("username",usertxt);
+	var user = msgContext.guild.members.get(userid);
+	/*if(!user){
+		var users = msg.guild.members.findAll("username",usertxt);
 		if(users.length == 1){
 			user = users[0];
+		} else {
+			return null;
 		}
-	}
+	}*/
 	return user;
+	}catch(e){
+		console.error(e);
+	}
 }
 
 exports.myid = {
 	description: "returns the user id of the sender",
-	process: function(bot,msg){msg.channel.sendMessage(msg.author.id);}
+	process: function(bot,msg){msg.channel.send(msg.author.id);}
 }
 
 exports.perm = {
@@ -44,7 +63,7 @@ exports.perm = {
 		if(!user){
 			user = msg.author;
 		}
-		msg.channel.sendMessage("permissions of " + user + ':\n' + JSON.stringify(msg.channel.permissionsOf(user).serialize(),null,2));
+		msg.channel.send("permissions of " + user + ':\n' + JSON.stringify(msg.channel.permissionsFor(user).serialize(),null,2));
 	}
 }
 
@@ -54,8 +73,8 @@ exports.votekick = {
 	process: function(bot,msg,suffix) {
 		if(suffix){
 			//first check if the bot can kick
-			if(!msg.channel.permissionsOf(bot.user).hasPermission("kickMembers")){
-				msg.channel.sendMessage( "I don't have permission to kick people!");
+			if(!msg.channel.permissionsFor(bot.user).hasPermission("kickMembers")){
+				msg.channel.send( "I don't have permission to kick people!");
 				return;
 			}
 			var vote = function(user){
@@ -63,19 +82,19 @@ exports.votekick = {
 					var votes = votekicks[user.id];
 					votes.count += 1;
 					if(votes.voters.indexOf(msg.author.id) > -1){
-						msg.channel.sendMessage(msg.author + " you can only vote once!");
+						msg.channel.send(msg.author + " you can only vote once!");
 						return;
 					}
 					votes.voters.push(msg.author.id);
 					if(votes.count > usersOnline(msg.channel.server)/2){
-						msg.channel.sendMessage("Vote passed!\nKicking " + user + " from " + msg.channel.server + "!",
+						msg.channel.send("Vote passed!\nKicking " + user + " from " + msg.channel.server + "!",
 							function() {
 								bot.kickMember(users[0],msg.channel.server);
 						});
 					}
 				} else {
 					votekicks[user.id] = { count:1, voters:[msg.author.id]};
-					msg.channel.sendMessage("Starting votekick for user " + user + "!");
+					msg.channel.send("Starting votekick for user " + user + "!");
 				}
 			};
 			if(suffix.startsWith("<@")){
@@ -88,14 +107,14 @@ exports.votekick = {
 			}
 			var users = msg.channel.server.members.getAll("username",suffix);
 			if(users.length > 1){
-				msg.channel.sendMessage("Multiple people match " + suffix + "!")
+				msg.channel.send("Multiple people match " + suffix + "!")
 			} else if(users.length == 1){
 				vote(users[0]);
 			} else {
-				msg.channel.sendMessage("I couldn't find a user " + suffix);
+				msg.channel.send("I couldn't find a user " + suffix);
 			}
 		} else {
-			msg.channel.sendMessage("You must specify a user to kick!");
+			msg.channel.send("You must specify a user to kick!");
 		}
 	}
 }
@@ -104,30 +123,50 @@ exports.kick = {
 	usage: "<user>",
 	description: "Kick a user with a message! Requires both the author of the message and the bot to have kick permission",
 	process: function(bot,msg,suffix) {
-		if(suffix){
+		let args = suffix.split(" ");
+		if(args.length > 0 && args[0]){
 			//first check if the bot can kick
-			if(!msg.channel.permissionsOf(bot.user).hasPermission("kickMembers")){
-				msg.channel.sendMessage( "I don't have permission to kick people!");
+			let hasPermissonToKick =  msg.guild.members.get(bot.user.id).permissions.has("KICK_MEMBERS");
+			if(!hasPermissonToKick){
+				msg.channel.send( "I don't have permission to kick people!");
 				return;
 			}
 			//now check if the user can kick
-			if(!msg.channel.permissionsOf(msg.author).hasPermission("kickMembers")){
-				msg.channel.sendMessage( "You don't have permission to kick people!");
+			if(!msg.guild.members.get(msg.author.id).permissions.has("KICK_MEMBERS")){
+				msg.channel.send( "You don't have permission to kick people!");
 				return;
 			}
-			var users = msg.channel.server.members.getAll("username",suffix);
+			var targetId = resolveMention(args[0]);
+			let target = msg.guild.members.get(targetId);
+			/*var users = msg.guild.members.findAll("username",suffix);
 			if(users.length > 1){
-				msg.channel.sendMessage("Multiple people match " + suffix + "!")
+				msg.channel.send("Multiple people match " + suffix + "!")
 			} else if(users.length == 1){
-				msg.channel.sendMessage("Kicking " + users[0] + " from " + msg.channel.server + "!",
+				msg.channel.send("Kicking " + users[0] + " from " + msg.channel.server + "!",
 				function() {
 					bot.kickMember(users[0],msg.channel.server);
 				});
 			} else {
-				msg.channel.sendMessage("I couldn't find a user " + suffix);
+				msg.channel.send("I couldn't find a user " + suffix);
+			}*/
+			if(target != undefined){
+				if(args.length > 1) {
+					let reason = args.slice(1).join(" ");
+					msg.channel.send("Kicking " + target + " from " + msg.guild + " for " + reason + "!",
+						function() {
+						target.kick(reason);
+					});
+				} else {
+					msg.channel.send("Kicking " + target + " from " + msg.guild + "!",
+					function() {
+						target.kick();
+					});
+				}
+			} else {
+				msg.channel.send("I couldn't find a user " + args[0]);
 			}
 		} else {
-			msg.channel.sendMessage("You must specify a user to kick!");
+			msg.channel.send("You must specify a user to kick!");
 		}
 	}
 }
@@ -137,13 +176,13 @@ exports.bans = {
 	process: function(bot,msg,suffix){
 		bot.getBans(msg.channel.server,function(error,users){
 			if(users.length == 0){
-				msg.channel.sendMessage("No one has been banned from this server!");
+				msg.channel.send("No one has been banned from this server!");
 			} else {
 				var response = "Banned users:";
 				for(var user in users){
 					response += "\n" + user.username;
 				}
-				msg.channel.sendMessage(response);
+				msg.channel.send(response);
 			}
 		});
 	}
@@ -159,10 +198,10 @@ exports.ban = {
 		var user = resolveUser(msg,usertxt);
 		if(user){
 			bot.banMember(user,msg.server,days,function(){
-				msg.channel.sendMessage("banned user " + user + " id:" + user.id);
+				msg.channel.send("banned user " + user + " id:" + user.id);
 			});
 		} else {
-			msg.channel.sendMessage("couldn't uniquely resolve " + usertxt);
+			msg.channel.send("couldn't uniquely resolve " + usertxt);
 		}
 	}
 }
@@ -178,7 +217,7 @@ exports.unban = {
 		if(user){
 			bot.unbanMember(user,msg.server);
 		} else {
-			bot.sendMessage("couldn't uniquely resolve " + usertxt);
+			bot.send("couldn't uniquely resolve " + usertxt);
 		}
 	}
 }
