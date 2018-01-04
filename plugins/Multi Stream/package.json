@@ -1,0 +1,8 @@
+{
+  "main": "stream.js",
+  "dependencies": {
+    "request": ">=2.58.0",
+        "jquery": "3.2.x",
+        "jsdom": "11.x.x"
+  }
+}

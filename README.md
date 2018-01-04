@@ -2,18 +2,11 @@
 A chat bot for discord app based off <a href="https://github.com/hydrabolt/discord.js/">discord.js</a>
 
 # Features:
-- !gif query => returns a gif example !gif cute cats doing stuff
-- !image query => returns an image from Google Images (careful, no adult filter)
-- !youtube query=> returns a youtube link
-- !wiki query=> returns the summary of the first search result on Wikipedia
-- !wolfram query => queries Wolfram Alpha for results
-- !meme memetype "text1" "text2" => returns a meme image. notice the quotes around text, they are vitally important
 - !say text => echos text
 - !alias => create custom shorthand commands in channel!
-- !join-server => bot will join the requested server
-- !talk => talk with the bot!
 - @botname => responds when @mentioned
 - channel management!
+- !perm => Permission management (per user or group. Note: User permissions overrule group permission)
 
 And much more! Try !help to get a full list of available commands
 
@@ -37,26 +30,6 @@ Please note that you must have a working C compiler and Python in your path for
 
 ## RSS
 You can create an rss.json file adding rss feeds as commands. See rss.json.example for details.
-
-## Special instructions for setting up google search and youtube APIs:
-
-(thanks @SchwererKonigstiger)
-
-1) Create a Custom Search at: https://cse.google.com/cse/create/new
-
-2) Leave the first line blank, and name the search engine anything you wish.
-
-3) Click "Advanced Options" and then type ImageObject.
-
-4) Hit create.
-
-5) On this new page, enable the Image Search in the menu.
-
-6) Then press "Search engine ID" under the Details header.
-
-7) Copy this into the auth.json's "google_custom_search" section.
-
-Make sure you also have your google server API key, which goes in the "youtube_api_key" section, or the search will fail.
 
 # Running
 Before first run you will need to create an `auth.json` file. A bot token or the email and password for a discord account are required. The other credentials are not required for the bot to run, but highly recommended as commands that depend on them will malfunction. See `auth.json.example`.
