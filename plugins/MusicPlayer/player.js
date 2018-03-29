@@ -1,5 +1,6 @@
 const YoutubeDL = require('youtube-dl');
 const Request = require('request');
+const ytdl = require('ytdl-core');
 exports.commands = [
 	"play",
 	"skip",
@@ -31,6 +32,21 @@ let options = false;
 		return queues[server];
 	}
 
+	function isUrl(str) {
+	  var pattern = new RegExp('^(https?:\/\/)?'+ // protocol
+	    '((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|'+ // domain name
+	    '((\d{1,3}\.){3}\d{1,3}))'+ // OR ip (v4) address
+	    '(\:\d+)?(\/[-a-z\d%_.~+]*)*'+ // port and path
+	    '(\?[;&a-z\d%_.~+=-]*)?'+ // query string
+	    '(\#[-a-z\d_]*)?$','i'); // fragment locater
+	  if(!pattern.test(str)) {
+	    alert("Please enter a valid URL.");
+	    return false;
+	  } else {
+	    return true;
+	  }
+	}
+
 	/*
 	 * Play command.
 	 *
@@ -58,16 +74,21 @@ exports.play = {
 		}
 
 		// Get the video information.
-		msg.channel.sendMessage( wrap('Searching...')).then(response => {
+		msg.channel.send( wrap('Searching...')).then(response => {
+			debugger;
 			// If the suffix doesn't start with 'http', assume it's a search.
 			if (!suffix.toLowerCase().startsWith('http')) {
-				suffix = 'gvsearch1:' + suffix;
-			}
-
+				suffix = 'ytsearch1:' + suffix;
 			// Get the video info from youtube-dl.
-			YoutubeDL.getInfo(suffix, ['-q', '--no-warnings', '--force-ipv4'], (err, info) => {
+			//'-q',
+			YoutubeDL.getInfo(suffix, [ '--no-check-certificate','--no-warnings', '--force-ipv4', '--verbose', '--print-traffic'], (err, info) => {
+				debugger;
+
+				console.log("info");
 				// Verify the info.
+				console.log("1")
 				if (err || info.format_id === undefined || info.format_id.startsWith('0')) {
+					console.log(err)
 					return response.edit( wrap('Invalid video!'));
 				}
 
@@ -80,8 +101,32 @@ exports.play = {
 						executeQueue(client, msg, queue);
 						resp.delete(1000);
 					}
-				}).catch(() => {});
+				}).catch((e) => {
+					console.log("2")
+					console.log(e);
+		
+				});
 			});
+			} else {
+					YoutubeDL.getInfo(suffix, [ '--no-check-certificate','--no-warnings', '--force-ipv4', '--verbose', '--print-traffic'], (err, info) => {
+					// Verify the info.
+					if (err || info.format_id === undefined || info.format_id.startsWith('0')) {
+						console.log(err)
+						return response.edit( wrap('Invalid video!'));
+					}
+
+					// Queue the video.
+					response.edit( wrap('Queued: ' + info.title)).then((resp) => {
+						queue.push(info);
+
+						// Play if only one element in the queue.
+						if (queue.length === 1) {
+							executeQueue(client, msg, queue);
+							resp.delete(1000);
+						}
+					}).catch(() => {});
+				});
+		}
 		}).catch(() => {});
 	}
 }
@@ -160,7 +205,7 @@ exports.dequeue = {
 	process: function(client, msg, suffix) {
 		// Define a usage string to print out on errors
 		const usageString = 'The format is "!dequeue <index>".  Use !queue to find the indices of each song in the queue.';
-		
+
 		// Get the queue.
 		const queue = getQueue(msg.guild.id);
 
@@ -171,36 +216,36 @@ exports.dequeue = {
 		// Get the arguments
 		var split = suffix.split(/(\s+)/);
 
-		// Make sure there's only 1 index 
+		// Make sure there's only 1 index
 		if (split.length > 1)
 			return msg.channel.sendMessage( wrap('There are too many arguments.  ' + usageString));
-		
+
 		// Remove the index
 		var index = parseInt(split[0]);
 		var songRemoved = ''; // To be filled out below
 		if (!isNaN(index)) {
 			index = index - 1;
-			
+
 			if (index >= 0 && index < queue.length) {
 				songRemoved = queue[index].title;
-				
+
 				if (index == 0) {
 					// If it was the first one, skip it
 					const voiceConnection = client.voiceConnections.get(msg.guild.id);
-					if (voiceConnection.player.dispatcher) 
+					if (voiceConnection.player.dispatcher)
 						voiceConnection.player.dispatcher.resume();
 					voiceConnection.player.dispatcher.end();
 				} else {
 					// Otherwise, just remove it from the queue
 					queue.splice(index, 1);
-				}				
+				}
 			} else {
 				return msg.channel.sendMessage( wrap('The index is out of range.  ' + usageString));
 			}
 		} else {
 			return msg.channel.sendMessage( wrap('That index isn\'t a number.  ' + usageString));
 		}
-		
+
 		// Send the queue and status.
 		msg.channel.sendMessage( wrap('Removed \'' + songRemoved + '\' (index ' + split[0] + ') from the queue.'));
 	}
@@ -321,10 +366,22 @@ function executeQueue(client, msg, queue) {
 		}).then(connection => {
 			// Get the first item in the queue.
 			const video = queue[0];
+			console.log(video);
+
 
 			// Play the video.
 			msg.channel.sendMessage( wrap('Now Playing: ' + video.title)).then((cur) => {
-				const dispatcher = connection.playStream(Request(video.url));
+				const streamOptions = {volume: .5 };
+
+				var videoStream = YoutubeDL(video.url,
+
+				// Optional arguments passed to youtube-dl.
+				['-f', 'bestaudio']
+
+				// start will be sent as a range header
+				);
+
+				const dispatcher = connection.playStream(videoStream, streamOptions);
 				//dispatcher.then(intent => {
 					dispatcher.on('debug',(i)=>console.log("debug: " + i));
 					// Catch errors in the connection.
