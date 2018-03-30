@@ -58,7 +58,9 @@ Permissions.checkPermission = function (user,permission){
 	} catch(e){}
 	return false;
 }
-fs.writeFile("./permissions.json",JSON.stringify(Permissions,null,2));
+fs.writeFile("./permissions.json",JSON.stringify(Permissions,null,2), (err) => {
+	if(err) console.error(err);
+});
 
 //load config data
 var Config = {};
@@ -72,7 +74,9 @@ try{
 			console.log("WARNING: config.json found but we couldn't read it!\n" + e.stack);
 		}
 	} catch(e2){
-		fs.writeFile("./config.json",JSON.stringify(Config,null,2));
+		fs.writeFile("./config.json",JSON.stringify(Config,null,2), (err) => {
+			if(err) console.error(err);
+		});
 	}
 }
 if(!Config.hasOwnProperty("commandPrefix")){
