@@ -8,5 +8,11 @@
 			"eval": false,
 			"pullanddeploy": true
 		}
+	},
+	"roles":{
+		"roleid":{
+			"eval": true,
+			"pullanddeploy": false
+		}
 	}
 }

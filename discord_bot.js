@@ -1,4 +1,6 @@
 var fs = require('fs');
+var epoc = 945000; //15 minutes in milliseconds
+var dayLimit = 1210000000; //14 days in milliseconds
 
 process.on('unhandledRejection', (reason) => {
   console.error(reason);
@@ -33,6 +35,7 @@ try{
 } catch(e){
 	Permissions.global = {};
 	Permissions.users = {};
+    Permissions.roles = {};
 }
 
 for( var i=0; i<dangerousCommands.length;i++ ){
@@ -41,8 +44,9 @@ for( var i=0; i<dangerousCommands.length;i++ ){
 		Permissions.global[cmd] = false;
 	}
 }
-Permissions.checkPermission = function (user,permission){
-	try {
+Permissions.checkPermission = function (msg,permission){
+    console.log('User ID of person running command: '+msg.author.id+' username: '+msg.author.username);
+    try {
 		var allowed = true;
 		try{
 			if(Permissions.global.hasOwnProperty(permission)){
@@ -50,10 +54,26 @@ Permissions.checkPermission = function (user,permission){
 			}
 		} catch(e){}
 		try{
-			if(Permissions.users[user.id].hasOwnProperty(permission)){
-				allowed = Permissions.users[user.id][permission] === true;
+			if(Permissions.users[msg.author.id].hasOwnProperty(permission)){
+				allowed = Permissions.users[msg.author.id][permission] === true;
+                return allowed;
 			}
 		} catch(e){}
+        try{
+            if(typeof msg.member != 'undefined'){
+                var roles = msg.member.roles;
+                //console.log("contents of roles: "+roles);
+                for (let rol of roles){
+                    //console.log("Content of rol: "+rol[0]+" typeof rol: "+typeof rol);
+                    try{
+                        if(Permissions.roles[rol[0]].hasOwnProperty(permission)){
+                            allowed = Permissions.roles[rol[0]][permission] === true;
+                            break;
+                        }
+                    }catch(e){}
+                }
+            }
+        } catch(e){ console.log("Error Role perm: "+e); }
 		return allowed;
 	} catch(e){}
 	return false;
@@ -137,7 +157,7 @@ var commands = {
         description: "sets bot status to idle",
         process: function(bot,msg,suffix){ 
 	    bot.user.setStatus("idle");
-	    bot.user.setGame(suffix);
+	    bot.user.setGame(suffix).catch(err => console.log(err));
 	}
     },
     "online": {
@@ -145,7 +165,7 @@ var commands = {
         description: "sets bot status to online",
         process: function(bot,msg,suffix){ 
 	    bot.user.setStatus("online");
-	    bot.user.setGame(suffix);
+	    bot.user.setGame(suffix).catch(err => console.log(err));
 	}
     },
     "say": {
@@ -233,8 +253,10 @@ function checkMessageForCommand(msg, isEdit) {
 	//check if message is a command
 	if(msg.author.id != bot.user.id && (msg.content.startsWith(Config.commandPrefix))){
         console.log("treating " + msg.content + " from " + msg.author + " as command");
+        //console.log("Message.member.user.id "+msg.member.user.id+" Message.member.user.username "+msg.member.user.username);
 		var cmdTxt = msg.content.split(" ")[0].substring(Config.commandPrefix.length);
         var suffix = msg.content.substring(cmdTxt.length+Config.commandPrefix.length+1);//add one for the ! and one for the space
+        //suffix = suffix.split(" ");
         if(msg.isMentioned(bot.user)){
 			try {
 				cmdTxt = msg.content.split(" ")[1];
@@ -279,7 +301,9 @@ function checkMessageForCommand(msg, isEdit) {
 								var sortedCommands = Object.keys(commands).sort();
 								for(var i in sortedCommands) {
 									var cmd = sortedCommands[i];
-									var info = "**"+Config.commandPrefix + cmd+"**";
+                                    cmds = cmd.replace(/_/g," ");
+                                    console.log(i+": "+cmd)
+									var info = "**"+Config.commandPrefix + cmds+"**";
 									var usage = commands[cmd].usage;
 									if(usage){
 										info += " " + usage;
@@ -306,7 +330,7 @@ function checkMessageForCommand(msg, isEdit) {
 					}
         }
 		else if(cmd) {
-			if(Permissions.checkPermission(msg.author,cmdTxt)){
+			if(Permissions.checkPermission(msg,cmdTxt)){
 				try{
 					cmd.process(bot,msg,suffix,isEdit);
 				} catch(e){
@@ -337,9 +361,83 @@ function checkMessageForCommand(msg, isEdit) {
     }
 }
 
-bot.on("message", (msg) => checkMessageForCommand(msg, false));
+bot.on("message", (msg) => {
+       checkMessageForCommand(msg, false);
+       //console.log('Checking Message Channel: '+msg.channel);
+       if(msg.author != bot.user && msg.content.startsWith('!')){
+       msg.delete(2000).catch(err => console.log('Error occursed at:' +err+ 'skipping msg'));
+       } else if(msg.author == bot.user && msg.content.startsWith('__')){
+       msg.delete(2000).catch(err => console.log('Error occured at: '+err+' skipping msg'));
+       }
+       //console.log(bot.users.get('390062678363734026').username);
+});
 bot.on("messageUpdate", (oldMessage, newMessage) => {
 	checkMessageForCommand(newMessage,true);
+});
+
+var blackList = "";
+var channels = [];
+
+function purgeOld(){
+    var guild = bot.guilds.array();
+    for(let gu of guild){
+        gut = gu.channels.array();
+        chan = require("./guilds/"+gu.name+".json");
+        //console.log();
+         for(let ch of gut){
+             if(ch.type == "text"){
+                 try{
+                     for(let cha of chan.purge){
+                         //console.log('in for of');
+                     if(ch.name == cha.channel && !blackList.includes(ch.name)){
+                         //console.log(ch.name+' = '+cha.channel);
+                         channels.push(ch);
+                         blackList += ch.name+" ";
+                     }
+                     }
+                 }catch(err){
+                     //console.log('Error occured at: '+err);
+                 }
+             }
+         }
+        break;
+         }
+    for(var i = 0; i < channels.length; i++){
+    channels[i].fetchMessages().then((msg) => {
+                                 //console.log(msg);
+                                 for(let link of msg.array()){
+                                 //console.log('Link var for msg: '+link);
+                                 if(link.createdTimestamp < Date.now()-epoc){
+                                 link.delete().catch((err) => { console.log('Error has occured at: '+err); });
+                                 }
+                                 }
+                                 }).catch((err)=>{
+                                          console.log('Error occured at: '+err);
+                                          });
+    }
+}
+
+setInterval(purgeOld, 6000);
+
+//Create Guild file on client first join
+bot.on("guildCreate", function(guild){
+        var Guild = {}
+        try{
+            Guild = require("./guilds/"+ guild.name +".json");
+        } catch(e){ //no config file, use defaults
+            Guild.community = '';
+            Guild.commid = '';
+            Guild.client_id = '';
+            Guild.secret = '';
+            Guild.bearer = '';
+            try{
+                if(fs.lstatSync("./guilds/"+ guild.name +".json").isFile()){
+                    console.log("WARNING: Guild File found but we couldn't read it!\n" + e.stack);
+                }
+            } catch(e2){
+                fs.writeFile("./guilds/"+ guild.name +".json",JSON.stringify(Guild,null,2));
+            }
+        }
 });
 
 //Log user status changes
