@@ -81,10 +81,10 @@ exports.play = {
 				suffix = 'ytsearch1:' + suffix;
 			// Get the video info from youtube-dl.
 			//'-q',
-			YoutubeDL.getInfo(suffix, [ '--no-check-certificate','--no-warnings', '--force-ipv4', '--verbose', '--print-traffic'], (err, info) => {
+			YoutubeDL.getInfo(suffix, [ '--no-check-certificate','--no-warnings', '--force-ipv4',], (err, info) => {
 				debugger;
 
-				console.log("info");
+				console.log(info);
 				// Verify the info.
 				console.log("1")
 				if (err || info.format_id === undefined || info.format_id.startsWith('0')) {
@@ -108,7 +108,7 @@ exports.play = {
 				});
 			});
 			} else {
-					YoutubeDL.getInfo(suffix, [ '--no-check-certificate','--no-warnings', '--force-ipv4', '--verbose', '--print-traffic'], (err, info) => {
+					YoutubeDL.getInfo(suffix, [ '--no-check-certificate','--no-warnings', '--force-ipv4'], (err, info) => {
 					// Verify the info.
 					if (err || info.format_id === undefined || info.format_id.startsWith('0')) {
 						console.log(err)
@@ -331,15 +331,18 @@ exports.volume = {
 	 * @param msg Original message.
 	 * @param queue The queue.
 	 */
-function executeQueue(client, msg, queue) {
+function executeQueue(client, msg, queue, my_dispatcher) {
 		// If the queue is empty, finish.
 		if (queue.length === 0) {
 			msg.channel.sendMessage( wrap('Playback finished.'));
 
 			// Leave the voice channel.
+			
+			if (my_dispatcher != null) {
+				my_dispatcher.end();
+			}
 			const voiceConnection = client.voiceConnections.get(msg.guild.id);
-			if (voiceConnection != null) {
-				voiceConnection.player.dispatcher.end();
+			if(null != voiceConnection){
 				voiceConnection.channel.leave();
 				return;
 			}
@@ -366,14 +369,15 @@ function executeQueue(client, msg, queue) {
 		}).then(connection => {
 			// Get the first item in the queue.
 			const video = queue[0];
-			console.log(video);
-
 
 			// Play the video.
 			msg.channel.sendMessage( wrap('Now Playing: ' + video.title)).then((cur) => {
 				const streamOptions = {volume: .5 };
 
-				var videoStream = YoutubeDL(video.url,
+				var size = 0;
+				var pos = 0;
+
+				var videoStream = YoutubeDL(video.webpage_url,
 
 				// Optional arguments passed to youtube-dl.
 				['-f', 'bestaudio']
@@ -381,28 +385,47 @@ function executeQueue(client, msg, queue) {
 				// start will be sent as a range header
 				);
 
+				// ytdl.exec(url, ['-x', '--audio-format', 'mp3'], {}, function exec(err, output) {
+				// 	'use strict';
+				// 	if (err) { throw err; }
+				// 	console.log(output.join('\n'));
+				// });
+
 				const dispatcher = connection.playStream(videoStream, streamOptions);
 				//dispatcher.then(intent => {
-					dispatcher.on('debug',(i)=>console.log("debug: " + i));
-					// Catch errors in the connection.
-					dispatcher.on('error', (err) => {
-						msg.channel.sendMessage("fail: " + err);
-						// Skip to the next song.
+				dispatcher.on('debug',(i)=>console.log("debug: " + i));
+				// Catch errors in the connection.
+				dispatcher.on('error', (err) => {
+					msg.channel.sendMessage("fail: " + err);
+					// Skip to the next song.
+					queue.shift();
+					executeQueue(client, msg, queue, dispatcher);
+				});
+
+				// Catch the end event.
+				dispatcher.on('end', () => {
+					console.log("stream ended");
+					// Wait a second.
+					setTimeout(() => {
+						// Remove the song from the queue.
 						queue.shift();
-						executeQueue(client, msg, queue);
-					});
 
-					// Catch the end event.
-					dispatcher.on('end', () => {
-						// Wait a second.
-						setTimeout(() => {
-							// Remove the song from the queue.
-							queue.shift();
+						// Play the next song in the queue.
+						executeQueue(client, msg, queue, dispatcher);
+					}, 1000);
+				});
 
-							// Play the next song in the queue.
-							executeQueue(client, msg, queue);
-						}, 1000);
-					});
+				videoStream.on('data', function data(chunk) {
+					pos += chunk.length;
+				
+					// `size` should not be 0 here.
+					if (size) {
+						var percent = (pos / size * 100).toFixed(2);
+						console.log(percent + '%');
+					}
+				});
+				
+
 				//}).catch((ex) => {msg.channel.sendMessage("playStream fail: " + ex)});//*/
 			}).catch(console.error);
 		}).catch(console.error);
