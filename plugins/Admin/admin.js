@@ -46,6 +46,6 @@ exports.uptime = {
 		if(secs > 0) {
 			timestr += secs + " seconds ";
 		}
-		msg.channel.sendMessage("**Uptime**: " + timestr);
+		msg.channel.send("**Uptime**: " + timestr);
 	}
 }

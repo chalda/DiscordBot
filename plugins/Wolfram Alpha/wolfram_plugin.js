@@ -20,7 +20,7 @@ WolframPlugin.prototype.respond = function (query, channel, bot,tmpMsg) {
 							for(var j in result.queryresult.warnings[i]){
 								if(j != "$"){
 									try {
-										channel.sendMessage(result.queryresult.warnings[i][j][0].$.text);
+										channel.send(result.queryresult.warnings[i][j][0].$.text);
 									} catch(e){
 										console.log("WolframAlpha: failed displaying warning:\n"+e.stack());
 									}
@@ -33,7 +33,7 @@ WolframPlugin.prototype.respond = function (query, channel, bot,tmpMsg) {
 							for(var j in result.queryresult.assumptions[i]){
 								if(j == "assumption"){
 									try {
-										channel.sendMessage(`Assuming ${result.queryresult.assumptions[i][j][0].$.word} is ${result.queryresult.assumptions[i][j][0].value[0].$.desc}`);
+										channel.send(`Assuming ${result.queryresult.assumptions[i][j][0].$.word} is ${result.queryresult.assumptions[i][j][0].value[0].$.desc}`);
 									} catch(e) {
 										console.log("WolframAlpha: failed displaying assumption:\n"+e.stack());
 									}
@@ -56,7 +56,7 @@ WolframPlugin.prototype.respond = function (query, channel, bot,tmpMsg) {
 									for(var d=0; d<subpod.img.length;d++)
 									{
 										response += "\n" + subpod.img[d].$.src;
-										channel.sendMessage(response);
+										channel.send(response);
 										response = "";
 									}
 	            }

@@ -133,19 +133,17 @@ var commands = {
         }
     },
     "idle": {
-				usage: "[status]",
+		usage: "[status]",
         description: "sets bot status to idle",
         process: function(bot,msg,suffix){ 
-	    bot.user.setStatus("idle");
-	    bot.user.setGame(suffix);
+	    bot.user.setStatus("idle").then(console.log).catch(console.error);
 	}
     },
     "online": {
-				usage: "[status]",
+		usage: "[status]",
         description: "sets bot status to online",
         process: function(bot,msg,suffix){ 
-	    bot.user.setStatus("online");
-	    bot.user.setGame(suffix);
+	    bot.user.setStatus("online").then(console.log).catch(console.error);
 	}
     },
     "say": {
@@ -185,7 +183,10 @@ var commands = {
 		description: 'Executes arbitrary javascript in the bot process. User must have "eval" permission',
 		process: function(bot,msg,suffix) {
 			if(Permissions.checkPermission(msg.author,"eval")){
-				msg.channel.send( eval(suffix,bot));
+				let result = eval(suffix,bot).toString();
+				if(result) {
+					msg.channel.send(result);
+				}
 			} else {
 				msg.channel.send( msg.author + " doesn't have permission to execute eval!");
 			}
@@ -219,7 +220,11 @@ bot.on("ready", function () {
 	console.log("Logged in! Serving in " + bot.guilds.array().length + " servers");
 	require("./plugins.js").init();
 	console.log("type "+Config.commandPrefix+"help in Discord for a commands list.");
-	bot.user.setGame(Config.commandPrefix+"help | " + bot.guilds.array().length +" Servers"); 
+	bot.user.setPresence({
+		game: {
+			name: Config.commandPrefix+"help | " + bot.guilds.array().length +" Servers"
+		}
+	}); 
 });
 
 bot.on("disconnected", function () {
@@ -313,6 +318,10 @@ function checkMessageForCommand(msg, isEdit) {
 					var msgTxt = "command " + cmdTxt + " failed :(";
 					if(Config.debug){
 						 msgTxt += "\n" + e.stack;
+						 console.log(msgTxt);
+					}
+					if(msgTxt.length > (1024 - 8)){ //Truncate the stack if it's too long for a discord message
+						msgTxt = msgTxt.substr(0,1024-8);
 					}
 					msg.channel.send(msgTxt);
 				}

@@ -41,7 +41,7 @@ exports['4chan'] = {
 				var comment = (matches[0]['com'] === null) ? '' : matches[0]['com'];
 				var link = 'https://boards.4chan.org/' + board + '/thread/' + matches[0]['no'];
 				var finalMessage = 'Image: ' + filepath + '\nName: ' + name + '\nSubject: ' + subject + '\nComment:\n' + htmlToText.fromString(comment) + '\nLink: ' + link;
-				msg.channel.sendMessage(finalMessage);
+				msg.channel.send(finalMessage);
 			} else {
 				// search thread bodies now
 				for(var i = 0; i < threads.length; ++i) {
@@ -57,14 +57,14 @@ exports['4chan'] = {
 					var comment = matches[0]['com'];
 					var link = 'https://boards.4chan.org/' + board + '/thread/' + matches[0]['no'];
 					var finalMessage = 'Image: ' + filepath + '\nName: ' + name + '\nSubject: ' + subject + '\nComment:\n' + htmlToText.fromString(comment) + '\nLink: ' + link;
-					msg.channel.sendMessage(finalMessage);
+					msg.channel.send(finalMessage);
 				} else {
-					msg.channel.sendMessage('4chan: No matches found.');
+					msg.channel.send('4chan: No matches found.');
 				}
 			}
 		})
 		.catch(function(error) {
-			msg.channel.sendMessage("4CHAN ERROR: " + error);
+			msg.channel.send("4CHAN ERROR: " + error);
 		});
 	}
 }
