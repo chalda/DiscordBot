@@ -1,4 +1,5 @@
 var fs = require('fs');
+var cmd = require('./commands');
 
 process.on('unhandledRejection', (reason) => {
   console.error(reason);
@@ -26,7 +27,7 @@ try {
 }
 
 // Load custom permissions
-var dangerousCommands = ["eval","pullanddeploy","setUsername"];
+var dangerousCommands = ["eval","pullanddeploy","setUsername","cmdauth"];
 var Permissions = {};
 try{
 	Permissions = require("./permissions.json");
@@ -41,17 +42,22 @@ for( var i=0; i<dangerousCommands.length;i++ ){
 		Permissions.global[cmd] = false;
 	}
 }
-Permissions.checkPermission = function (user,permission){
+Permissions.checkPermission = function (userid,permission){
+	//var usn = user.username + "#" + user.discriminator;
+	//console.log("Checking " + permission + " permission for " + usn);
 	try {
-		var allowed = true;
+		var allowed = false;
 		try{
 			if(Permissions.global.hasOwnProperty(permission)){
 				allowed = Permissions.global[permission] === true;
 			}
 		} catch(e){}
 		try{
-			if(Permissions.users[user.id].hasOwnProperty(permission)){
-				allowed = Permissions.users[user.id][permission] === true;
+			if(Permissions.users[userid].hasOwnProperty("*")){
+				allowed = Permissions.users[userid]["*"] === true;
+			}
+			if(Permissions.users[userid].hasOwnProperty(permission)){
+				allowed = Permissions.users[userid][permission] === true;
 			}
 		} catch(e){}
 		return allowed;
@@ -91,108 +97,6 @@ try{
 	//No aliases defined
 	aliases = {};
 }
-
-var commands = {	
-	"alias": {
-		usage: "<name> <actual command>",
-		description: "Creates command aliases. Useful for making simple commands on the fly",
-		process: function(bot,msg,suffix) {
-			var args = suffix.split(" ");
-			var name = args.shift();
-			if(!name){
-				msg.channel.send(Config.commandPrefix + "alias " + this.usage + "\n" + this.description);
-			} else if(commands[name] || name === "help"){
-				msg.channel.send("overwriting commands with aliases is not allowed!");
-			} else {
-				var command = args.shift();
-				aliases[name] = [command, args.join(" ")];
-				//now save the new alias
-				require("fs").writeFile("./alias.json",JSON.stringify(aliases,null,2), null);
-				msg.channel.send("created alias " + name);
-			}
-		}
-	},
-	"aliases": {
-		description: "lists all recorded aliases",
-		process: function(bot, msg, suffix) {
-			var text = "current aliases:\n";
-			for(var a in aliases){
-				if(typeof a === 'string')
-					text += a + " ";
-			}
-			msg.channel.send(text);
-		}
-	},
-    "ping": {
-        description: "responds pong, useful for checking if bot is alive",
-        process: function(bot, msg, suffix) {
-            msg.channel.send( msg.author+" pong!");
-            if(suffix){
-                msg.channel.send( "note that !ping takes no arguments!");
-            }
-        }
-    },
-    "idle": {
-		usage: "[status]",
-        description: "sets bot status to idle",
-        process: function(bot,msg,suffix){ 
-	    bot.user.setStatus("idle").then(console.log).catch(console.error);
-	}
-    },
-    "online": {
-		usage: "[status]",
-        description: "sets bot status to online",
-        process: function(bot,msg,suffix){ 
-	    bot.user.setStatus("online").then(console.log).catch(console.error);
-	}
-    },
-    "say": {
-        usage: "<message>",
-        description: "bot says message",
-        process: function(bot,msg,suffix){ msg.channel.send(suffix);}
-    },
-	"announce": {
-        usage: "<message>",
-        description: "bot says message with text to speech",
-        process: function(bot,msg,suffix){ msg.channel.send(suffix,{tts:true});}
-    },
-	"msg": {
-		usage: "<user> <message to leave user>",
-		description: "leaves a message for a user the next time they come online",
-		process: function(bot,msg,suffix) {
-			var args = suffix.split(' ');
-			var user = args.shift();
-			var message = args.join(' ');
-			if(user.startsWith('<@')){
-				user = user.substr(2,user.length-3);
-			}
-			var target = msg.channel.guild.members.find("id",user);
-			if(!target){
-				target = msg.channel.guild.members.find("username",user);
-			}
-			messagebox[target.id] = {
-				channel: msg.channel.id,
-				content: target + ", " + msg.author + " said: " + message
-			};
-			updateMessagebox();
-			msg.channel.send("message saved.")
-		}
-	},
-	"eval": {
-		usage: "<command>",
-		description: 'Executes arbitrary javascript in the bot process. User must have "eval" permission',
-		process: function(bot,msg,suffix) {
-			if(Permissions.checkPermission(msg.author,"eval")){
-				let result = eval(suffix,bot).toString();
-				if(result) {
-					msg.channel.send(result);
-				}
-			} else {
-				msg.channel.send( msg.author + " doesn't have permission to execute eval!");
-			}
-		}
-	}
-};
 
 if(AuthDetails.hasOwnProperty("client_id")){
 	commands["invite"] = {
@@ -311,7 +215,7 @@ function checkMessageForCommand(msg, isEdit) {
 					}
         }
 		else if(cmd) {
-			if(Permissions.checkPermission(msg.author,cmdTxt)){
+			if(Permissions.checkPermission(msg.author.id,cmdTxt)){
 				try{
 					cmd.process(bot,msg,suffix,isEdit);
 				} catch(e){
