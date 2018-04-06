@@ -46,7 +46,7 @@ Permissions.checkPermission = function (userid,permission){
 	//var usn = user.username + "#" + user.discriminator;
 	//console.log("Checking " + permission + " permission for " + usn);
 	try {
-		var allowed = false;
+		var allowed = true;
 		try{
 			if(Permissions.global.hasOwnProperty(permission)){
 				allowed = Permissions.global[permission] === true;
