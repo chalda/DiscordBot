@@ -266,9 +266,13 @@ function updateMessagebox(){
 
 var bot = new Discord.Client();
 
+var hooks = {
+	onMessage: []
+}
+
 bot.on("ready", function () {
 	console.log("Logged in! Serving in " + bot.guilds.array().length + " servers");
-	require("./plugins.js").init();
+	require("./plugins.js").init(hooks);
 	console.log("type "+Config.commandPrefix+"help in Discord for a commands list.");
 	bot.user.setPresence({
 		game: {
@@ -295,8 +299,8 @@ function checkMessageForCommand(msg, isEdit) {
 				cmdTxt = msg.content.split(" ")[1];
 				suffix = msg.content.substring(bot.user.mention().length+cmdTxt.length+Config.commandPrefix.length+1);
 			} catch(e){ //no command
-				msg.channel.send("Yes?");
-				return;
+				//msg.channel.send("Yes?");
+				return false;
 			}
         }
 		alias = aliases[cmdTxt];
@@ -308,57 +312,58 @@ function checkMessageForCommand(msg, isEdit) {
 		var cmd = commands[cmdTxt];
         if(cmdTxt === "help"){
             //help is special since it iterates over the other commands
-						if(suffix){
-							var cmds = suffix.split(" ").filter(function(cmd){return commands[cmd]});
-							var info = "";
-							for(var i=0;i<cmds.length;i++) {
-								var cmd = cmds[i];
-								info += "**"+Config.commandPrefix + cmd+"**";
-								var usage = commands[cmd].usage;
-								if(usage){
-									info += " " + usage;
-								}
-								var description = commands[cmd].description;
-								if(description instanceof Function){
-									description = description();
-								}
-								if(description){
-									info += "\n\t" + description;
-								}
-								info += "\n"
-							}
-							msg.channel.send(info);
-						} else {
-							msg.author.send("**Available Commands:**").then(function(){
-								var batch = "";
-								var sortedCommands = Object.keys(commands).sort();
-								for(var i in sortedCommands) {
-									var cmd = sortedCommands[i];
-									var info = "**"+Config.commandPrefix + cmd+"**";
-									var usage = commands[cmd].usage;
-									if(usage){
-										info += " " + usage;
-									}
-									var description = commands[cmd].description;
-									if(description instanceof Function){
-										description = description();
-									}
-									if(description){
-										info += "\n\t" + description;
-									}
-									var newBatch = batch + "\n" + info;
-									if(newBatch.length > (1024 - 8)){ //limit message length
-										msg.author.send(batch);
-										batch = info;
-									} else {
-										batch = newBatch
-									}
-								}
-								if(batch.length > 0){
-									msg.author.send(batch);
-								}
-						});
+			if(suffix){
+				var cmds = suffix.split(" ").filter(function(cmd){return commands[cmd]});
+				var info = "";
+				for(var i=0;i<cmds.length;i++) {
+					var cmd = cmds[i];
+					info += "**"+Config.commandPrefix + cmd+"**";
+					var usage = commands[cmd].usage;
+					if(usage){
+						info += " " + usage;
 					}
+					var description = commands[cmd].description;
+					if(description instanceof Function){
+						description = description();
+					}
+					if(description){
+						info += "\n\t" + description;
+					}
+					info += "\n"
+				}
+				msg.channel.send(info);
+			} else {
+				msg.author.send("**Available Commands:**").then(function(){
+					var batch = "";
+					var sortedCommands = Object.keys(commands).sort();
+					for(var i in sortedCommands) {
+						var cmd = sortedCommands[i];
+						var info = "**"+Config.commandPrefix + cmd+"**";
+						var usage = commands[cmd].usage;
+						if(usage){
+							info += " " + usage;
+						}
+						var description = commands[cmd].description;
+						if(description instanceof Function){
+							description = description();
+						}
+						if(description){
+							info += "\n\t" + description;
+						}
+						var newBatch = batch + "\n" + info;
+						if(newBatch.length > (1024 - 8)){ //limit message length
+							msg.author.send(batch);
+							batch = info;
+						} else {
+							batch = newBatch
+						}
+					}
+					if(batch.length > 0){
+						msg.author.send(batch);
+					}
+				});
+			}
+			return true;
         }
 		else if(cmd) {
 			if(Permissions.checkPermission(msg.author.id,cmdTxt)){
@@ -378,25 +383,34 @@ function checkMessageForCommand(msg, isEdit) {
 			} else {
 				msg.channel.send("You are not allowed to run " + cmdTxt + "!");
 			}
+			return true;
 		} else {
 			msg.channel.send(cmdTxt + " not recognized as a command!").then((message => message.delete(5000)))
+			return true;
 		}
 	} else {
 		//message isn't a command or is from us
         //drop our own messages to prevent feedback loops
         if(msg.author == bot.user){
-            return;
+            return true; //returning true to prevent feedback from commands
         }
 
         if (msg.author != bot.user && msg.isMentioned(bot.user)) {
-                msg.channel.send("yes?"); //using a mention here can lead to looping
+                //msg.channel.send("yes?"); //using a mention here can lead to looping
         } else {
 
 				}
+		return false;
     }
 }
 
-bot.on("message", (msg) => checkMessageForCommand(msg, false));
+bot.on("message", (msg) => {
+	if(!checkMessageForCommand(msg, false)){
+		for(msgListener of hooks.onMessage){
+			msgListener(msg);
+		}
+	}
+});
 bot.on("messageUpdate", (oldMessage, newMessage) => {
 	checkMessageForCommand(newMessage,true);
 });

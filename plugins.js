@@ -19,8 +19,8 @@ try { //try loading plugins from a non standalone install first
     plugin_folders = getDirectories(plugin_directory);
 }
 
-exports.init = function(){
-    preload_plugins();
+exports.init = function(hooks){
+    preload_plugins(hooks);
 };
 
 function createNpmDependenciesArray (packageFilePath) {
@@ -34,7 +34,7 @@ function createNpmDependenciesArray (packageFilePath) {
     return deps;
 }
 
-function preload_plugins(){
+function preload_plugins(hooks){
     var deps = [];
     var npm = require("npm");
     for (var i = 0; i < plugin_folders.length; i++) {
@@ -58,7 +58,7 @@ function preload_plugins(){
                     console.log(er);
                 }
                 console.log("Plugin preload complete");
-                load_plugins()
+                load_plugins(hooks)
             });
 
             if (err) {
@@ -66,11 +66,11 @@ function preload_plugins(){
             }
         });
     } else {
-        load_plugins()
+        load_plugins(hooks)
     }
 }
 
-function load_plugins(){
+function load_plugins(hooks){
     var dbot = require("./discord_bot.js");
     var commandCount = 0;
     for (var i = 0; i < plugin_folders.length; i++) {
@@ -81,6 +81,9 @@ function load_plugins(){
             console.log("Improper setup of the '" + plugin_folders[i] +"' plugin. : " + err);
         }
         if (plugin){
+            if(plugin.init){
+                plugin.init(hooks)
+            }
             if("commands" in plugin){
                 for (var j = 0; j < plugin.commands.length; j++) {
                     if (plugin.commands[j] in plugin){
