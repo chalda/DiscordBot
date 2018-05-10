@@ -117,6 +117,26 @@ commands = {
 			}
 		}
 	},
+	var commands = {	
+	"alias": {
+		usage: "<ip> <123>",
+		description: "Creates command aliases. Useful for making simple commands on the fly",
+		process: function(bot,msg,suffix) {
+			var args = suffix.split(" ");
+			var name = args.shift();
+			if(!name){
+				msg.channel.sendMessage(Config.commandPrefix + "alias " + this.usage + "\n" + this.description);
+			} else if(commands[ip] || ip === "help"){
+				msg.channel.sendMessage("overwriting commands with aliases is not allowed!");
+			} else {
+				var command = args.shift();
+				aliases[name] = [command, args.join(" ")];
+				//now save the new alias
+				require("fs").writeFile("./alias.json",JSON.stringify(aliases,null,2), null);
+				msg.channel.sendMessage("created alias " + ip);
+			}
+		}
+	},
 	"aliases": {
 		description: "lists all recorded aliases",
 		process: function(bot, msg, suffix) {
@@ -181,6 +201,26 @@ commands = {
 			};
 			updateMessagebox();
 			msg.channel.send("message saved.")
+		}
+	},
+	var commands = {	
+	"alias": {
+		usage: "<name> <actual command>",
+		description: "Creates command aliases. Useful for making simple commands on the fly",
+		process: function(bot,msg,suffix) {
+			var args = suffix.split(" ");
+			var name = args.shift();
+			if(!name){
+				msg.channel.sendMessage(Config.commandPrefix + "alias " + this.usage + "\n" + this.description);
+			} else if(commands[name] || name === "help"){
+				msg.channel.sendMessage("overwriting commands with aliases is not allowed!");
+			} else {
+				var command = args.shift();
+				aliases[name] = [command, args.join(" ")];
+				//now save the new alias
+				require("fs").writeFile("./alias.json",JSON.stringify(aliases,null,2), null);
+				msg.channel.sendMessage("created alias " + name);
+			}
 		}
 	},
 	"eval": {
