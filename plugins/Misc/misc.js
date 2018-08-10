@@ -97,7 +97,7 @@ exports.watchtogether = {
 		} else {
 		riparoo = msg.author;
             	};
-	    var restArray = ['riparoony', 'riparoo', 'rest', 'rip', 'reset', 'remember', 'ripadoodle', 'restaroony', 'resta'];
+	    var restArray = ['riparoony', 'riparoo', 'rest', 'rip', 'reset', 'remember', 'ripadoodle', 'restaroony', 'resta', 'ring'];
 	    var peaceArray = ['peace', 'pepperoni', 'pepperoncini', 'pizza', 'pieces', 'prezzies', 'potatoes', 'pasta', 'pastaroni', 'poopymon'];
 		var randRest = Math.floor(Math.random() * restArray.length); var rrip = restArray[randRest];
 		var randPeace = Math.floor(Math.random() * peaceArray.length); var prip = peaceArray[randPeace];
@@ -105,6 +105,13 @@ exports.watchtogether = {
             msg.channel.sendMessage( rrip + " in " + prip + ", " + riparoo).then((message => msg.delete(1000)));
         }
     }
+
+   exports.warp = {
+	   description: "Opens a temporary wormhole to another channel or literally repeats what you said",
+	   process: function(bot, msg, suffix) {
+		   msg.channel.sendMessage(suffix).then((message => msg.delete(1000)));
+	   }
+   }
 
    exports.features = {
         description: "Lists features and commands.",
