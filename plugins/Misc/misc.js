@@ -111,7 +111,7 @@ exports.watchtogether = {
 	   description: "Opens a temporary wormhole to another channel or literally repeats what you said",
 	   process: function(bot, msg, suffix) {
 		   msg.channel.sendMessage(suffix).then((message => message.delete(10000)));
-		   msg.delete(10000);
+		   msg.delete(100);
 	   }
    }
 
