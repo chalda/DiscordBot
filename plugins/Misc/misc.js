@@ -5,6 +5,7 @@ exports.commands = [
 	"watchtogether",
 	"ping",
 	"rip",
+	"warp",
 	"features"
 ]
 
