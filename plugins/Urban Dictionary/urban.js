@@ -15,9 +15,9 @@ exports.urban = {
 								if (json.example) {
 										message = message + "\n\n__Example__:\n" + json.example;
 								}
-						    msg.channel.sendMessage( message);
+						    msg.channel.send( message);
 							} else {
-								msg.channel.sendMessage( "No matches found");
+								msg.channel.send( "No matches found");
 							}
 					});
 			}

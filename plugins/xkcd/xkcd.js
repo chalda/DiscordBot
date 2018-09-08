@@ -13,12 +13,12 @@ exports.xkcd = {
 		require("request")(url,function(err,res,body){
 			try{
 				var comic = JSON.parse(body);
-				msg.channel.sendMessage(
+				msg.channel.send(
 					comic.title+"\n"+comic.img,function(){
-						msg.channel.sendMessage(comic.alt)
+						msg.channel.send(comic.alt)
 				});
 			}catch(e){
-				msg.channel.sendMessage(
+				msg.channel.send(
 					"Couldn't fetch an XKCD for "+suffix);
 			}
 		});
@@ -30,6 +30,6 @@ exports.highnoon = {
 		require("request")({
 			uri:"http://imgs.xkcd.com/comics/now.png",
 			followAllRedirects:true
-		},(err, resp, body) => msg.channel.sendMessage(resp.request.uri.href))
+		},(err, resp, body) => msg.channel.send(resp.request.uri.href))
 	}
 }

@@ -11,10 +11,10 @@ exports.stock = {
 		  fields: ['s', 'n', 'd1', 'l1', 'y', 'r'],
 		}, function (error, snapshot) {
 			if(error){
-				msg.channel.sendMessage("couldn't get stock: " + error);
+				msg.channel.send("couldn't get stock: " + error);
 			} else {
-				//msg.channel.sendMessage(JSON.stringify(snapshot));
-				msg.channel.sendMessage(snapshot.name
+				//msg.channel.send(JSON.stringify(snapshot));
+				msg.channel.send(snapshot.name
 					+ "\nprice: $" + snapshot.lastTradePriceOnly);
 			}
 		});

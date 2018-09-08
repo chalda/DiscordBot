@@ -1,0 +1,27 @@
+// global: Command permission defaults for all users
+// users: Command permissions for individual users. Overrides global permissions.
+// 		"*" grants/denies permission to run all commands. Individually listed commands will be exceptions to this.
+//
+// DON'T INCLUDE ANYTHING ON OR ABOVE THIS LINE IN FILE. ONLY INCLUDE BELOW.
+
+{
+  "global": {
+    "eval": false,
+    "pullanddeploy": false,
+    "setUsername": false,
+    "cmdauth": false
+  },
+  "users": {
+    "12300000000000004": {
+      "eval": true,
+      "cmdauth": true,
+      "*": true
+    },
+    "56700000000000008": {
+      "eval": false,
+      "say": false,
+      "cmdauth": false,
+      "year_fact": false
+    }
+  }
+}
