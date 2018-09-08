@@ -13,7 +13,7 @@ exports.math_fact = {
                 function(err, res, body) {
                     var data = JSON.parse(body);
                     if (data && data.text) {
-                        msg.channel.sendMessage(data.text)
+                        msg.channel.send(data.text)
                     }
                 });
         }
@@ -26,7 +26,7 @@ exports.math_fact = {
                 function(err, res, body) {
                     var data = JSON.parse(body);
                     if (data && data.text) {
-                        msg.channel.sendMessage(data.text)
+                        msg.channel.send(data.text)
                     }
                 });
         }
@@ -39,7 +39,7 @@ exports.math_fact = {
                 function(err, res, body) {
                     var data = JSON.parse(body);
                     if (data && data.joke) {
-                        msg.channel.sendMessage(data.joke)
+                        msg.channel.send(data.joke)
                     }
                 });
         }
@@ -52,7 +52,7 @@ exports.math_fact = {
                 function(err, res, body) {
                     var data = JSON.parse(body);
                     if (data && data.text) {
-                        msg.channel.sendMessage(data.text)
+                        msg.channel.send(data.text)
                     }
                 });
         }

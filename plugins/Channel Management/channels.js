@@ -11,9 +11,9 @@ exports.create = {
 	description: "creates a new text channel with the given name.",
 	process: function(bot,msg,suffix) {
 		msg.channel.guild.createChannel(suffix,"text").then(function(channel) {
-			msg.channel.sendMessage("created " + channel);
+			msg.channel.send("created " + channel);
 		}).catch(function(error){
-			msg.channel.sendMessage("failed to create channel: " + error);
+			msg.channel.send("failed to create channel: " + error);
 		});
 	}
 }
@@ -21,7 +21,7 @@ exports.create = {
 exports.servers = {
 description: "Tells you what servers the bot is in",
 process: function(bot,msg) {
-	msg.channel.sendMessage(`__**${bot.user.username} is currently on the following servers:**__ \n\n${bot.guilds.map(g => `${g.name} - **${g.memberCount} Members**`).join(`\n`)}`, {split: true});
+	msg.channel.send(`__**${bot.user.username} is currently on the following servers:**__ \n\n${bot.guilds.map(g => `${g.name} - **${g.memberCount} Members**`).join(`\n`)}`, {split: true});
 }
 },
 
@@ -32,10 +32,10 @@ exports.voice = {
 	description: "creates a new voice channel with the give name.",
 	process: function(bot,msg,suffix) {
 		msg.channel.guild.createChannel(suffix,"voice").then(function(channel) {
-			msg.channel.sendMessage("created " + channel.id);
+			msg.channel.send("created " + channel.id);
 			console.log("created " + channel);
 		}).catch(function(error){
-			msg.channel.sendMessage("failed to create channel: " + error);
+			msg.channel.send("failed to create channel: " + error);
 		});
 	}
 },
@@ -54,23 +54,23 @@ exports["delete"] = {
 				for(var i=0;i<channels.length;i++){
 					response += channels[i] + ": " + channels[i].id;
 				}
-				msg.channel.sendMessage(response);
+				msg.channel.send(response);
 				return;
 			}else if(channels.length == 1){
 				channel = channels[0];
 			} else {
-				msg.channel.sendMessage( "Couldn't find channel " + suffix + " to delete!");
+				msg.channel.send( "Couldn't find channel " + suffix + " to delete!");
 				return;
 			}
 		}
-		msg.channel.guild.defaultChannel.sendMessage("deleting channel " + suffix + " at " +msg.author + "'s request");
+		msg.channel.guild.defaultChannel.send("deleting channel " + suffix + " at " +msg.author + "'s request");
 		if(msg.channel.guild.defaultChannel != msg.channel){
-			msg.channel.sendMessage("deleting " + channel);
+			msg.channel.send("deleting " + channel);
 		}
 		channel.delete().then(function(channel){
 			console.log("deleted " + suffix + " at " + msg.author + "'s request");
 		}).catch(function(error){
-			msg.channel.sendMessage("couldn't delete channel: " + error);
+			msg.channel.send("couldn't delete channel: " + error);
 		});
 	}
 }

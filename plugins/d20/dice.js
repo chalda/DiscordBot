@@ -9,7 +9,7 @@ exports.roll = {
 	description: "roll one die with x sides, or multiple dice using d20 syntax. Default value is 10",
 	process: function(bot,msg,suffix) {
 		if (suffix.split("d").length <= 1) {
-			msg.channel.sendMessage(msg.author + " rolled a " + d20.roll(suffix || "10"));
+			msg.channel.send(msg.author + " rolled a " + d20.roll(suffix || "10"));
 		}
 		else if (suffix.split("d").length > 1) {
 			var eachDie = suffix.split("+");
@@ -20,9 +20,9 @@ exports.roll = {
 				};
 			}
 			if (passing == eachDie.length) {
-				msg.channel.sendMessage(msg.author + " rolled a " + d20.roll(suffix));
+				msg.channel.send(msg.author + " rolled a " + d20.roll(suffix));
 			}  else {
-				msg.channel.sendMessage(msg.author + " tried to roll too many dice at once!");
+				msg.channel.send(msg.author + " tried to roll too many dice at once!");
 			}
 		}
 	}

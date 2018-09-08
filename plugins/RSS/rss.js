@@ -34,7 +34,7 @@ function rssfeed(bot,msg,url,count,full){
     var request = require('request');
     request(url).pipe(feedparser);
     feedparser.on('error', function(error){
-        msg.channel.sendMessage("failed reading feed: " + error);
+        msg.channel.send("failed reading feed: " + error);
     });
     var shown = 0;
     feedparser.on('readable',function() {
@@ -44,13 +44,13 @@ function rssfeed(bot,msg,url,count,full){
             return;
         }
         var item = stream.read();
-        msg.channel.sendMessage(item.title + " - " + item.link, function() {
+        msg.channel.send(item.title + " - " + item.link, function() {
             if(full === true){
                 var text = htmlToText.fromString(item.description,{
                     wordwrap:false,
                     ignoreHref:true
                 });
-                msg.channel.sendMessage(text);
+                msg.channel.send(text);
             }
         });
         stream.alreadyRead = true;
@@ -64,9 +64,9 @@ exports.rss = {
 		var count = args.shift();
 		var url = args.join(" ");
 		rssfeed(bot,msg,url,count,full);*/
-		msg.channel.sendMessage("Available feeds:").then(function(){
+		msg.channel.send("Available feeds:").then(function(){
 			for(var c in rssFeeds){
-				msg.channel.sendMessage(c + ": " + rssFeeds[c].url);
+				msg.channel.send(c + ": " + rssFeeds[c].url);
 			}
 		});
 	}

@@ -10,7 +10,7 @@ exports.wiki = {
 	process: function(bot,msg,suffix) {
 		var query = suffix;
 		if(!query) {
-			msg.channel.sendMessage("usage: " + Config.commandPrefix + "wiki search terms");
+			msg.channel.send("usage: " + Config.commandPrefix + "wiki search terms");
 			return;
 		}
 		
@@ -21,14 +21,14 @@ exports.wiki = {
 					var continuation = function() {
 						var paragraph = sumText.shift();
 						if(paragraph){
-							msg.channel.sendMessage(paragraph,continuation);
+							msg.channel.send(paragraph,continuation);
 						}
 					};
 					continuation();
 				});
 			});
 		},function(err){
-			msg.channel.sendMessage(err);
+			msg.channel.send(err);
 		});
 	}
 }
