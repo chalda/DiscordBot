@@ -52,6 +52,9 @@ Permissions.checkPermission = function (msg,permission){
 			}
 		} catch(e){}
 		try{
+      if(Permissions.users[msg.author.id].hasOwnProperty("*")){
+				allowed = Permissions.users[msg.author.id]["*"] === true;
+			}
 			if(Permissions.users[msg.author.id].hasOwnProperty(permission)){
 				allowed = Permissions.users[msg.author.id][permission] === true;
                 return allowed;
