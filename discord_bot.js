@@ -33,6 +33,7 @@ try{
 } catch(e){
 	Permissions.global = {};
 	Permissions.users = {};
+  Permissions.roles = {};
 }
 
 for( var i=0; i<dangerousCommands.length;i++ ){
@@ -41,10 +42,9 @@ for( var i=0; i<dangerousCommands.length;i++ ){
 		Permissions.global[cmd] = false;
 	}
 }
-Permissions.checkPermission = function (userid,permission){
-	//var usn = user.username + "#" + user.discriminator;
-	//console.log("Checking " + permission + " permission for " + usn);
-	try {
+Permissions.checkPermission = function (msg,permission){
+    console.log('User ID of person running command: '+msg.author.id+' username: '+msg.author.username);
+    try {
 		var allowed = true;
 		try{
 			if(Permissions.global.hasOwnProperty(permission)){
@@ -52,13 +52,26 @@ Permissions.checkPermission = function (userid,permission){
 			}
 		} catch(e){}
 		try{
-			if(Permissions.users[userid].hasOwnProperty("*")){
-				allowed = Permissions.users[userid]["*"] === true;
-			}
-			if(Permissions.users[userid].hasOwnProperty(permission)){
-				allowed = Permissions.users[userid][permission] === true;
+			if(Permissions.users[msg.author.id].hasOwnProperty(permission)){
+				allowed = Permissions.users[msg.author.id][permission] === true;
+                return allowed;
 			}
 		} catch(e){}
+        try{
+            if(typeof msg.member != 'undefined'){
+                var roles = msg.member.roles;
+                //console.log("contents of roles: "+roles);
+                for (let rol of roles){
+                    //console.log("Content of rol: "+rol[0]+" typeof rol: "+typeof rol);
+                    try{
+                        if(Permissions.roles[rol[0]].hasOwnProperty(permission)){
+                            allowed = Permissions.roles[rol[0]][permission] === true;
+                            break;
+                        }
+                    }catch(e){}
+                }
+            }
+        } catch(e){ console.log("Error Role perm: "+e); }
 		return allowed;
 	} catch(e){}
 	return false;
@@ -97,7 +110,7 @@ try{
 	aliases = {};
 }
 
-commands = {	
+commands = {
 	"alias": {
 		usage: "<name> <actual command>",
 		description: "Creates command aliases. Useful for making simple commands on the fly",
@@ -138,16 +151,16 @@ commands = {
         }
     },
     "idle": {
-		usage: "[status]",
+		    usage: "[status]",
         description: "sets bot status to idle",
-        process: function(bot,msg,suffix){ 
+        process: function(bot,msg,suffix){
 	    bot.user.setStatus("idle").then(console.log).catch(console.error);
 	}
     },
     "online": {
-		usage: "[status]",
+		    usage: "[status]",
         description: "sets bot status to online",
-        process: function(bot,msg,suffix){ 
+        process: function(bot,msg,suffix){
 	    bot.user.setStatus("online").then(console.log).catch(console.error);
 	}
     },
@@ -224,22 +237,22 @@ commands = {
 					if(action.toUpperCase() === "GET") {
 						msg.channel.send("User permission for " + strResult + " is " + canUse);
 					} else if(action.toUpperCase() === "TOGGLE") {
-						if(Permissions.users.hasOwnProperty(userid)) {	
+						if(Permissions.users.hasOwnProperty(userid)) {
 							Permissions.users[userid][cmd] = !canUse;
 						}
 						else {
 							Permissions.users[userid].append({[cmd] : !canUse});
 						}
 						fs.writeFile("./permissions.json",JSON.stringify(Permissions,null,2));
-						
+
 						msg.channel.send("User permission for " + strResult + " set to " + Permissions.users[userid][cmd]);
 					} else {
 						msg.channel.send('Requires "get" or "toggle" parameter');
 					}
 				} else {
 					msg.channel.send("Invalid command")
-				}				
-			}		
+				}
+			}
 		}
 	}
 };
@@ -278,7 +291,7 @@ bot.on("ready", function () {
 		game: {
 			name: Config.commandPrefix+"help | " + bot.guilds.array().length +" Servers"
 		}
-	}); 
+	});
 });
 
 bot.on("disconnected", function () {
@@ -312,61 +325,61 @@ function checkMessageForCommand(msg, isEdit) {
 		var cmd = commands[cmdTxt];
         if(cmdTxt === "help"){
             //help is special since it iterates over the other commands
-			if(suffix){
-				var cmds = suffix.split(" ").filter(function(cmd){return commands[cmd]});
-				var info = "";
-				for(var i=0;i<cmds.length;i++) {
-					var cmd = cmds[i];
-					info += "**"+Config.commandPrefix + cmd+"**";
-					var usage = commands[cmd].usage;
-					if(usage){
-						info += " " + usage;
-					}
-					var description = commands[cmd].description;
-					if(description instanceof Function){
-						description = description();
-					}
-					if(description){
-						info += "\n\t" + description;
-					}
-					info += "\n"
-				}
-				msg.channel.send(info);
-			} else {
-				msg.author.send("**Available Commands:**").then(function(){
-					var batch = "";
-					var sortedCommands = Object.keys(commands).sort();
-					for(var i in sortedCommands) {
-						var cmd = sortedCommands[i];
-						var info = "**"+Config.commandPrefix + cmd+"**";
-						var usage = commands[cmd].usage;
-						if(usage){
-							info += " " + usage;
-						}
-						var description = commands[cmd].description;
-						if(description instanceof Function){
-							description = description();
-						}
-						if(description){
-							info += "\n\t" + description;
-						}
-						var newBatch = batch + "\n" + info;
-						if(newBatch.length > (1024 - 8)){ //limit message length
-							msg.author.send(batch);
-							batch = info;
-						} else {
-							batch = newBatch
-						}
-					}
-					if(batch.length > 0){
-						msg.author.send(batch);
-					}
-				});
-			}
-			return true;
+			      if(suffix){
+				      var cmds = suffix.split(" ").filter(function(cmd){return commands[cmd]});
+				      var info = "";
+				      for(var i=0;i<cmds.length;i++) {
+					      var cmd = cmds[i];
+					      info += "**"+Config.commandPrefix + cmd+"**";
+					      var usage = commands[cmd].usage;
+					      if(usage){
+						      info += " " + usage;
+					      }
+					      var description = commands[cmd].description;
+					      if(description instanceof Function){
+						      description = description();
+					      }
+					      if(description){
+						      info += "\n\t" + description;
+					      }
+					      info += "\n"
+				     }
+				     msg.channel.send(info);
+			     } else {
+				      msg.author.send("**Available Commands:**").then(function(){
+					      var batch = "";
+					      var sortedCommands = Object.keys(commands).sort();
+					      for(var i in sortedCommands) {
+						       var cmd = sortedCommands[i];
+						       var info = "**"+Config.commandPrefix + cmd+"**";
+						       var usage = commands[cmd].usage;
+						       if(usage){
+							       info += " " + usage;
+						       }
+						       var description = commands[cmd].description;
+						       if(description instanceof Function){
+							       description = description();
+						       }
+						       if(description){
+							       info += "\n\t" + description;
+						       }
+						       var newBatch = batch + "\n" + info;
+						       if(newBatch.length > (1024 - 8)){ //limit message length
+							       msg.author.send(batch);
+							       batch = info;
+						       } else {
+							       batch = newBatch
+						       }
+					      }
+					      if(batch.length > 0){
+						      msg.author.send(batch);
+					      }
+				     });
+			    }
+			   return true;
         }
 		else if(cmd) {
-			if(Permissions.checkPermission(msg.author.id,cmdTxt)){
+			if(Permissions.checkPermission(msg,cmdTxt)){
 				try{
 					cmd.process(bot,msg,suffix,isEdit);
 				} catch(e){
@@ -413,6 +426,27 @@ bot.on("message", (msg) => {
 });
 bot.on("messageUpdate", (oldMessage, newMessage) => {
 	checkMessageForCommand(newMessage,true);
+});
+
+//Create Guild file on client first join
+bot.on("guildCreate", function(guild){
+        var Guild = {}
+        try{
+            Guild = require("./guilds/"+ guild.name +".json");
+        } catch(e){ //no config file, use defaults
+            Guild.community = '';
+            Guild.commid = '';
+            Guild.client_id = '';
+            Guild.secret = '';
+            Guild.bearer = '';
+            try{
+                if(fs.lstatSync("./guilds/"+ guild.name +".json").isFile()){
+                    console.log("WARNING: Guild File found but we couldn't read it!\n" + e.stack);
+                }
+            } catch(e2){
+                fs.writeFile("./guilds/"+ guild.name +".json",JSON.stringify(Guild,null,2));
+            }
+        }
 });
 
 //Log user status changes
