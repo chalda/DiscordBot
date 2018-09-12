@@ -109,14 +109,14 @@ exports.play = {
 			});
 			} else {
 					YoutubeDL.getInfo(suffix, [ '--no-check-certificate','--no-warnings', '--force-ipv4'], (err, info) => {
-					// Verify the info.
-					if (err || info.format_id === undefined || info.format_id.startsWith('0')) {
-						console.log(err)
-						return response.edit( wrap('Invalid video!'));
-					}
+					// // Verify the info.
+					// if (err || info.format_id === undefined || info.format_id.startsWith('0')) {
+					// 	console.log(err)
+					// 	return response.edit( wrap('Invalid video!'));
+					// }
 
 					// Queue the video.
-					response.edit( wrap('Queued: ' + info.title)).then((resp) => {
+					response.edit( wrap('Queued: ' + info.title?info.title:"")).then((resp) => {
 						queue.push(info);
 
 						// Play if only one element in the queue.
@@ -369,9 +369,16 @@ function executeQueue(client, msg, queue, my_dispatcher) {
 		}).then(connection => {
 			// Get the first item in the queue.
 			const video = queue[0];
+			console.log(video);
 
 			// Play the video.
-			msg.channel.sendMessage( wrap('Now Playing: ' + video.title)).then((cur) => {
+			msg.channel.send( wrap('Now Playing: ' + video.title),{
+				embed:{
+					thumbnail: {
+						url: video.thumbnail
+					}
+			 	}
+			}).then(response => {
 				const streamOptions = {volume: .5 };
 
 				var size = 0;
@@ -414,14 +421,24 @@ function executeQueue(client, msg, queue, my_dispatcher) {
 						executeQueue(client, msg, queue, dispatcher);
 					}, 1000);
 				});
+				videoStream.on('next', (url) =>{
+					debugger;
+					//queue.push()
+				});
+
+				videoStream.on('info', function(info) {
+					size = info.size;
+				});
 
 				videoStream.on('data', function data(chunk) {
+					
 					pos += chunk.length;
 				
 					// `size` should not be 0 here.
 					if (size) {
 						var percent = (pos / size * 100).toFixed(2);
-						console.log(percent + '%');
+						//response.edit
+						//console.log(percent + '%');
 					}
 				});
 				
@@ -446,4 +463,9 @@ function getAuthorVoiceChannel(msg) {
  */
 function wrap(text) {
 	return '```\n' + text.replace(/`/g, '`' + String.fromCharCode(8203)) + '\n```';
+}
+
+
+function wrapSongInfo(text, url){
+	return '```\n' + url + text.replace(/`/g, '`' + String.fromCharCode(8203)) + '\n```';
 }
