@@ -1,6 +1,7 @@
 const YoutubeDL = require('youtube-dl');
 const Request = require('request');
 const ytdl = require('ytdl-core');
+const _ = require('lodash');
 exports.commands = [
 	"play",
 	"skip",
@@ -8,9 +9,11 @@ exports.commands = [
 	"dequeue",
 	"pause",
 	"resume",
-	"volume"
+	"volume",
+	"clearqueue"
 ]
 
+NOW_PLAYING = false;
 let options = false;
 	let PREFIX = (options && options.prefix) || '!';
 	let GLOBAL_QUEUE = (options && options.global) || false;
@@ -66,7 +69,7 @@ exports.play = {
 		if (!suffix) return msg.channel.sendMessage( wrap('No video specified!'));
 
 		// Get the queue.
-		const queue = getQueue(msg.guild.id);
+		let queue = getQueue(msg.guild.id);
 
 		// Check if the queue has reached its maximum size.
 		if (queue.length >= MAX_QUEUE_SIZE) {
@@ -76,12 +79,14 @@ exports.play = {
 		// Get the video information.
 		msg.channel.send( wrap('Searching...')).then(response => {
 			debugger;
+			console.log(suffix);
 			// If the suffix doesn't start with 'http', assume it's a search.
-			if (!suffix.toLowerCase().startsWith('http')) {
+			if (!suffix.toString().toLowerCase().startsWith('http')) {
+				console.log("here");
 				suffix = 'ytsearch1:' + suffix;
+
 			// Get the video info from youtube-dl.
-			//'-q',
-			YoutubeDL.getInfo(suffix, [ '--no-check-certificate','--no-warnings', '--force-ipv4',], (err, info) => {
+			YoutubeDL.getInfo(suffix, [ '-i', '--max-downloads 1', '--no-check-certificate','--no-warnings', '--force-ipv4'], (err, info) => {
 				debugger;
 
 				console.log(info);
@@ -108,7 +113,29 @@ exports.play = {
 				});
 			});
 			} else {
-					YoutubeDL.getInfo(suffix, [ '--no-check-certificate','--no-warnings', '--force-ipv4'], (err, info) => {
+				console.log("there");
+					YoutubeDL.getInfo(suffix, [ '--no-check-certificate','--no-warnings', '--force-ipv4', '--yes-playlist', '-i'], (err, info) => {
+						//console.log(err, info);
+					if(_.isArray(info)){
+						console.log("concat playlist")
+						console.log(queue);
+						queue = queue.concat(info)
+						//queue = queue.push.apply(queue, info);
+						response.edit( wrap('Queued: a playlist')).then((resp) => {
+
+							// Play if only one element in the queue.
+							if (!NOW_PLAYING) {
+								executeQueue(client, msg, queue);
+								resp.delete(1000);
+							}
+						}).catch((e) => {console.log(e)});
+						
+					}
+					else {
+
+
+					
+					console.log(err, info);
 					// // Verify the info.
 					// if (err || info.format_id === undefined || info.format_id.startsWith('0')) {
 					// 	console.log(err)
@@ -124,10 +151,11 @@ exports.play = {
 							executeQueue(client, msg, queue);
 							resp.delete(1000);
 						}
-					}).catch(() => {});
+					}).catch((e) => {console.log(e)});
+					}
 				});
 		}
-		}).catch(() => {});
+		}).catch((e) => {console.log(e)});
 	}
 }
 
@@ -178,8 +206,9 @@ exports.queue = {
 		const queue = getQueue(msg.guild.id);
 
 		// Get the queue text.
+		console.log(queue);
 		const text = queue.map((video, index) => (
-			(index + 1) + ': ' + video.title
+			(index + 1) + ': ' + video.title || video.track
 		)).join('\n');
 
 		// Get the status of the queue.
@@ -273,7 +302,7 @@ exports.pause = {
 	/*
 	 * Resume command.
 	 *
-	 * @param msg Original message.
+	 * $@param msg Original message.
 	 * @param suffix Command suffix.
 	 */
 exports.resume = {
@@ -287,6 +316,18 @@ exports.resume = {
 		msg.channel.sendMessage( wrap('Playback resumed.'));
 		if (voiceConnection.player.dispatcher) voiceConnection.player.dispatcher.resume();
 	}
+}
+
+exports.clearqueue = {
+	description: "removes everything from the queue",
+	process: function(client, msg, suffix) {
+		const queue = getQueue(msg.guild.id);
+		const voiceConnection = client.voiceConnections.get(msg.guild.id);
+
+		queue = [];
+		executeQueue(client, msg, queue, voiceConnection.player.dispatcher);
+	}
+
 }
 
 /*
@@ -335,7 +376,7 @@ function executeQueue(client, msg, queue, my_dispatcher) {
 		// If the queue is empty, finish.
 		if (queue.length === 0) {
 			msg.channel.sendMessage( wrap('Playback finished.'));
-
+			NOW_PLAYING = false;
 			// Leave the voice channel.
 			
 			if (my_dispatcher != null) {
@@ -368,7 +409,13 @@ function executeQueue(client, msg, queue, my_dispatcher) {
 			}
 		}).then(connection => {
 			// Get the first item in the queue.
+			console.log('THE QUEUE------')
+			console.log(queue);
+			console.log('_______THE QUEUE------')
+			console.log('POPING A VIDEO OFF THE QUEUE')
+
 			const video = queue[0];
+			
 			console.log(video);
 
 			// Play the video.
@@ -397,7 +444,7 @@ function executeQueue(client, msg, queue, my_dispatcher) {
 				// 	if (err) { throw err; }
 				// 	console.log(output.join('\n'));
 				// });
-
+				NOW_PLAYING = true;
 				const dispatcher = connection.playStream(videoStream, streamOptions);
 				//dispatcher.then(intent => {
 				dispatcher.on('debug',(i)=>console.log("debug: " + i));
@@ -421,8 +468,11 @@ function executeQueue(client, msg, queue, my_dispatcher) {
 						executeQueue(client, msg, queue, dispatcher);
 					}, 1000);
 				});
-				videoStream.on('next', (url) =>{
+				videoStream.on('next', (song) =>{
+					console.log("NEXT SONG?!?!??!?!")
+					console.log(song);
 					debugger;
+					queue.push(song);
 					//queue.push()
 				});
 
