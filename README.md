@@ -2,10 +2,10 @@
 A chat bot for discord app based off <a href="https://github.com/hydrabolt/discord.js/">discord.js</a>
 
 # Features:
-- !gif query => returns a gif example !gif cute cats doing stuff
-- !image query => returns an image from Google Images (careful, no adult filter)
-- !youtube query=> returns a youtube link
-- !wiki query=> returns the summary of the first search result on Wikipedia
+- !gif query => returns a gif connected to search query. Example = !gif dogs
+- !image query => returns an image from Google Images (careful, no adult filter) Example: !image dogs
+- !youtube query=> returns a youtube link. Example: !youtube Fortnite
+- !wiki query=> returns the summary of the first search result on Wikipedia. Example: Linus Torvalds
 - !wolfram query => queries Wolfram Alpha for results
 - !meme memetype "text1" "text2" => returns a meme image. notice the quotes around text, they are vitally important
 - !say text => echos text
@@ -70,9 +70,9 @@ issues with this, you can try deleting your node_modules folder and then running
 `npm install` again. Please see [Installation](#Installation).
 
 # ToDo:
-All the things!
+Setup the bot up!
 
 # Help
-Please check github issues page on this project. We get a lot of the same questions, its very likely yours has already been answered. And yes we need to roll those into an official FAQ.
+Please check GitHub issues page on this project. We get a lot of the same questions, its very likely yours has already been answered. And yes we need to roll those into an official FAQ.
 
 If you still need help join us on [discord.](https://discord.gg/m29GJBN)
