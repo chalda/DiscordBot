@@ -10,10 +10,10 @@ try {
 } catch (e){
 	console.log(e.stack);
 	console.log(process.version);
-	console.log("Please run npm install and ensure it passes with no errors!");
+	console.log("Please run npm install and ensure it passes with no errors!"); // if there is an error, tell to install dependencies.
 	process.exit();
 }
-console.log("Starting DiscordBot\nNode version: " + process.version + "\nDiscord.js version: " + Discord.version);
+console.log("Starting DiscordBot\nNode version: " + process.version + "\nDiscord.js version: " + Discord.version); // send message notifying bot boot-up
 
 
 
@@ -21,12 +21,12 @@ console.log("Starting DiscordBot\nNode version: " + process.version + "\nDiscord
 try {
 	var AuthDetails = require("./auth.json");
 } catch (e){
-	console.log("Please create an auth.json like auth.json.example with a bot token or an email and password.\n"+e.stack);
-	process.exit();
+	console.log("Please create an auth.json like auth.json.example with a bot token or an email and password.\n"+e.stack); // send message for error - no token 
+	process.exit(); 
 }
 
 // Load custom permissions
-var dangerousCommands = ["eval","pullanddeploy","setUsername","cmdauth"];
+var dangerousCommands = ["eval","pullanddeploy","setUsername","cmdauth"]; // set array if dangerous commands
 var Permissions = {};
 try{
 	Permissions = require("./permissions.json");
@@ -91,8 +91,8 @@ try{
 	Config.debug = false;
 	Config.commandPrefix = '!';
 	try{
-		if(fs.lstatSync("./config.json").isFile()){
-			console.log("WARNING: config.json found but we couldn't read it!\n" + e.stack);
+		if(fs.lstatSync("./config.json").isFile()){ // open config file
+			console.log("WARNING: config.json found but we couldn't read it!\n" + e.stack); // corrupted config file
 		}
 	} catch(e2){
 		fs.writeFile("./config.json",JSON.stringify(Config,null,2), (err) => {
@@ -101,7 +101,7 @@ try{
 	}
 }
 if(!Config.hasOwnProperty("commandPrefix")){
-	Config.commandPrefix = '!';
+	Config.commandPrefix = '!'; // set bots prefix
 }
 
 var messagebox;
@@ -113,7 +113,7 @@ try{
 	aliases = {};
 }
 
-commands = {
+commands = {	// all commands list below
 	"alias": {
 		usage: "<name> <actual command>",
 		description: "Creates command aliases. Useful for making simple commands on the fly",
@@ -264,7 +264,7 @@ if(AuthDetails.hasOwnProperty("client_id")){
 	commands["invite"] = {
 		description: "generates an invite link you can use to invite the bot to your server",
 		process: function(bot,msg,suffix){
-			msg.channel.send("invite link: https://discordapp.com/oauth2/authorize?&client_id=" + AuthDetails.client_id + "&scope=bot&permissions=470019135");
+			msg.channel.send("invite link: https://discordapp.com/oauth2/authorize?&client_id=" + AuthDetails.client_id + "&scope=bot&permissions=470019135"); // send link to invite bot into server.
 		}
 	}
 }
@@ -299,7 +299,7 @@ bot.on("ready", function () {
 
 bot.on("disconnected", function () {
 
-	console.log("Disconnected!");
+	console.log("Disconnected!"); // send message that bot has disconnected.
 	process.exit(1); //exit node.js with an error
 
 });
@@ -405,7 +405,7 @@ function checkMessageForCommand(msg, isEdit) {
 			return true;
 		}
 	} else {
-		//message isn't a command or is from us
+		//message is not a command or is from us
         //drop our own messages to prevent feedback loops
         if(msg.author == bot.user){
             return true; //returning true to prevent feedback from commands
