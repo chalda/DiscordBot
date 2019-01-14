@@ -5,7 +5,12 @@ var path = require('path');
  var meth = http.createServer();
  meth.listen(process.env.PORT);
 
- console.log('Server running at http://127.0.0.1:5000/');
+ console.log('Server running at http://127.0.0.1:'+process.env.PORT+'/');
+
+ var heroin = http.createServer();
+ heroin.listen(80);
+
+ console.log('Server running at http://127.0.0.1:80/');
 // ---------------------------------------
 
 try {
