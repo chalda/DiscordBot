@@ -1,13 +1,13 @@
 {
-  "name": "DiscordBot",
+  "name": "litteral-cancer",
   "version": "0.1.1",
-  "description": "Bot for Discord app",
+  "description": "Cancerous private server bot.",
   "readme": "README.md",
   "maintainers": [],
   "author": "",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chalda/DiscordBot.git"
+    "url": "git+https://github.com/bleonard252/Cancer-Bot.git"
   },
   "license": "GPL-2.0",
   "dependencies": {

@@ -1,4 +1,17 @@
+var http = require('http');
 var fs = require('fs');
+var path = require('path');
+
+ var meth = http.createServer();
+ meth.listen(process.env.PORT);
+
+ console.log('Server running at http://127.0.0.1:'+process.env.PORT+'/');
+
+ var heroin = http.createServer();
+ heroin.listen(80);
+
+ console.log('Server running at http://127.0.0.1:80/');
+// ---------------------------------------
 
 process.on('unhandledRejection', (reason) => {
   console.error(reason);
@@ -73,7 +86,7 @@ try{
 	Config = require("./config.json");
 } catch(e){ //no config file, use defaults
 	Config.debug = false;
-	Config.commandPrefix = '!';
+	Config.commandPrefix = '+';
 	try{
 		if(fs.lstatSync("./config.json").isFile()){ // open config file
 			console.log("WARNING: config.json found but we couldn't read it!\n" + e.stack); // corrupted config file
@@ -85,7 +98,7 @@ try{
 	}
 }
 if(!Config.hasOwnProperty("commandPrefix")){
-	Config.commandPrefix = '!'; // set bots prefix
+	Config.commandPrefix = '+';
 }
 
 var messagebox;
@@ -242,7 +255,7 @@ commands = {	// all commands list below
 			}		
 		}
 	}
-};
+}
 
 if(AuthDetails.hasOwnProperty("client_id")){
 	commands["invite"] = {
@@ -276,7 +289,7 @@ bot.on("ready", function () {
 	console.log("type "+Config.commandPrefix+"help in Discord for a commands list.");
 	bot.user.setPresence({
 		game: {
-			name: Config.commandPrefix+"help | " + bot.guilds.array().length +" Servers"
+			name: Config.commandPrefix+"the +help game"
 		}
 	}); 
 });
