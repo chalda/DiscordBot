@@ -2,11 +2,11 @@ var http = require('http');
 var fs = require('fs');
 var path = require('path');
 
- var meth = http.createServer();
+ var meth = http.createServer(function(request,response){response.writeHeader(200, {"Content-Type": "text/html"});response.write("OK");response.end();});
  meth.listen(process.env.PORT);
 
  console.log('Server running at http://127.0.0.1:'+process.env.PORT+'/');
- meth.on("request", function(){return "Ping success"});
+
 // ---------------------------------------
 
 process.on('unhandledRejection', (reason) => {
