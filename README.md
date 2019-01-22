@@ -1,5 +1,5 @@
 # DiscordBot
-A chat bot for discord app based off <a href="https://github.com/hydrabolt/discord.js/">discord.js</a>
+A chat bot for Discord app based off <a href="https://github.com/hydrabolt/discord.js/">discord.js</a>.
 
 # Features:
 - !gif query => returns a gif connected to search query. Example = !gif dogs
@@ -15,13 +15,13 @@ A chat bot for discord app based off <a href="https://github.com/hydrabolt/disco
 - @botname => responds when @mentioned
 - channel management!
 
-And much more! Try !help to get a full list of available commands
+And much more! Try `!help` to get a full list of available commands
 
 # Installation
 
 This bot is written to run on top of node.js. Please see https://nodejs.org/en/download/
 
-Once you have node installed running `npm install` from the bot directory should install all the needed packages. If this command prints errors the bot won't work!
+Once you have NodeJS installed, running `npm install` from the bot directory should install all required packages. If this command prints errors, the bot won't work!
 
 
 
@@ -56,10 +56,10 @@ You can create an rss.json file adding rss feeds as commands. See rss.json.examp
 
 7) Copy this into the auth.json's "google_custom_search" section.
 
-Make sure you also have your google server API key, which goes in the "youtube_api_key" section, or the search will fail.
+Make sure you also have your Google server API key, which is located in the "youtube_api_key" section, or the search will fail.
 
 # Running
-Before first run you will need to create an `auth.json` file. A bot token or the email and password for a discord account are required. The other credentials are not required for the bot to run, but highly recommended as commands that depend on them will malfunction. See `auth.json.example`.
+Before the first run you will need to create an `auth.json` file. A bot token or the email and password for a discord account are required. The other credentials are not required for the bot to run, but they are highly recommended as commands that depend on them will malfunction. See `auth.json.example`.
 
 To start the bot just run
 `node discord_bot.js`.
@@ -69,10 +69,10 @@ If you update the bot, please run `npm update` before starting it again. If you 
 issues with this, you can try deleting your node_modules folder and then running
 `npm install` again. Please see [Installation](#Installation).
 
-# ToDo:
-Setup the bot up!
+# TODO:
+Setup the bot!
 
 # Help
-Please check GitHub issues page on this project. We get a lot of the same questions, its very likely yours has already been answered. And yes we need to roll those into an official FAQ.
+Please check the GitHub issues page on this project. We get a lot of similar questions, and it is likely that yours has already been answered. And yes, we need to roll those into an official FAQ.
 
-If you still need help join us on [discord.](https://discord.gg/m29GJBN)
+If you still need help, feel free to join us on [discord.](https://discord.gg/m29GJBN)
