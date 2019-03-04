@@ -52,7 +52,7 @@ exports["delete"] = {
 	process: function(bot,msg,suffix) {
 		var channel = bot.channels.get(suffix);
 		if(suffix.startsWith('<#')){
-			channel = bot.channels.get(suffix.substr(2,suffix.length-3));
+			channel = bot.channels.find(suffix.substr(2,suffix.length-3));
 		}
 		if (channel.memberPermissions(msg.author).has("SEND_TTS_MESSAGES") || channel.memberPermissions(msg.author).has("PRIORITY_SPEAKER") || channel.memberPermissions(msg.author).has("ADMINISTRATOR")) {
 		channel.delete().then(function(channel){
