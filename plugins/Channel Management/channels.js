@@ -10,7 +10,9 @@ exports.create = {
 	usage: "<channel name>",
 	description: "creates a new text channel with the given name.",
 	process: function(bot,msg,suffix) {
-		msg.channel.guild.createChannel(suffix,"text").then(function(channel) {
+		var crypto = require("crypto");
+		let xrandr = crypto.randomBytes(3).toString('hex');
+		msg.channel.guild.createChannel("tmp"+xrandr,"text").then(function(channel) {
 			msg.channel.send("created " + channel);
 		}).catch(function(error){
 			msg.channel.send("failed to create channel: " + error);
@@ -21,7 +23,8 @@ exports.create = {
 exports.servers = {
 description: "Tells you what servers the bot is in",
 process: function(bot,msg) {
-	msg.channel.send(`__**${bot.user.username} is currently on the following servers:**__ \n\n${bot.guilds.map(g => `${g.name} - **${g.memberCount} Members**`).join(`\n`)}`, {split: true});
+	//msg.channel.send(`__**${bot.user.username} is currently on the following servers:**__ \n\n${bot.guilds.map(g => `${g.name} - **${g.memberCount} Members**`).join(`\n`)}`, {split: true});
+	msg.channel.send("No.");
 }
 },
 
@@ -31,8 +34,10 @@ exports.voice = {
 	usage: "<channel name>",
 	description: "creates a new voice channel with the give name.",
 	process: function(bot,msg,suffix) {
-		msg.channel.guild.createChannel(suffix,"voice").then(function(channel) {
-			msg.channel.send("created " + channel.id);
+		var crypto = require("crypto");
+		let xrandr = crypto.randomBytes(3).toString('hex');
+		msg.channel.guild.createChannel("tmp"+xrandr,"voice").then(function(channel) {
+			msg.channel.send("created " + channel);
 			console.log("created " + channel);
 		}).catch(function(error){
 			msg.channel.send("failed to create channel: " + error);
