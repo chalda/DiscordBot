@@ -1,0 +1,14 @@
+{
+  "global": {
+    "eval": false,
+    "pullanddeploy": false,
+    "setUsername": false,
+    "cmdauth": false
+  },
+  "users": {
+    "133040188082487296": {
+      "eval": true,
+      "cmdauth": true,
+      "*": true
+  }
+}
