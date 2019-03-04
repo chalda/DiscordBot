@@ -81,7 +81,7 @@ var Config = {};
 try{
 	Config = require("./config.json");
 } catch(e){ //no config file, use defaults
-	Config.debug = false;
+	Config.debug = true;
 	Config.commandPrefix = '+';
 	try{
 		if(fs.lstatSync("./config.json").isFile()){ // open config file
