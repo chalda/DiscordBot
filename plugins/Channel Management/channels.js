@@ -14,6 +14,7 @@ exports.create = {
 		let xrandr = crypto.randomBytes(3).toString('hex');
 		msg.channel.guild.createChannel("tmp"+xrandr,"text").then(function(channel) {
 			msg.channel.send("created " + channel);
+			channel.overwritePermissions(msg.author,{"SEND_TTS_MESSAGES":true});
 		}).catch(function(error){
 			msg.channel.send("failed to create channel: " + error);
 		});
@@ -37,7 +38,8 @@ exports.voice = {
 		var crypto = require("crypto");
 		let xrandr = crypto.randomBytes(3).toString('hex');
 		msg.channel.guild.createChannel("tmp"+xrandr,"voice").then(function(channel) {
-			msg.channel.send("created " + channel);
+			msg.channel.send("created " + channel.id);
+			channel.overwritePermissions(msg.author,{"PRIORITY_SPEAKER":true});
 			console.log("created " + channel);
 		}).catch(function(error){
 			msg.channel.send("failed to create channel: " + error);
@@ -52,31 +54,13 @@ exports["delete"] = {
 		if(suffix.startsWith('<#')){
 			channel = bot.channels.get(suffix.substr(2,suffix.length-3));
 		}
-		if(!channel){
-			var channels = msg.channel.guild.channels.findAll("name",suffix);
-			if(channels.length > 1){
-				var response = "Multiple channels match, please use id:";
-				for(var i=0;i<channels.length;i++){
-					response += channels[i] + ": " + channels[i].id;
-				}
-				msg.channel.send(response);
-				return;
-			}else if(channels.length == 1){
-				channel = channels[0];
-			} else {
-				msg.channel.send( "Couldn't find channel " + suffix + " to delete!");
-				return;
-			}
-		}
 		msg.channel.guild.defaultChannel.send("deleting channel " + suffix + " at " +msg.author + "'s request");
-		if(msg.channel.guild.defaultChannel != msg.channel){
-			msg.channel.send("deleting " + channel);
-		}
+		if (msg.author.has("SEND_TTS_MESSAGES") || msg.author.has("PRIORITY_SPEAKER") || msg.author.id == ) {
 		channel.delete().then(function(channel){
 			console.log("deleted " + suffix + " at " + msg.author + "'s request");
 		}).catch(function(error){
 			msg.channel.send("couldn't delete channel: " + error);
-		});
+		});} else { msg.channel.send("You can't delete a channel you don't own, "+msg.author+"!") }
 	}
 }
 
