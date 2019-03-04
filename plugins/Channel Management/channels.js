@@ -54,7 +54,7 @@ exports["delete"] = {
 		if(suffix.startsWith('<#')){
 			channel = bot.channels.get(suffix.substr(2,suffix.length-3));
 		}
-		if (msg.author.hasPermission("SEND_TTS_MESSAGES") || msg.author.hasPermission("PRIORITY_SPEAKER") || msg.author.hasPermission("ADMINISTRATOR")) {
+		if (channel.memberPermissions(msg.author).has("SEND_TTS_MESSAGES") || channel.memberPermissions(msg.author).has("PRIORITY_SPEAKER") || channel.memberPermissions(msg.author).has("ADMINISTRATOR")) {
 		channel.delete().then(function(channel){
 			console.log("deleted " + suffix + " at " + msg.author + "'s request");
 		}).catch(function(error){
