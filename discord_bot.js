@@ -142,7 +142,7 @@ commands = {	// all commands list below
         process: function(bot, msg, suffix) {
             msg.channel.send( msg.author+" pong!");
             if(suffix){
-                msg.channel.send( "note that !ping takes no arguments!");
+                msg.channel.send( "note that +ping takes no arguments!");
             }
         }
     },
@@ -285,7 +285,7 @@ bot.on("ready", function () {
 	console.log("type "+Config.commandPrefix+"help in Discord for a commands list.");
 	bot.user.setPresence({
 		game: {
-			name: Config.commandPrefix+"the +help game"
+			name: "the +help game"
 		}
 	}); 
 });
