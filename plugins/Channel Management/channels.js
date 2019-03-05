@@ -64,6 +64,7 @@ exports.topic = {
 	usage: "[topic]",
 	description: 'Sets the topic for the channel. No topic removes the topic.',
 	process: function(bot,msg,suffix) {
-		msg.channel.setTopic(suffix);
+		//msg.channel.setTopic(suffix);
+		msg.channel.seng("No.");
 	}
 }
