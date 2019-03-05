@@ -51,7 +51,7 @@ exports["delete"] = {
 	description: "deletes the specified channel",
 	process: function(bot,msg,suffix) {
 		var channel = msg.channel;
-		if (channel.memberPermissions(msg.author).has("SEND_TTS_MESSAGES") || channel.memberPermissions(msg.author).has("PRIORITY_SPEAKER") || channel.memberPermissions(msg.author).has("ADMINISTRATOR")) {
+		if (channel.permissionsFor(msg.author).has("SEND_TTS_MESSAGES") || channel.permissionsFor(msg.author).has("PRIORITY_SPEAKER") || channel.permissionsFor(msg.author).has("ADMINISTRATOR")) {
 		channel.delete().then(function(channel){
 			console.log("deleted " + suffix + " at " + msg.author + "'s request");
 		}).catch(function(error){
