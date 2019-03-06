@@ -1,4 +1,5 @@
 var request = require("request");
+const querystring = require('querystring');
 var AuthDetails = require("../../auth.json");
 try {
 	var yt = require("./youtube_plugin");
@@ -11,6 +12,7 @@ exports.commands = [
 	"image", //gives top image from google search
 	"rimage", //gives random image from google search
 	"ggif", //gives random gif from google search
+	"shorten", //shortens url to lcb.page.link url
 	"youtube"
 ];
 
@@ -112,6 +114,20 @@ exports.ggif = {
 
 	}
 }
+exports.shorten = {
+	usage: "<url>",
+	description: "shortens urls with https://lcb.page.link",
+	process: function(bot,msg,suffix) {
+		request.post({url:"https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key="+process.env.WAKEY,
+                  form:
+`{
+   "longDynamicLink": "https://lcb.page.link/?link=`+querystring.escape(suffix)+`&efr=1",
+   "suffix": {
+     "option": "SHORT"
+   }
+}`
+},function(back){msg.channel.send("Your shortlink is: "+back)});
+}}
 
 exports.youtube = {
 	usage: "<video tags>",

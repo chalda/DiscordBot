@@ -1,6 +1,9 @@
 var http = require('http');
+var https = require('https');
+var rqq = require('request');
 var fs = require('fs');
 var path = require('path');
+var fba = require('firebase-admin');
 
  var meth = http.createServer(function(request,response){response.writeHeader(200, {"Content-Type": "text/html"});response.write("<body bgcolor=green><h1>OK");response.end();});
  meth.listen(process.env.PORT);
@@ -24,7 +27,20 @@ try {
 }
 console.log("Starting DiscordBot\nNode version: " + process.version + "\nDiscord.js version: " + Discord.version); // send message notifying bot boot-up
 
+// Databasing
 
+var serviceAccount = JSON.parse(process.env.PKEY);
+
+global["fire"] = fba.initializeApp({
+  credential: fba.credential.cert(serviceAccount),
+  databaseURL: "https://litteral-cancer-bot.firebaseio.com"
+}); //database: fire.database()
+
+/* # NOTE TO FORKS #
+You will NOT have access to this database!
+The serviceAccount.json file is stored as a config value in Heroku.
+This is to protect Cancer-Bot's database.
+You may need to create your own Cloud Firestore database. */
 
 // Get authentication data
 try {
