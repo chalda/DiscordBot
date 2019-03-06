@@ -1,5 +1,6 @@
 var http = require('http');
-var http = require('https');
+var https = require('https');
+var rqq = require('request');
 var fs = require('fs');
 var path = require('path');
 var fba = require('firebase-admin');
@@ -34,9 +35,6 @@ global["fire"] = fba.initializeApp({
   credential: fba.credential.cert(serviceAccount),
   databaseURL: "https://litteral-cancer-bot.firebaseio.com"
 }); //database: fire.database()
-//http.request("https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key="+process.env.WAKEY"+,{method:"POST"}
-//todo: put shortlink making in misc plugin
-//hint: lcb.page.link
 
 /* # NOTE TO FORKS #
 You will NOT have access to this database!
