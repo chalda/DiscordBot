@@ -2,19 +2,23 @@ exports.commands = [
 	"create",
 	"voice",
 	"delete",
+	"pub",
+	"priv",
 	"servers",
 	"topic"
 ]
 
 exports.create = {
 	usage: "<channel name>",
-	description: "creates a new text channel with the given name.",
+	description: "creates a temporary text channel.",
 	process: function(bot,msg,suffix) {
 		var crypto = require("crypto");
 		let xrandr = crypto.randomBytes(3).toString('hex');
 		msg.channel.guild.createChannel("tmp"+xrandr,"text").then(function(channel) {
-			msg.channel.send("created " + channel);
-			channel.overwritePermissions(msg.author,{"SEND_TTS_MESSAGES":true});
+            channel.permissionOverwrites[0]["VIEW_CHANNEL"] = false;
+            channel.permissionOverwrites[0]["READ_MESSAGES"] = false;
+			channel.overwritePermissions(msg.author,{"SEND_TTS_MESSAGES":true,"MANAGE_MESSAGES":true,"VIEW_CHANNEL":true,"READ_MESSAGES":true});
+            msg.channel.send("created " + channel);
 		}).catch(function(error){
 			msg.channel.send("failed to create channel: " + error);
 		});
@@ -32,14 +36,14 @@ process: function(bot,msg) {
 
 
 exports.voice = {
-	usage: "<channel name>",
-	description: "creates a new voice channel with the give name.",
+	usage: "",
+	description: "creates a temporary voice channel.",
 	process: function(bot,msg,suffix) {
 		var crypto = require("crypto");
 		let xrandr = crypto.randomBytes(3).toString('hex');
 		msg.channel.guild.createChannel("tmp"+xrandr,"voice").then(function(channel) {
 			msg.channel.send("created " + channel.id);
-			channel.overwritePermissions(msg.author,{"PRIORITY_SPEAKER":true});
+            channel.overwritePermissions(msg.author,{"PRIORITY_SPEAKER":true});
 			console.log("created " + channel);
 		}).catch(function(error){
 			msg.channel.send("failed to create channel: " + error);
@@ -47,24 +51,54 @@ exports.voice = {
 	}
 },
 exports["delete"] = {
-	usage: "<channel name>",
+	usage: "",
 	description: "deletes the specified channel",
 	process: function(bot,msg,suffix) {
 		var channel = msg.channel;
-		if (channel.permissionsFor(msg.author).has("SEND_TTS_MESSAGES") || channel.permissionsFor(msg.author).has("PRIORITY_SPEAKER") || channel.permissionsFor(msg.author).has("ADMINISTRATOR")) {
+		if (isOwner(msg)) {
 		channel.delete().then(function(channel){
 			console.log("deleted " + suffix + " at " + msg.author + "'s request");
 		}).catch(function(error){
 			msg.channel.send("couldn't delete channel: " + error);
 		});} else { msg.channel.send("You can't delete a channel you don't own, "+msg.author+"!").then(function(vx){msg.delete();vx.delete(10000)}) }
 	}
-}
+},
+exports["pub"] = {
+	usage: "",
+	description: "publifies the current channel",
+	process: function(bot,msg,suffix) {
+		var channel = msg.channel;
+		if (isOwner(msg)) {
+            channel.permissionOverwrites[0]["VIEW_CHANNEL"] = true;
+            channel.permissionOverwrites[0]["READ_MESSAGES"] = true;
+        } else { msg.channel.send("You can't publify a channel you don't own, "+msg.author+"!").then(function(vx){msg.delete();vx.delete(10000)}) }
+	}
+},
+exports["priv"] = {
+	usage: "",
+	description: "privifies the current channel",
+	process: function(bot,msg,suffix) {
+		var channel = msg.channel;
+		if (isOwner(msg)) {
+            channel.permissionOverwrites[0]["VIEW_CHANNEL"] = false;
+            channel.permissionOverwrites[0]["READ_MESSAGES"] = false;
+        } else { msg.channel.send("You can't privify a channel you don't own, "+msg.author+"!").then(function(vx){msg.delete();vx.delete(10000)}) }
+	}
+},
 
 exports.topic = {
 	usage: "[topic]",
 	description: 'Sets the topic for the channel. No topic removes the topic.',
 	process: function(bot,msg,suffix) {
-		//msg.channel.setTopic(suffix);
-		msg.channel.seng("No.");
+		var channel = msg.channel;
+		if (isOwner(msg)) {
+            msg.channel.setTopic(suffix)
+        } else { msg.channel.send("You can't change the topic a channel you don't own, "+msg.author+"!").then(function(vx){msg.delete();vx.delete(10000)}) }
 	}
+}
+function isOwner(msg) {
+    return ((msg.channel.permissionsFor(msg.author).has("MANAGE_MESSAGES") 
+    || msg.channel.permissionsFor(msg.author).has("PRIORITY_SPEAKER") 
+    || msg.channel.permissionsFor(msg.author).has("ADMINISTRATOR")) 
+    && msg.channel.name.startsWith("tmp"))
 }
