@@ -1,7 +1,7 @@
 exports.commands = [
 	"mixer",
 	"chuckNorris",
-	"watchtogether",
+	//"watchtogether",
 	"ping",
 	"rip",
 	"warp",
@@ -42,7 +42,7 @@ exports.chuckNorris = {
 	}
 }
 
-exports.watchtogether = {
+/*exports.watchtogether = {
 	usage: "[video url (Youtube, Vimeo)",
 	description: "Generate a watch2gether room with your video to watch with your friends!",
 	process: function(bot,msg,suffix){
@@ -52,7 +52,7 @@ exports.watchtogether = {
 				msg.channel.send(watch2getherUrl + suffix)
 		})
 	}
-}
+}*/
 
     exports.ping = {
         description: "responds pong, useful for checking if bot is alive",
@@ -77,8 +77,8 @@ exports.watchtogether = {
 		} else {
 		riparoo = msg.author;
             	};
-	    var restArray = ['riparoony', 'riparoo', 'rest', 'rip', 'reset', 'remember', 'ripadoodle', 'restaroony', 'resta', 'ring'];
-	    var peaceArray = ['peace', 'pepperoni', 'pepperoncini', 'pizza', 'pieces', 'prezzies', 'potatoes', 'pasta', 'pastaroni', 'poopymon'];
+	    var restArray = ['riparoony', 'riparoo', 'rest', 'rip', 'reset', 'remember', 'ripadoodle', 'restaroony', 'resta', 'ring', 'resurrect', 'respawn'];
+	    var peaceArray = ['peace', 'pepperoni', 'pepperoncini', 'pizza', 'pieces', 'prezzies', 'potatoes', 'pasta', 'pastaroni', 'poop', 'pokemon', 'pie'];
 		var randRest = Math.floor(Math.random() * restArray.length); var rrip = restArray[randRest];
 		var randPeace = Math.floor(Math.random() * peaceArray.length); var prip = peaceArray[randPeace];
 		
