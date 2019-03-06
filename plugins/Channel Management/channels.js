@@ -15,8 +15,7 @@ exports.create = {
 		var crypto = require("crypto");
 		let xrandr = crypto.randomBytes(3).toString('hex');
 		msg.channel.guild.createChannel("tmp"+xrandr,"text").then(function(channel) {
-            channel.permissionOverwrites[0]["VIEW_CHANNEL"] = false;
-            channel.permissionOverwrites[0]["READ_MESSAGES"] = false;
+            channel.overwritePermissions(0,{"VIEW_CHANNEL":false,"READ_MESSAGES":false});
 			channel.overwritePermissions(msg.author,{"SEND_TTS_MESSAGES":true,"MANAGE_MESSAGES":true,"VIEW_CHANNEL":true,"READ_MESSAGES":true});
             msg.channel.send("created " + channel);
 		}).catch(function(error){
