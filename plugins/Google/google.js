@@ -128,7 +128,7 @@ exports.shorten = {
       "enableForcedRedirect": true,
     }
    }
-}},function(back){msg.channel.send("Your shortlink is: "+JSON.parse(back)["shortLink"])});
+}},function(back){console.log(back);msg.channel.send("Your shortlink is: "+back)});
 }}
 
 exports.youtube = {
