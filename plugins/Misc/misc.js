@@ -5,6 +5,7 @@ exports.commands = [
 	"ping",
 	"rip",
 	"warp",
+	"die",
 	"features"
 ]
 
@@ -83,6 +84,22 @@ exports.chuckNorris = {
 		var randPeace = Math.floor(Math.random() * peaceArray.length); var prip = peaceArray[randPeace];
 		
             msg.channel.sendMessage( rrip + " in " + prip + ", " + riparoo).then((message => msg.delete(1000)));
+        }
+    }
+    exports.kill = {
+        description: "Murders a target",
+        process: function(bot, msg, suffix) {
+	    var riparoo = "";
+		if(suffix){
+                riparoo = suffix;
+		riparoo = riparoo.replace('my', msg.author + '\'s');
+		} else {
+		riparoo = "self";
+            	};
+	    var kmsg = ['In their feverish assault on '+riparoo+', '+msg.author+' committed suicide.', riparoo+'caused much suffering. '+msg.author+' took justice into their own hands.', 'In their feverish assault on '+riparoo+', '+msg.author+' was captured by the police.'];
+		var monger = Math.floor(Math.random() * kmsg.length); var message = kmsg[monger];
+		
+            msg.channel.sendMessage(message).then((message => msg.delete(1000)));
         }
     }
 
