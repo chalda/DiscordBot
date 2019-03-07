@@ -5,7 +5,7 @@ try {
 	var yt = require("./youtube_plugin");
 	var youtube_plugin = new yt();
 } catch(e){
-	console.log("couldn't load youtube plugin!\n"+e.stack);
+	console.log("couldn't load youtube plugin!");
 }
 
 exports.commands = [
@@ -119,14 +119,16 @@ exports.shorten = {
 	description: "shortens urls with https://lcb.page.link",
 	process: function(bot,msg,suffix) {
 		request.post({url:"https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key="+process.env.WAKEY,
-                  form:
-`{
-   "longDynamicLink": "https://lcb.page.link/?link=`+querystring.escape(suffix)+`&efr=1",
-   "suffix": {
-     "option": "SHORT"
+                  json:
+{
+   "dynamicLinkInfo": {
+    "domainUriPrefix": "https://lcb.page.link",
+    "link": suffix,
+    "navigationInfo": {
+      "enableForcedRedirect": true,
+    }
    }
-}`
-},function(back){msg.channel.send("Your shortlink is: "+back)});
+}},function(back){msg.channel.send("Your shortlink is: "+JSON.parse(back)["shortLink"])});
 }}
 
 exports.youtube = {
