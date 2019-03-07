@@ -83,7 +83,7 @@ exports.chuckNorris = {
 		var randRest = Math.floor(Math.random() * restArray.length); var rrip = restArray[randRest];
 		var randPeace = Math.floor(Math.random() * peaceArray.length); var prip = peaceArray[randPeace];
 		
-            msg.channel.sendMessage( rrip + " in " + prip + ", " + riparoo).then((message => msg.delete(1000)));
+            msg.channel.send( rrip + " in " + prip + ", " + riparoo).then((message => msg.delete(1000)));
         }
     }
     exports.die = {
@@ -105,7 +105,7 @@ exports.chuckNorris = {
 		 msg.author+' killed '+riparoo+'.',];
 		var monger = Math.floor(Math.random() * kmsg.length); var message = kmsg[monger];
 		
-            msg.channel.sendMessage(message).then((message => msg.delete(1000)));
+            msg.channel.send(message).then((ff => msg.delete(1000)));
         }
     }
 
