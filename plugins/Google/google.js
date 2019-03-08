@@ -128,6 +128,9 @@ exports.shorten = {
 					"navigationInfo": {
 						"enableForcedRedirect": true,
 					}
+				},
+				"suffix": {
+					"option": "SHORT"
 				}
 			}
 		}, function (error, response, back) {
