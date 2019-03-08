@@ -132,7 +132,7 @@ exports.shorten = {
 			}
 		}, function (error, response, back) {
 			console.log(response); console.log(back);
-			msg.channel.send("Your shortlink is: " + back)
+			msg.channel.send("Your shortlink is: " + back["shortLink"])
 		});
 	}
 }
