@@ -136,7 +136,7 @@ exports.chuckNorris = {
 		
             msg.channel.send(message).then((ff => msg.delete(1000)));
             if (msg.channel.name.startsWith('tmp')) {
-            	msg.channel.fetchMessages().then({messages => let ee = messages.filter(message => message.content.contains(msg.author + ' attacked') || message.content.contains(msg.author + ' caused a lot of suffering') || message.content.contains(msg.author + ' caused major damage') || message.content.contains(msg.author + ' was not very effective')) if (ee.size >= 20) msg.channel.send(msg.author+' wins the fight!')})
+            	msg.channel.fetchMessages().then(function(messages){let ee = messages.filter(message => message.content.contains(msg.author + ' attacked') || message.content.contains(msg.author + ' caused a lot of suffering') || message.content.contains(msg.author + ' caused major damage') || message.content.contains(msg.author + ' was not very effective')) if (ee.size >= 20) msg.channel.send(msg.author+' wins the fight!')})
         	}
         }
     }
