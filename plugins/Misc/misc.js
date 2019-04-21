@@ -6,6 +6,7 @@ exports.commands = [
 	"rip",
 	"warp",
 	"die",
+	"attack",
 	"features",
 	"count"
 ]
@@ -109,6 +110,34 @@ exports.chuckNorris = {
 		var monger = Math.floor(Math.random() * kmsg.length); var message = kmsg[monger];
 		
             msg.channel.send(message).then((ff => msg.delete(1000)));
+        }
+    }
+    
+    exports.attack = {
+        description: "Attacks a target",
+        process: function(bot, msg, suffix) {
+	    var riparoo = "";
+		if(suffix){
+                riparoo = suffix;
+		riparoo = riparoo.replace('my', msg.author + '\'s');
+		} else {
+		riparoo = msg.author.name;
+            	};
+	    var kmsg = 
+		['In their feverish assault on '+riparoo+', '+msg.author+' was not very effective.', 
+		 riparoo+' caused a lot of suffering to '+msg.author+'.', 
+		 'In their aggravated assault on '+riparoo+', '+msg.author+' was captured by the police.',
+		 msg.author+' attacked '+riparoo+'. '+msg.author+' held '+riparoo+' against a wall.',
+		 msg.author+' attacked '+riparoo+'. '+riparoo+' held one of '+msg.author+'\'s ribs above their head.',
+		 msg.author+' attacked '+riparoo+'.',
+		 msg.author+' caused major damage to '+riparoo+'.',
+		 riparoo+' deflected '+msg.author+'\'s attack.'];
+		var monger = Math.floor(Math.random() * kmsg.length); var message = kmsg[monger];
+		
+            msg.channel.send(message).then((ff => msg.delete(1000)));
+            if (msg.channel.name.startsWith('tmp')) {
+            	msg.channel.fetchMessages().then({messages => let ee = messages.filter(message => message.content.contains(msg.author + ' attacked') || message.content.contains(msg.author + ' caused a lot of suffering') || message.content.contains(msg.author + ' caused major damage') || message.content.contains(msg.author + ' was not very effective')) if (ee.size >= 20) msg.channel.send(msg.author+' wins the fight!')})
+        	}
         }
     }
 
