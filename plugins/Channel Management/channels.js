@@ -1,9 +1,10 @@
+const crypto = require("crypto");
 exports.commands = [
 	"create",
-	"voice",
+	//"voice",
 	"delete",
-	"pub",
-	"priv",
+	//"pub",
+	//"priv",
 	"servers",
 	"topic"
 ]
@@ -12,11 +13,10 @@ exports.create = {
 	usage: "<channel name>",
 	description: "creates a temporary text channel.",
 	process: function(bot,msg,suffix) {
-		var crypto = require("crypto");
 		let xrandr = crypto.randomBytes(3).toString('hex');
 		msg.channel.guild.createChannel("tmp"+xrandr,"text").then(function(channel) {
-            channel.overwritePermissions(0,{"VIEW_CHANNEL":false,"READ_MESSAGES":false});
-			channel.overwritePermissions(msg.author,{"SEND_TTS_MESSAGES":true,"MANAGE_MESSAGES":true,"VIEW_CHANNEL":true,"READ_MESSAGES":true});
+            //channel.overwritePermissions(0,{"VIEW_CHANNEL":false,"READ_MESSAGES":false});
+		channel.overwritePermissions(msg.author,{"SEND_TTS_MESSAGES":true,"MANAGE_MESSAGES":true,"VIEW_CHANNEL":true,"READ_MESSAGES":true});
             msg.channel.send("created " + channel);
 		}).catch(function(error){
 			msg.channel.send("failed to create channel: " + error);
@@ -32,17 +32,14 @@ process: function(bot,msg) {
 }
 },
 
-
-
 exports.voice = {
 	usage: "",
 	description: "creates a temporary voice channel.",
 	process: function(bot,msg,suffix) {
-		var crypto = require("crypto");
 		let xrandr = crypto.randomBytes(3).toString('hex');
 		msg.channel.guild.createChannel("tmp"+xrandr,"voice").then(function(channel) {
 			msg.channel.send("created " + channel.id);
-            channel.overwritePermissions(msg.author,{"PRIORITY_SPEAKER":true});
+            		channel.overwritePermissions(msg.author,{"PRIORITY_SPEAKER":true});
 			console.log("created " + channel);
 		}).catch(function(error){
 			msg.channel.send("failed to create channel: " + error);

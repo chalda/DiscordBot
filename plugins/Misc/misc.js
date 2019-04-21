@@ -84,10 +84,10 @@ exports.chuckNorris = {
 		var randRest = Math.floor(Math.random() * restArray.length); var rrip = restArray[randRest];
 		var randPeace = Math.floor(Math.random() * peaceArray.length); var prip = peaceArray[randPeace];
 		
-            msg.channel.sendMessage( rrip + " in " + prip + ", " + riparoo).then((message => msg.delete(1000)));
+            msg.channel.send( rrip + " in " + prip + ", " + riparoo).then((message => msg.delete(1000)));
         }
     }
-    exports.kill = {
+    exports.die = {
         description: "Murders a target",
         process: function(bot, msg, suffix) {
 	    var riparoo = "";
@@ -95,12 +95,20 @@ exports.chuckNorris = {
                 riparoo = suffix;
 		riparoo = riparoo.replace('my', msg.author + '\'s');
 		} else {
-		riparoo = "self";
+		riparoo = msg.author.name;
             	};
-	    var kmsg = ['In their feverish assault on '+riparoo+', '+msg.author+' committed suicide.', riparoo+'caused much suffering. '+msg.author+' took justice into their own hands.', 'In their feverish assault on '+riparoo+', '+msg.author+' was captured by the police.'];
+	    var kmsg = 
+		['In their feverish assault on '+riparoo+', '+msg.author+' committed suicide.', 
+		 riparoo+' caused a lot of suffering. '+msg.author+' took justice into their own hands.', 
+		 'In their feverish assault on '+riparoo+', '+msg.author+' was captured by the police.',
+		 msg.author+' attacked '+riparoo+'. '+msg.author+' won the resulting quarrel.',
+		 msg.author+' attacked '+riparoo+'. '+riparoo+' won the resulting quarrel.',
+		 msg.author+' killed '+riparoo+'.',
+		 msg.author+' caused major damage to '+riparoo+'.',
+		 riparoo+' caused major damage to '+msg.author+'.'];
 		var monger = Math.floor(Math.random() * kmsg.length); var message = kmsg[monger];
 		
-            msg.channel.sendMessage(message).then((message => msg.delete(1000)));
+            msg.channel.send(message).then((ff => msg.delete(1000)));
         }
     }
 
