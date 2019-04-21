@@ -9,6 +9,7 @@
     "133040188082487296": {
       "eval": true,
       "cmdauth": true,
-      "*": true
+      "*": true,
+      "pullanddeploy": true
   }
 }
