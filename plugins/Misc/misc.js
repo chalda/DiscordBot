@@ -6,7 +6,8 @@ exports.commands = [
 	"rip",
 	"warp",
 	"die",
-	"features"
+	"features",
+	"count"
 ]
 
 //a collection of simple self contained commands with no dependencies beyond request
@@ -120,3 +121,9 @@ exports.chuckNorris = {
             }
 	}
     }
+exports.count = {
+	   description: "yeachets egg counts",
+	   process: function(bot, msg, suffix) {
+		   msg.channel.sendMessage(Math.floor(Math.random() * 1776))
+	   }
+   }
