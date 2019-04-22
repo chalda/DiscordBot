@@ -23,7 +23,7 @@ exports.fight = {
 					channel.overwritePermissions(fighter,{"SEND_MESSAGES":true,"VIEW_CHANNEL":true,"READ_MESSAGES":true});
 				};
             	msg.channel.send("created " + channel);
-				if (fighters.length = 1) channel.setTopic("Fight between " + msg.author + " and " + fighters[0] "; facilitated by " + bot);
+				if (fighters.length = 1) channel.setTopic("Fight between " + msg.author + " and " + fighters[0] + "; facilitated by " + bot);
 				if (fighters.length > 1) channel.setTopic("Fight between " + msg.author + ", " + fighters.join(", ") + "; facilitated by " + bot);
 			}).catch(function(error){
 				msg.channel.send("failed to create channel: " + error);
