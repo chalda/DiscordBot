@@ -139,10 +139,10 @@ exports.chuckNorris = {
 				msg.channel.fetchMessages()
 					.then(function(messages){
 						let ee = messages.filter(function(message){
-								return (message.content.contains(msg.author + ' attacked')
-								|| message.content.contains(msg.author + ' caused a lot of suffering')
-								|| message.content.contains(msg.author + ' caused major damage')
-								|| message.content.contains(msg.author + ' was not very effective'))});
+								return (message.content.includes(msg.author + ' attacked')
+								|| message.content.includes(msg.author + ' caused a lot of suffering')
+								|| message.content.includes(msg.author + ' caused major damage')
+								|| message.content.includes(msg.author + ' was not very effective'))});
 						if (ee.size > 19) msg.channel.send(msg.author+' wins the fight!')})
         	}
         }
