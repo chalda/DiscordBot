@@ -1,6 +1,3 @@
 {
-  "main": "alexa.js",
-  "dependencies": {
-    "request": "2.x.x"
-  }
+  "main": "fight.js"
 }
