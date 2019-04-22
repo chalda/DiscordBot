@@ -168,7 +168,7 @@ exports.chuckNorris = {
 exports.count = {
 	   description: "yeachets egg counts",
 	   process: function(bot, msg, suffix) {
-		   if (msg.channel.id == ) msg.channel.sendMessage(Math.floor(Math.random() * 7900) + " eggs found")
-		   else msg.channel.sendMessage(Math.floor(Math.random() * 1776) + " eggs found")
+		   if (msg.channel.id == "528702192715300865") msg.channel.sendMessage(Math.floor(Math.random() * 7900) + " eggs found");
+		   else msg.channel.sendMessage(Math.floor(Math.random() * 1776));
 	   }
    }
