@@ -136,7 +136,14 @@ exports.chuckNorris = {
 		
             msg.channel.send(message).then((ff => msg.delete(1000)));
             if (msg.channel.name.startsWith('tmp')) {
-            	msg.channel.fetchMessages().then(function(messages){let ee = messages.filter(function(message){message.content.contains(msg.author + ' attacked') || message.content.contains(msg.author + ' caused a lot of suffering') || message.content.contains(msg.author + ' caused major damage') || message.content.contains(msg.author + ' was not very effective')) if (ee.size > 19) msg.channel.send(msg.author+' wins the fight!')}})
+				msg.channel.fetchMessages()
+					.then(function(messages){
+						let ee = messages.filter(function(message){
+								return (message.content.contains(msg.author + ' attacked')
+								|| message.content.contains(msg.author + ' caused a lot of suffering')
+								|| message.content.contains(msg.author + ' caused major damage')
+								|| message.content.contains(msg.author + ' was not very effective'))});
+						if (ee.size > 19) msg.channel.send(msg.author+' wins the fight!')})
         	}
         }
     }
@@ -161,6 +168,7 @@ exports.chuckNorris = {
 exports.count = {
 	   description: "yeachets egg counts",
 	   process: function(bot, msg, suffix) {
-		   msg.channel.sendMessage(Math.floor(Math.random() * 1776))
+		   if (msg.channel.id == ) msg.channel.sendMessage(Math.floor(Math.random() * 7900) + " eggs found")
+		   else msg.channel.sendMessage(Math.floor(Math.random() * 1776) + " eggs found")
 	   }
    }
