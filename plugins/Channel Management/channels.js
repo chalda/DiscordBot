@@ -90,12 +90,7 @@ exports.servers = {
         process: function (bot, msg, suffix) {
             var channel = msg.channel;
             if (isOwner(msg)) {
-                for (user of msg.mentions.users) {
-                    channel.overwritePermissions(user, { "VIEW_CHANNEL": true, "READ_MESSAGES": true });
-                }
-                for (role of msg.mentions.roles) {
-                    channel.overwritePermissions(role, { "VIEW_CHANNEL": true, "READ_MESSAGES": true });
-                }
+                channel.overwritePermissions(msg.mentions[0], { "VIEW_CHANNEL": true, "READ_MESSAGES": true });
                 msg.channel.send(msg.author + ", I have addified those you have requested to the channel.").then(function (vx) { vx.delete(10000) })
             } else { msg.channel.send("You can't addify someone to a channel you don't own, " + msg.author + "!").then(function (vx) { msg.delete(); vx.delete(10000) }) }
         }
@@ -106,12 +101,7 @@ exports.servers = {
         process: function (bot, msg, suffix) {
             var channel = msg.channel;
             if (isOwner(msg)) {
-                for (user of msg.mentions.users) {
-                    channel.overwritePermissions(user, { "VIEW_CHANNEL": false, "READ_MESSAGES": false });
-                }
-                for (role of msg.mentions.roles) {
-                    channel.overwritePermissions(role, { "VIEW_CHANNEL": false, "READ_MESSAGES": false });
-                }
+                channel.overwritePermissions(msg.mentions[0], { "VIEW_CHANNEL": false, "READ_MESSAGES": false });
                 msg.channel.send(msg.author + ", I have yeachetified those you have requested to the channel.").then(function (vx) { vx.delete(10000) })
             } else { msg.channel.send("You can't yeetify someone from a channel you don't own, " + msg.author + "!").then(function (vx) { msg.delete(); vx.delete(10000) }) }
         }
