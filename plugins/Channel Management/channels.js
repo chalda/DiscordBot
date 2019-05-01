@@ -69,8 +69,7 @@ exports["pub"] = {
 	process: function(bot,msg,suffix) {
 		var channel = msg.channel;
 		if (isOwner(msg)) {
-            channel.permissionOverwrites[msg.channel.guild.defaultRole]["VIEW_CHANNEL"] = true;
-            channel.permissionOverwrites[msg.channel.guild.defaultRole]["READ_MESSAGES"] = true;
+            channel.overwritePermissions(msg.channel.guild.defaultRole,{"VIEW_CHANNEL":true,"READ_MESSAGES":true});
         } else { msg.channel.send("You can't publify a channel you don't own, "+msg.author+"!").then(function(vx){msg.delete();vx.delete(10000)}) }
 	}
 },
@@ -80,8 +79,7 @@ exports["priv"] = {
 	process: function(bot,msg,suffix) {
 		var channel = msg.channel;
 		if (isOwner(msg)) {
-            channel.permissionOverwrites[msg.channel.guild.defaultRole]["VIEW_CHANNEL"] = false;
-            channel.permissionOverwrites[msg.channel.guild.defaultRole]["READ_MESSAGES"] = false;
+		channel.overwritePermissions(msg.channel.guild.defaultRole,{"VIEW_CHANNEL":false,"READ_MESSAGES":false});
         } else { msg.channel.send("You can't privify a channel you don't own, "+msg.author+"!").then(function(vx){msg.delete();vx.delete(10000)}) }
 	}
 },
@@ -91,8 +89,7 @@ exports["invite"] = {
 	process: function(bot,msg,suffix) {
 		var channel = msg.channel;
 		if (isOwner(msg)) {
-            channel.permissionOverwrites[suffix]["VIEW_CHANNEL"] = true;
-            channel.permissionOverwrites[suffix]["READ_MESSAGES"] = true;
+            channel.overwritePermissions(suffix,{"VIEW_CHANNEL":true,"READ_MESSAGES":true});
         } else { msg.channel.send("You can't addify someone to a channel you don't own, "+msg.author+"!").then(function(vx){msg.delete();vx.delete(10000)}) }
 	}
 },
@@ -102,8 +99,7 @@ exports["uninvite"] = {
 	process: function(bot,msg,suffix) {
 		var channel = msg.channel;
 		if (isOwner(msg)) {
-            channel.permissionOverwrites[suffix]["VIEW_CHANNEL"] = false;
-            channel.permissionOverwrites[suffix]["READ_MESSAGES"] = false;
+            channel.overwritePermissions(suffix,{"VIEW_CHANNEL":false,"READ_MESSAGES":false});
         } else { msg.channel.send("You can't yeetify someone from a channel you don't own, "+msg.author+"!").then(function(vx){msg.delete();vx.delete(10000)}) }
 	}
 },
