@@ -5,8 +5,8 @@ exports.commands = [
     "delete",
     "pub",
     "priv",
-    //"invite",
-    //"uninvite",
+    "invite",
+    "uninvite",
     "servers",
     "topic"
 ];
