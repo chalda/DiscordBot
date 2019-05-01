@@ -90,10 +90,10 @@ exports.servers = {
         process: function (bot, msg, suffix) {
             var channel = msg.channel;
             if (isOwner(msg)) {
-                for (var user in msg.mentions.users) {
+                for (user of msg.mentions.users) {
                     channel.overwritePermissions(user, { "VIEW_CHANNEL": true, "READ_MESSAGES": true });
                 }
-                for (var role in msg.mentions.roles) {
+                for (role of msg.mentions.roles) {
                     channel.overwritePermissions(role, { "VIEW_CHANNEL": true, "READ_MESSAGES": true });
                 }
                 msg.channel.send(msg.author + ", I have addified those you have requested to the channel.").then(function (vx) { vx.delete(10000) })
@@ -106,10 +106,10 @@ exports.servers = {
         process: function (bot, msg, suffix) {
             var channel = msg.channel;
             if (isOwner(msg)) {
-                for (var user in msg.mentions.users) {
+                for (user of msg.mentions.users) {
                     channel.overwritePermissions(user, { "VIEW_CHANNEL": false, "READ_MESSAGES": false });
                 }
-                for (var role in msg.mentions.roles) {
+                for (role of msg.mentions.roles) {
                     channel.overwritePermissions(role, { "VIEW_CHANNEL": false, "READ_MESSAGES": false });
                 }
                 msg.channel.send(msg.author + ", I have yeachetified those you have requested to the channel.").then(function (vx) { vx.delete(10000) })
