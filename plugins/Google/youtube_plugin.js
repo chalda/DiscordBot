@@ -19,7 +19,7 @@ YoutubePlugin.prototype.respond = function (query, channel, bot) {
 			}
 			else {
 				if (!result || !result.items || result.items.length < 1) {
-					channel.send("¯\\_(ツ)_/¯");
+					channel.send("There were no results.");
 				} else {
 					channel.send("http://www.youtube.com/watch?v=" + result.items[0].id.videoId );
 				}
