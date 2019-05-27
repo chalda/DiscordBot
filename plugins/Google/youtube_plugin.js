@@ -1,6 +1,7 @@
 var util = require('util');
 var youtube_node = require('youtube-node');
 var AuthDetails = require("../../auth.json");
+var Config = require("../../config.json");
 
 
 function YoutubePlugin () {
@@ -14,7 +15,7 @@ function YoutubePlugin () {
 YoutubePlugin.prototype.respond = function (query, channel, bot) {
 	this.youtube.search(query, 1, function(error, result) {
 			if (error) {
-				channel.send("¯\\_(ツ)_/¯");
+				channel.send("Syntax: " + Config.commandPrefix + "youtube <video tags>");
 			}
 			else {
 				if (!result || !result.items || result.items.length < 1) {
