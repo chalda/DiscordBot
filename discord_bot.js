@@ -270,7 +270,7 @@ commands = {	// all commands list below
 }
 
 if(AuthDetails.hasOwnProperty("client_id")){
-	commands["invite"] = {
+	commands["+invite"] = {
 		description: "generates an invite link you can use to invite the bot to your server",
 		process: function(bot,msg,suffix){
 			msg.channel.send("invite link: https://discordapp.com/oauth2/authorize?&client_id=" + AuthDetails.client_id + "&scope=bot&permissions=470019135"); // send link to invite bot into server.
