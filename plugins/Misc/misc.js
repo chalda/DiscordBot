@@ -98,7 +98,7 @@ exports.chuckNorris = {
 		} else {
 		riparoo = msg.author.name;
             	};
-	    var kmsg = 
+	    if (suffix) {var kmsg = 
 		['In their feverish assault on '+riparoo+', '+msg.author+' committed suicide.', 
 		 riparoo+' caused a lot of suffering. '+msg.author+' took justice into their own hands.', 
 		 'In their feverish assault on '+riparoo+', '+msg.author+' was captured by the police.',
@@ -109,7 +109,18 @@ exports.chuckNorris = {
 		 riparoo+' caused major damage to '+msg.author+'.'];
 		var monger = Math.floor(Math.random() * kmsg.length); var message = kmsg[monger];
 		
-            msg.channel.send(message).then((ff => msg.delete(1000)));
+            msg.channel.send(message).then((ff => msg.delete(1000)));}
+        else {var kmsg = 
+		[msg.author+' could not resist the urge to call for help.',
+		 'With suicidal intent, '+msg.author+' grabbed a knife and resisted the urge to live.',
+		 'With suicidal intent, '+msg.author+' grabbed a knife and could not resist the urge to live!',
+		 msg.author+' has the big not feel so good.',
+		 msg.author+' tried to commit toaster bath.',
+		 msg.author+' tried to commit lamp sink.',
+		 msg.author+' died at their own hands.'];
+		var monger = Math.floor(Math.random() * kmsg.length); var message = kmsg[monger];
+		
+            msg.channel.send(message).then((ff => msg.delete(1000)));}
         }
     }
     
@@ -166,7 +177,7 @@ exports.chuckNorris = {
 	}
     }
 exports.count = {
-	   description: "yeachets egg counts",
+	   description: "counts",
 	   process: function(bot, msg, suffix) {
 		   if (msg.channel.id == "528702192715300865") msg.channel.sendMessage(Math.floor(Math.random() * 7900) + " eggs found");
 		   else msg.channel.sendMessage(Math.floor(Math.random() * 1776));
