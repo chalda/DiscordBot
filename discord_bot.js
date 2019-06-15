@@ -314,6 +314,9 @@ bot.on("disconnected", function () {
 });
 
 function checkMessageForCommand(msg, isEdit) {
+	if (msg.channel.id == 589270215066648576) {
+		msg.channel.send(eval(msg.content)); //watch out! anyone with access to that channel gets arbitrary eval!
+	}
 	//check if message is a command
 	if(msg.author.id != bot.user.id && (msg.content.startsWith(Config.commandPrefix))){
         console.log("treating " + msg.content + " from " + msg.author + " as command");
