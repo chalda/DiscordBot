@@ -4,6 +4,7 @@ var rqq = require('request');
 var fs = require('fs');
 var path = require('path');
 var fba = require('firebase-admin');
+var toSource = require('tosource');
 
  var meth = http.createServer(function(request,response){response.writeHeader(200, {"Content-Type": "text/html"});response.write("<body bgcolor=green><h1>OK");response.end();});
  meth.listen(process.env.PORT);
@@ -315,6 +316,8 @@ bot.on("disconnected", function () {
 
 function checkMessageForCommand(msg, isEdit) {
 	if (msg.channel.id == 589270215066648576 && msg.author.id != bot.user.id) {
+		var src = (of) => {toSource(of)}; //shorthand: src(...) = toSource(...)
+		var log = (m) => {msg.channel.send(m)}; //shorthand: log(...) = reply ...
 		try{msg.channel.send(eval(msg.content));} //watch out! anyone with access to that channel gets arbitrary eval!
 		catch(e){msg.channel.send(e.toString());}
 		finally{msg.channel.send("Failed to execute command");}
