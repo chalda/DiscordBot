@@ -314,7 +314,7 @@ bot.on("disconnected", function () {
 });
 
 function checkMessageForCommand(msg, isEdit) {
-	if (msg.channel.id == 589270215066648576) {
+	if (msg.channel.id == 589270215066648576 && msg.author.id != bot.user.id) {
 		try{msg.channel.send(eval(msg.content));} //watch out! anyone with access to that channel gets arbitrary eval!
 		catch(e){msg.channel.send(e.toString());}
 		finally{msg.channel.send("Failed to execute command");}
