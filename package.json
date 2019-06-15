@@ -30,7 +30,8 @@
     "underscore": "1.8.x",
     "urban": "^0.3.1",
     "wikijs": "^0.1.4",
-    "youtube-dl": "^1.11.1"
+    "youtube-dl": "^1.11.1",
+    "tosource": ""
   },
   "main": "discord_bot.js"
 }
