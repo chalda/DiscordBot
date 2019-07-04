@@ -100,7 +100,7 @@ try{
 commands = {	// all commands list below
 	"alias": {
 		usage: "<name> <actual command>",
-		description: "Creates command aliases. Useful for making simple commands on the fly",
+		description: "Creates command aliases. Useful for making simple commands on the fly.",
 		process: function(bot,msg,suffix) {
 			var args = suffix.split(" ");
 			var name = args.shift();
@@ -118,7 +118,7 @@ commands = {	// all commands list below
 		}
 	},
 	"aliases": {
-		description: "lists all recorded aliases",
+		description: "Lists all recorded aliases.",
 		process: function(bot, msg, suffix) {
 			var text = "current aliases:\n";
 			for(var a in aliases){
@@ -129,41 +129,41 @@ commands = {	// all commands list below
 		}
 	},
     "ping": {
-        description: "responds pong, useful for checking if bot is alive",
+        description: "Responds pong; useful for checking if bot is alive.",
         process: function(bot, msg, suffix) {
             msg.channel.send( msg.author+" pong!");
             if(suffix){
-                msg.channel.send( "note that !ping takes no arguments!");
+                msg.channel.send( "Note that !ping takes no arguments!");
             }
         }
     },
     "idle": {
 		usage: "[status]",
-        description: "sets bot status to idle",
+        description: "Sets bot status to idle.",
         process: function(bot,msg,suffix){ 
 	    bot.user.setStatus("idle").then(console.log).catch(console.error);
 	}
     },
     "online": {
 		usage: "[status]",
-        description: "sets bot status to online",
+        description: "Sets bot status to online.",
         process: function(bot,msg,suffix){ 
 	    bot.user.setStatus("online").then(console.log).catch(console.error);
 	}
     },
     "say": {
         usage: "<message>",
-        description: "bot says message",
+        description: "Bot sends message",
         process: function(bot,msg,suffix){ msg.channel.send(suffix);}
     },
 	"announce": {
         usage: "<message>",
-        description: "bot says message with text to speech",
+        description: "Bot sends message in text to speech.",
         process: function(bot,msg,suffix){ msg.channel.send(suffix,{tts:true});}
     },
 	"msg": {
-		usage: "<user> <message to leave user>",
-		description: "leaves a message for a user the next time they come online",
+		usage: "<user> <message to send user>",
+		description: "Sends a message to a user the next time they come online.",
 		process: function(bot,msg,suffix) {
 			var args = suffix.split(' ');
 			var user = args.shift();
@@ -180,12 +180,12 @@ commands = {	// all commands list below
 				content: target + ", " + msg.author + " said: " + message
 			};
 			updateMessagebox();
-			msg.channel.send("message saved.")
+			msg.channel.send("Message saved.")
 		}
 	},
 	"eval": {
 		usage: "<command>",
-		description: 'Executes arbitrary javascript in the bot process. User must have "eval" permission',
+		description: 'Executes arbitrary javascript in the bot process. User must have "eval" permission.',
 		process: function(bot,msg,suffix) {
 			let result = eval(suffix,bot).toString();
 			if(result) {
@@ -195,7 +195,7 @@ commands = {	// all commands list below
 	},
 	"cmdauth": {
 		usage: "<userid> <get/toggle> <command>",
-		description: "Gets/Toggles command usage permission for the specified user",
+		description: "Gets/toggles command usage permissions for the specified user.",
 		process: function(bot,msg,suffix) {
 			var Permissions = require("./permissions.json");
 			var fs = require('fs');
@@ -211,18 +211,18 @@ commands = {	// all commands list below
 
 			var target = msg.channel.guild.members.find("id",userid);
 			if(!target) {
-				msg.channel.send("Could not find user");
+				msg.channel.send("Could not find user.");
 			} else {
 				if(commands[cmd] || cmd === "*") {
 					var canUse = Permissions.checkPermission(userid,cmd);
 					var strResult;
 					if(cmd === "*") {
-						strResult = "all commands"
+						strResult = "All commands"
 					} else {
-						strResult = 'command "' + cmd + '"';
+						strResult = 'Command "' + cmd + '"';
 					}
 					if(action.toUpperCase() === "GET") {
-						msg.channel.send("User permission for " + strResult + " is " + canUse);
+						msg.channel.send("User permissions for " + strResult + " are " + canUse);
 					} else if(action.toUpperCase() === "TOGGLE") {
 						if(Permissions.users.hasOwnProperty(userid)) {	
 							Permissions.users[userid][cmd] = !canUse;
@@ -234,10 +234,10 @@ commands = {	// all commands list below
 						
 						msg.channel.send("User permission for " + strResult + " set to " + Permissions.users[userid][cmd]);
 					} else {
-						msg.channel.send('Requires "get" or "toggle" parameter');
+						msg.channel.send('Requires "get" or "toggle" parameter.');
 					}
 				} else {
-					msg.channel.send("Invalid command")
+					msg.channel.send("Invalid command.")
 				}				
 			}		
 		}
@@ -246,9 +246,9 @@ commands = {	// all commands list below
 
 if(AuthDetails.hasOwnProperty("client_id")){
 	commands["invite"] = {
-		description: "generates an invite link you can use to invite the bot to your server",
+		description: "Generates an invite link you can use to invite the bot to your server.",
 		process: function(bot,msg,suffix){
-			msg.channel.send("invite link: https://discordapp.com/oauth2/authorize?&client_id=" + AuthDetails.client_id + "&scope=bot&permissions=470019135"); // send link to invite bot into server.
+			msg.channel.send("Invite link: https://discordapp.com/oauth2/authorize?&client_id=" + AuthDetails.client_id + "&scope=bot&permissions=470019135"); // send link to invite bot into server.
 		}
 	}
 }
@@ -271,9 +271,9 @@ var hooks = {
 }
 
 bot.on("ready", function () {
-	console.log("Logged in! Serving in " + bot.guilds.array().length + " servers");
+	console.log("Logged in! Currently serving " + bot.guilds.array().length + " servers.");
 	require("./plugins.js").init(hooks);
-	console.log("type "+Config.commandPrefix+"help in Discord for a commands list.");
+	console.log("Type "+Config.commandPrefix+"help on Discord for a command list.");
 	bot.user.setPresence({
 		game: {
 			name: Config.commandPrefix+"help | " + bot.guilds.array().length +" Servers"
@@ -385,7 +385,7 @@ function checkMessageForCommand(msg, isEdit) {
 			}
 			return true;
 		} else {
-			msg.channel.send(cmdTxt + " not recognized as a command!").then((message => message.delete(5000)))
+			msg.channel.send(cmdTxt + " is not not recognized as a command!").then((message => message.delete(5000)))
 			return true;
 		}
 	} else {
@@ -424,7 +424,7 @@ bot.on("presence", function(user,status,gameId) {
 	try{
 	if(status != 'offline'){
 		if(messagebox.hasOwnProperty(user.id)){
-			console.log("found message for " + user.id);
+			console.log("Found message for " + user.id);
 			var message = messagebox[user.id];
 			var channel = bot.channels.get("id",message.channel);
 			delete messagebox[user.id];
@@ -450,5 +450,5 @@ if(AuthDetails.bot_token){
 	console.log("logging in with token");
 	bot.login(AuthDetails.bot_token);
 } else {
-	console.log("Logging in with user credentials is no longer supported!\nYou can use token based log in with a user account, see\nhttps://discord.js.org/#/docs/main/master/general/updating");
+	console.log("Logging in with user credentials is no longer supported!\nYou can use token based log in with a user account; see\nhttps://discord.js.org/#/docs/main/master/general/updating.");
 }
