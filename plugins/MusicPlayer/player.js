@@ -1,5 +1,9 @@
 const YoutubeDL = require('youtube-dl');
+//const YoutubeDL = require('ytdl-core');
+//const YoutubeDL = equire('ytdl-core-discord');
 const Request = require('request');
+
+var dispatcher;
 exports.commands = [
 	"play",
 	"skip",
@@ -61,19 +65,25 @@ exports.play = {
 		msg.channel.sendMessage( wrap('Searching...')).then(response => {
 			// If the suffix doesn't start with 'http', assume it's a search.
 			if (!suffix.toLowerCase().startsWith('http')) {
-				suffix = 'gvsearch1:' + suffix;
+				console.log('WE SEARCHING')
+				suffix = 'ytsearch1:' + suffix;
 			}
 
+			console.log(suffix)
 			// Get the video info from youtube-dl.
 			YoutubeDL.getInfo(suffix, ['-q', '--no-warnings', '--force-ipv4'], (err, info) => {
 				// Verify the info.
-				if (err || info.format_id === undefined || info.format_id.startsWith('0')) {
+				console.log(err, info)
+				//|| info.format_id === undefined || info.format_id.startsWith('0')
+				if (err ) {
 					return response.edit( wrap('Invalid video!'));
 				}
 
+				var result = info[0] || info;
+
 				// Queue the video.
-				response.edit( wrap('Queued: ' + info.title)).then((resp) => {
-					queue.push(info);
+				response.edit( wrap('Queued: ' + result.title)).then((resp) => {
+					queue.push(result);
 
 					// Play if only one element in the queue.
 					if (queue.length === 1) {
@@ -81,7 +91,7 @@ exports.play = {
 						resp.delete(1000);
 					}
 				}).catch(() => {});
-			});
+			})
 		}).catch(() => {});
 	}
 }
@@ -113,8 +123,8 @@ exports.skip = {
 		queue.splice(0, toSkip - 1);
 
 		// Resume and stop playing.
-		if (voiceConnection.player.dispatcher) voiceConnection.player.dispatcher.resume();
-		voiceConnection.player.dispatcher.end();
+		if (dispatcher) dispatcher.resume();
+		dispatcher.end();
 
 		msg.channel.sendMessage( wrap('Skipped ' + toSkip + '!'));
 	}
@@ -187,9 +197,9 @@ exports.dequeue = {
 				if (index == 0) {
 					// If it was the first one, skip it
 					const voiceConnection = client.voiceConnections.get(msg.guild.id);
-					if (voiceConnection.player.dispatcher) 
-						voiceConnection.player.dispatcher.resume();
-					voiceConnection.player.dispatcher.end();
+					if (dispatcher) 
+						dispatcher.resume();
+					dispatcher.end();
 				} else {
 					// Otherwise, just remove it from the queue
 					queue.splice(index, 1);
@@ -221,7 +231,7 @@ exports.pause = {
 
 		// Pause.
 		msg.channel.sendMessage( wrap('Playback paused.'));
-		if (voiceConnection.player.dispatcher) voiceConnection.player.dispatcher.pause();
+		if (dispatcher) dispatcher.pause();
 	}
 }
 
@@ -240,7 +250,7 @@ exports.resume = {
 
 		// Resume.
 		msg.channel.sendMessage( wrap('Playback resumed.'));
-		if (voiceConnection.player.dispatcher) voiceConnection.player.dispatcher.resume();
+		if (dispatcher) dispatcher.resume();
 	}
 }
 
@@ -258,22 +268,22 @@ exports.volume = {
 		const voiceConnection = client.voiceConnections.get(msg.guild.id);
 		if (voiceConnection == null) return msg.channel.sendMessage( wrap('No music being played.'));
 		// Set the volume
-		if (voiceConnection.player.dispatcher) {
+		if (dispatcher) {
 			if(suffix == ""){
-				var displayVolume = Math.pow(voiceConnection.player.dispatcher.volume,0.6020600085251697) * 100.0;
+				var displayVolume = Math.pow(dispatcher.volume,0.6020600085251697) * 100.0;
 				msg.channel.sendMessage(wrap("volume: " + displayVolume + "%"));
 			} else {
 				if(suffix.toLowerCase().indexOf("db") == -1){
 					if(suffix.indexOf("%") == -1){
 						if(suffix > 1) suffix /= 100.0;
-						voiceConnection.player.dispatcher.setVolumeLogarithmic(suffix);
+						dispatcher.setVolumeLogarithmic(suffix);
 					} else {
 						var num = suffix.split("%")[0];
-						voiceConnection.player.dispatcher.setVolumeLogarithmic(num/100.0);
+						dispatcher.setVolumeLogarithmic(num/100.0);
 					}
 				} else {
 					var value = suffix.toLowerCase().split("db")[0];
-					voiceConnection.player.dispatcher.setVolumeDecibels(value);
+					dispatcher.setVolumeDecibels(value);
 				}
 			}
 		}
@@ -294,7 +304,7 @@ function executeQueue(client, msg, queue) {
 			// Leave the voice channel.
 			const voiceConnection = client.voiceConnections.get(msg.guild.id);
 			if (voiceConnection != null) {
-				voiceConnection.player.dispatcher.end();
+				dispatcher.end();
 				voiceConnection.channel.leave();
 				return;
 			}
@@ -324,7 +334,9 @@ function executeQueue(client, msg, queue) {
 
 			// Play the video.
 			msg.channel.sendMessage( wrap('Now Playing: ' + video.title)).then((cur) => {
-				const dispatcher = connection.playStream(Request(video.url));
+				//console.log(YoutubeDL);
+				dispatcher = connection.playStream(YoutubeDL( video, {format:'opus', quality: 'highestaudio'}));
+				//, {format:'opus', quality: 'highestaudio'}
 				//dispatcher.then(intent => {
 					dispatcher.on('debug',(i)=>console.log("debug: " + i));
 					// Catch errors in the connection.
