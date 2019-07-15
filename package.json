@@ -13,7 +13,7 @@
   "dependencies": {
     "cleverbot-node": "^0.3.11",
     "d20": "^1.4.1",
-    "discord.js": "11.3.x",
+    "discord.js": "9.3.x",
     "feedparser": "2.2.x",
     "html-to-text": "^5.1.1",
     "imgflipper": "^1.0.1",
