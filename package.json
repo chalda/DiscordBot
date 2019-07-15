@@ -11,7 +11,7 @@
   },
   "license": "GPL-2.0",
   "dependencies": {
-    "cleverbot-node": "^0.2.8",
+    "cleverbot-node": "^0.3.11",
     "d20": "^1.4.1",
     "discord.js": "11.3.x",
     "feedparser": "2.2.x",
