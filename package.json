@@ -27,7 +27,6 @@
     "request": "^2.85.0",
     "request-promise": "^4.2.1",
     "sinon": "1.14.x",
-    "sodium": "^3.0.2",
     "tumblr.js": "0.0.x",
     "underscore": "1.8.x",
     "urban": "^0.3.1",
