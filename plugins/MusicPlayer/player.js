@@ -73,7 +73,7 @@ exports.play = {
 				// Verify the info.
 				//|| info.format_id === undefined || info.format_id.startsWith('0')
 				if (err ) {
-					return response.edit( wrap('Invalid video!'));
+					return response.edit( wrap('Invalid video!!'));
 				}
 
 				var result = info[0] || info;
