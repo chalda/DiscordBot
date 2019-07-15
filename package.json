@@ -26,7 +26,7 @@
     "request-promise": "^4.2.1",
     "sinon": "7.3.x",
     "tumblr.js": "0.0.x",
-    "underscore": "1.8.x",
+    "underscore": "1.9.x",
     "urban": "^0.3.1",
     "wikijs": "^0.1.4",
     "youtube-dl": "^2.0.0",
