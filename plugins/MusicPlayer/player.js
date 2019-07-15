@@ -65,15 +65,12 @@ exports.play = {
 		msg.channel.sendMessage( wrap('Searching...')).then(response => {
 			// If the suffix doesn't start with 'http', assume it's a search.
 			if (!suffix.toLowerCase().startsWith('http')) {
-				console.log('WE SEARCHING')
 				suffix = 'ytsearch1:' + suffix;
 			}
 
-			console.log(suffix)
 			// Get the video info from youtube-dl.
 			YoutubeDL.getInfo(suffix, ['-q', '--no-warnings', '--force-ipv4'], (err, info) => {
 				// Verify the info.
-				console.log(err, info)
 				//|| info.format_id === undefined || info.format_id.startsWith('0')
 				if (err ) {
 					return response.edit( wrap('Invalid video!'));
