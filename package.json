@@ -15,7 +15,7 @@
     "d20": "^1.4.1",
     "discord.js": "11.3.x",
     "feedparser": "2.2.x",
-    "html-to-text": "^3.3.0",
+    "html-to-text": "^5.1.1",
     "imgflipper": "^1.0.1",
     "leet": "^1.3.0",
     "nock": "10.0.x",
