@@ -24,7 +24,7 @@
     "querystring": "0.2.x",
     "request": "^2.85.0",
     "request-promise": "^4.2.1",
-    "sinon": "1.14.x",
+    "sinon": "7.3.x",
     "tumblr.js": "0.0.x",
     "underscore": "1.8.x",
     "urban": "^0.3.1",
