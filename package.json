@@ -25,7 +25,7 @@
     "request": "^2.85.0",
     "request-promise": "^4.2.1",
     "sinon": "7.3.x",
-    "tumblr.js": "0.0.x",
+    "tumblr.js": "2.0.x",
     "underscore": "1.9.x",
     "urban": "^0.3.1",
     "wikijs": "^5.5.0",
