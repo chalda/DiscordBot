@@ -1,7 +1,16 @@
 const YoutubeDL = require('youtube-dl');
 //const YoutubeDL = require('ytdl-core');
 //const YoutubeDL = equire('ytdl-core-discord');
-const Request = require('request');
+//const Request = require('request');
+const {PassThrough} = require('stream').PassThrough;
+
+const createStream = (options) => {
+	const stream = new PassThrough({
+	  highWaterMark: options && options.highWaterMark || null,
+	});
+	stream.destroy = () => { stream._isDestroyed = true; };
+	return stream;
+  };
 
 var dispatcher;
 exports.commands = [
@@ -120,8 +129,10 @@ exports.skip = {
 		queue.splice(0, toSkip - 1);
 
 		// Resume and stop playing.
-		if (dispatcher) dispatcher.resume();
-		dispatcher.end();
+		if (dispatcher){ 
+			dispatcher.resume();
+			dispatcher.end();
+		}
 
 		msg.channel.sendMessage( wrap('Skipped ' + toSkip + '!'));
 	}
@@ -193,10 +204,10 @@ exports.dequeue = {
 				
 				if (index == 0) {
 					// If it was the first one, skip it
-					const voiceConnection = client.voiceConnections.get(msg.guild.id);
-					if (dispatcher) 
+					if (dispatcher) {
 						dispatcher.resume();
-					dispatcher.end();
+						dispatcher.end();
+					}
 				} else {
 					// Otherwise, just remove it from the queue
 					queue.splice(index, 1);
@@ -332,8 +343,18 @@ function executeQueue(client, msg, queue) {
 			// Play the video.
 			msg.channel.sendMessage( wrap('Now Playing: ' + video.title)).then((cur) => {
 				//console.log(YoutubeDL);
-				dispatcher = connection.playStream(YoutubeDL( video, {format:'opus', quality: 'highestaudio'}));
+				var playbackStream = createStream({highWaterMark: 1<<25 })
+				// });
+				YoutubeDL( video ,['--audio-format opus', 
+				'--quality highestaudio', '-o -', '--exec "ffmpeg -reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 4 -i {} -c:a mp3 -filter:a loudnorm=i=-18:lra=17 -qscale:a 2 {}.mp3 && rm {} "' ]).pipe(playbackStream)
+				// console.log(stream, video)
+				dispatcher = connection.playStream(playbackStream), {
+					seek: 0,
+					passes: 3, 
+					volume: 1,
+					bitrate: 'auto'}
 				//, {format:'opus', quality: 'highestaudio'}
+				//['--format=18']
 				//dispatcher.then(intent => {
 					dispatcher.on('debug',(i)=>console.log("debug: " + i));
 					// Catch errors in the connection.
