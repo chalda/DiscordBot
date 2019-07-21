@@ -2,7 +2,7 @@ const YoutubeDL = require('youtube-dl');
 //const YoutubeDL = require('ytdl-core');
 //const YoutubeDL = equire('ytdl-core-discord');
 //const Request = require('request');
-const {PassThrough} = require('stream').PassThrough;
+const {PassThrough} = require('stream');
 
 const createStream = (options) => {
 	const stream = new PassThrough({
@@ -346,7 +346,7 @@ function executeQueue(client, msg, queue) {
 				var playbackStream = createStream({highWaterMark: 1<<25 })
 				// });
 				YoutubeDL( video ,['--audio-format opus', 
-				'--quality highestaudio', '-o -', '--exec "ffmpeg -reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 4 -i {} -c:a mp3 -filter:a loudnorm=i=-18:lra=17 -qscale:a 2 {}.mp3 && rm {} "' ]).pipe(playbackStream)
+				'--quality highestaudio', '-o -', '--exec "ffmpeg -reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 4 -i {} -ac 2 -codec:a libopus -b:a 64k -vbr on -compression_level 10 -frame_duration 60 -application audio"' ]).pipe(playbackStream)
 				// console.log(stream, video)
 				dispatcher = connection.playStream(playbackStream), {
 					seek: 0,
