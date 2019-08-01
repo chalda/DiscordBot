@@ -3,6 +3,7 @@ const YoutubeDL = require('youtube-dl');
 //const YoutubeDL = equire('ytdl-core-discord');
 //const Request = require('request');
 const {PassThrough} = require('stream');
+const { RichEmbed } = require('discord.js');
 
 const createStream = (options) => {
 	const stream = new PassThrough({
@@ -23,8 +24,30 @@ exports.commands = [
 	"volume"
 ]
 
-let options = false;
-	let PREFIX = (options && options.prefix) || '!';
+function getResultTitle(result){
+	let title = '';
+	if(result.title) return result.title;
+	if(result.track) title+= result.track;
+	if(result.artist) title+= ' by ' + result.artist;
+	return title;
+}
+
+function generateResultEmbed(result){		
+	return new RichEmbed()
+		// Set the title of the field
+		.setTitle('Now Playing:')
+		// Set the color of the embed
+		.setColor(0xFF0000)
+		// Set the main content of the embed
+		.setDescription(getResultTitle(result))
+		.setThumbnail(thumbnail)
+		.addField('Duration:', result.duration, true)
+		.addField('Queued By:', 'sum bitch', true);
+    // Send the embed to the same channel as the message
+}
+
+	let options = false;
+	const MUSIC_CHANNEL_NAME = (options && options.musicChannelName) || 'music';
 	let GLOBAL_QUEUE = (options && options.global) || false;
 	let MAX_QUEUE_SIZE = (options && options.maxQueueSize) || 20;
 	// Create an object of queues.
@@ -56,6 +79,7 @@ exports.play = {
 		process :function(client, msg, suffix, isEdit){
 		if(isEdit) return;
 		var arr = msg.guild.channels.filter((v)=>v.type == "voice").filter((v)=>v.members.has(msg.author.id));
+		let responseChannel = msg.guild.channels.filter((v)=>v.type == "text" && v.title === MUSIC_CHANNEL_NAME) || msg.channel;
 		// Make sure the user is in a voice channel.
 		if (arr.length == 0) return msg.channel.sendMessage( wrap('You\'re not in a voice channel.'));
 
@@ -71,7 +95,7 @@ exports.play = {
 		}
 
 		// Get the video information.
-		msg.channel.sendMessage( wrap('Searching...')).then(response => {
+		responseChannel.sendMessage( wrap('Searching...')).then(response => {
 			// If the suffix doesn't start with 'http', assume it's a search.
 			if (!suffix.toLowerCase().startsWith('http')) {
 				suffix = 'ytsearch1:' + suffix;
@@ -88,7 +112,7 @@ exports.play = {
 				var result = info[0] || info;
 
 				// Queue the video.
-				response.edit( wrap('Queued: ' + result.title)).then((resp) => {
+				response.edit( generateResultTitle(result)).then((resp) => {
 					queue.push(result);
 
 					// Play if only one element in the queue.
@@ -305,9 +329,11 @@ exports.volume = {
 	 * @param queue The queue.
 	 */
 function executeQueue(client, msg, queue) {
+		let responseChannel = msg.guild.channels.filter((v)=>v.type == "text" && v.title === MUSIC_CHANNEL_NAME) || msg.channel;
+
 		// If the queue is empty, finish.
 		if (queue.length === 0) {
-			msg.channel.sendMessage( wrap('Playback finished.'));
+			responseChannel.sendMessage( wrap('Playback finished.'));
 
 			// Leave the voice channel.
 			const voiceConnection = client.voiceConnections.get(msg.guild.id);
@@ -341,7 +367,7 @@ function executeQueue(client, msg, queue) {
 			const video = queue[0];
 
 			// Play the video.
-			msg.channel.sendMessage( wrap('Now Playing: ' + video.title)).then((cur) => {
+			responseChannel.sendMessage( generateResultEmbed(result)).then((cur) => {
 				//console.log(YoutubeDL);
 				var playbackStream = createStream({highWaterMark: 1<<25 })
 				// });
@@ -359,7 +385,7 @@ function executeQueue(client, msg, queue) {
 					dispatcher.on('debug',(i)=>console.log("debug: " + i));
 					// Catch errors in the connection.
 					dispatcher.on('error', (err) => {
-						msg.channel.sendMessage("fail: " + err);
+						responseChannel.sendMessage("fail: " + err);
 						// Skip to the next song.
 						queue.shift();
 						executeQueue(client, msg, queue);
