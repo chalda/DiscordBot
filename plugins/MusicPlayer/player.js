@@ -1,4 +1,5 @@
 const YoutubeDL = require('youtube-dl');
+const _ = require('lodash');
 //const YoutubeDL = require('ytdl-core');
 //const YoutubeDL = equire('ytdl-core-discord');
 //const Request = require('request');
@@ -26,7 +27,7 @@ exports.commands = [
 
 function getResultTitle(result){
 	let title = '';
-	if(result.title) return result.title;
+	if(result.title && result.title !== '_') return result.title;
 	if(result.track) title+= result.track;
 	if(result.artist) title+= ' by ' + result.artist;
 	return title;
@@ -40,7 +41,7 @@ function generateResultEmbed(result){
 		.setColor(0xFF0000)
 		// Set the main content of the embed
 		.setDescription(getResultTitle(result))
-		.setThumbnail(thumbnail)
+		.setThumbnail(result.thumbnail)
 		.addField('Duration:', result.duration, true)
 		.addField('Queued By:', 'sum bitch', true);
     // Send the embed to the same channel as the message
@@ -79,7 +80,7 @@ exports.play = {
 		process :function(client, msg, suffix, isEdit){
 		if(isEdit) return;
 		var arr = msg.guild.channels.filter((v)=>v.type == "voice").filter((v)=>v.members.has(msg.author.id));
-		let responseChannel = msg.guild.channels.filter((v)=>v.type == "text" && v.title === MUSIC_CHANNEL_NAME) || msg.channel;
+		let responseChannel = msg.guild.channels.find((v)=>v.type == "text" && v.name === MUSIC_CHANNEL_NAME) || msg.channel;
 		// Make sure the user is in a voice channel.
 		if (arr.length == 0) return msg.channel.sendMessage( wrap('You\'re not in a voice channel.'));
 
@@ -112,7 +113,7 @@ exports.play = {
 				var result = info[0] || info;
 
 				// Queue the video.
-				response.edit( generateResultTitle(result)).then((resp) => {
+				response.edit( getResultTitle(result)).then((resp) => {
 					queue.push(result);
 
 					// Play if only one element in the queue.
@@ -176,7 +177,7 @@ exports.queue = {
 
 		// Get the queue text.
 		const text = queue.map((video, index) => (
-			(index + 1) + ': ' + video.title
+			(index + 1) + ': ' + getResultTitle(video)
 		)).join('\n');
 
 		// Get the status of the queue.
@@ -329,7 +330,7 @@ exports.volume = {
 	 * @param queue The queue.
 	 */
 function executeQueue(client, msg, queue) {
-		let responseChannel = msg.guild.channels.filter((v)=>v.type == "text" && v.title === MUSIC_CHANNEL_NAME) || msg.channel;
+		let responseChannel = msg.guild.channels.find((v)=>v.type == "text" && v.name === MUSIC_CHANNEL_NAME) || msg.channel;
 
 		// If the queue is empty, finish.
 		if (queue.length === 0) {
@@ -367,7 +368,7 @@ function executeQueue(client, msg, queue) {
 			const video = queue[0];
 
 			// Play the video.
-			responseChannel.sendMessage( generateResultEmbed(result)).then((cur) => {
+			responseChannel.sendMessage( generateResultEmbed(video)).then((cur) => {
 				//console.log(YoutubeDL);
 				var playbackStream = createStream({highWaterMark: 1<<25 })
 				// });

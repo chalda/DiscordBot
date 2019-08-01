@@ -371,6 +371,7 @@ function checkMessageForCommand(msg, isEdit) {
 					cmd.process(bot,msg,suffix,isEdit);
 				} catch(e){
 					var msgTxt = "command " + cmdTxt + " failed :(";
+					console.error(e);
 					if(Config.debug){
 						 msgTxt += "\n" + e.stack;
 						 console.log(msgTxt);
