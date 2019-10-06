@@ -59,7 +59,7 @@ You can create an rss.json file adding rss feeds as commands. See rss.json.examp
 Make sure you also have your Google server API key, which is located in the "youtube_api_key" section, or the search will fail.
 
 # Running
-Before the first run you will need to create an `auth.json` file. A bot token or the email and password for a discord account are required. The other credentials are not required for the bot to run, but they are highly recommended as commands that depend on them will malfunction. See `auth.json.example`.
+Before the first run you will need to create an `.env` file. A bot token or the email and password for a discord account are required. The other credentials are not required for the bot to run, but they are highly recommended as commands that depend on them will malfunction. See `.env.example`.
 
 To start the bot just run
 `node discord_bot.js`.
