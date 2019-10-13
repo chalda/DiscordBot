@@ -21,7 +21,7 @@ Et encore plus ! Essayez `!help` pour obtenir une liste complète des commandes
 
 Ce bot est écrit pour fonctionner avec node.js. Allez voir : https://nodejs.org/en/download/
 
-Une fois NodeJS installé, exécutez `npm install` depuis le répertoire du bot, cela devrait installer touts les fichiers nécessaires (packages npm). Si cette commande affiche des erreurs, le bot ne fonctionnera pas!
+Une fois NodeJS installé, exécutez `npm install` depuis le répertoire du bot, cela devrait installer tous les fichiers nécessaires (packages npm). Si cette commande affiche des erreurs, le bot ne fonctionnera pas!
 
 
 
@@ -38,13 +38,13 @@ Notez que vous devez avoir un compileur C et Python dans le répertoire pour que
 ## RSS
 Vous pouvez créer un fichier rss.json en ajoutant des flux rss sous forme de commande. Allez voir rss.json.example pour plus de détails.
 
-## Instruction spéciale pour paramétrer l'API google search et l'API youtube :
+## Instructions spéciales pour paramétrer l'API google search et l'API youtube :
 
 (merci à @SchwererKonigstiger)
 
-1) Créez une recherche personnalisé sur : https://cse.google.com/cse/create/new
+1) Créez une recherche personnalisée sur : https://cse.google.com/cse/create/new
 
-2) Laissez la première ligne vide, et le saisissez ce que vous souhaitez pour le nom du moteur de recherche.
+2) Laissez le premier champ vide, et saisissez ce que vous souhaitez pour le nom du moteur de recherche.
 
 3) Cliquez sur "Advanced Options" et ensuite sur ImageObject.
 
@@ -69,11 +69,10 @@ Si vous mettez à jour le bot, exécutez `npm update` avant de le lancer à nouv
 `npm install`. Allez à [Installation](#Installation).
 
 # A Faire:
-Paraméterer le bot !
+Paramétrer le bot !
 
 # Help
-
-Veuillez vérifier la page des problèmes GitHub sur ce projet. Nous recevons beaucoup de questions similaires, et il est probable que votre question a déjà été répondue. Et oui, nous devons les intégrer dans une FAQ officielle.
+Veuillez vérifier la page des bugs GitHub de ce projet. Nous recevons beaucoup de questions similaires, et il est probable que votre problème ait déjà été résolu.
 
 
 Si vous avez encore besoin d’aide, n'hésitez pas à nous rejoindre sur [discord.](https://discord.gg/m29GJBN)
