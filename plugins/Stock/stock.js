@@ -11,7 +11,7 @@ exports.stock = {
         usage: "<stock to fetch>",
         process: function(bot, msg, suffix) {
                 suffix = string.sanitize(suffix);
-                var qurl = url + suffix;
+                var qurl = url + suffix + ":US";
                 axios.get(qurl).then(response => {
                         if(response.status === 200) {
                                 var html = response.data;
