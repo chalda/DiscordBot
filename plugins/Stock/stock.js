@@ -1,4 +1,4 @@
-var string = require("string-sanitizer");
+var string = require('string-sanitizer');
 var axios = require('axios');
 var cheerio = require('cheerio');
 var url = 'https://web.tmxmoney.com/quote.php?qm_symbol=';
@@ -26,7 +26,7 @@ exports.stock = {
                 })
                 .catch(error => {
                         console.log(error);
-                        msg.channel.send("Error completing request for stock quote.")
+                        msg.channel.send("Error completing request for stock quote.");
                 });
         }
 }
