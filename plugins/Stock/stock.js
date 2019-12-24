@@ -12,7 +12,7 @@ exports.stock = {
 	process: function(bot,msg,suffix){
 	let stock_api = "https://api.worldtradingdata.com/api/v1/stock?symbol="
 		request({
-			url: stock_api+suffix+"&api_token="+AuthDetails.stonks_key
+			url: stock_api+suffix+"&api_token="+AuthDetails.stocks_key
 		},
       function(err,res,body){
             let result = JSON.parse(body)
