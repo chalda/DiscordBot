@@ -1,8 +1,6 @@
 {
   "main": "stock.js",
   "dependencies": {
-    "string-sanitizer": "1.1.x",
-    "axios": "0.19.x",
-    "cheerio": "1.0.x"
+    "request": "2.x.x"
   }
 }
