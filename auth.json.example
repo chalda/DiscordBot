@@ -8,5 +8,6 @@
 	"imgflip_username": "https://imgflip.com/ username",
 	"imgflip_password": "https://imgflip.com/ password",
 	"wolfram_api_key": "go here and click sign up http://products.wolframalpha.com/api/",
-	"twitch_client_id": "create a twitch app here https://dev.twitch.tv/dashboard/apps/create (requires a twitch account)"
+	"twitch_client_id": "create a twitch app here https://dev.twitch.tv/dashboard/apps/create (requires a twitch account)",
+	"stocks_key": "create one at https://www.worldtradingdata.com/register"
 }
