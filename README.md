@@ -64,6 +64,10 @@ Before the first run you will need to create an `auth.json` file. A bot token or
 To start the bot just run
 `node discord_bot.js`.
 
+# Running on Repl.it
+You will also need to create an `auth.json` file with your credentials with this process, follow the steps above.
+[![Run on Repl.it](https://repl.it/badge/github/chalda/DiscordBot)](https://repl.it/github/chalda/DiscordBot)
+
 # Updates
 If you update the bot, please run `npm update` before starting it again. If you have
 issues with this, you can try deleting your node_modules folder and then running
