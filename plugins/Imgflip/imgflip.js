@@ -2,7 +2,6 @@ exports.commands = [
 	"meme"
 ]
 
-var AuthDetails = require("../../auth.json");
 var Config = require("../../config.json");
 
 //https://api.imgflip.com/popular_meme_ids
@@ -36,7 +35,7 @@ exports.meme = {
 		var memetype = tags[0].split(" ")[1];
 		//msg.channel.send(tags);
 		var Imgflipper = require("imgflipper");
-		var imgflipper = new Imgflipper(AuthDetails.imgflip_username, AuthDetails.imgflip_password);
+        var imgflipper = new Imgflipper(process.env.IMGFLIP_USERNAME, process.env.IMGFLIP_PASSWORD);
 		imgflipper.generateMeme(meme[memetype], tags[1]?tags[1]:"", tags[3]?tags[3]:"", function(err, image){
 			console.log(arguments);
 			console.log(image);

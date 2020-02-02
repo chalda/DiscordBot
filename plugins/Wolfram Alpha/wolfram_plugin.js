@@ -1,8 +1,7 @@
 var Wolfram = require('node-wolfram');
-var AuthDetails = require("../../auth.json");
 
 function WolframPlugin () {
-	this.wolfram = new Wolfram(AuthDetails.wolfram_api_key)
+	this.wolfram = new Wolfram(process.env.WOLFRAM_API_KEY)
 };
 
 WolframPlugin.prototype.respond = function (query, channel, bot,tmpMsg) {
