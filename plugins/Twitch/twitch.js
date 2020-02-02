@@ -1,4 +1,6 @@
 var request = require("request");
+var AuthDetails = require("../../auth.json");
+var Discord = require("discord.js");
 
 exports.commands = [
     "twitch_user",
@@ -14,7 +16,7 @@ exports.twitch_user = {
 		request({
 			url: "https://api.twitch.tv/helix/"+user_query,
 			headers: {
-                'Client-ID': process.env.TWITCH_CLIENT_IDs
+				'Client-ID': AuthDetails.twitch_client_id
 			}
 		},
 		function(err,res,body){
@@ -51,7 +53,7 @@ exports.twitch = {
             request({
                 url: twitch_api+user_query,
                 headers: {
-                    'Client-ID': process.env.TWITCH_CLIENT_ID
+                    'Client-ID': AuthDetails.twitch_client_id
                 }
             },
             function(err,res,body){
@@ -75,7 +77,7 @@ exports.twitch = {
             request({
                 url: twitch_api+stream_query,
                 headers: {
-                    'Client-ID': process.env.TWITCH_CLIENT_ID
+                    'Client-ID': AuthDetails.twitch_client_id
                 }
             },
             

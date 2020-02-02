@@ -1,5 +1,4 @@
-const fs = require('fs');
-require('dotenv').config()
+var fs = require('fs');
 
 process.on('unhandledRejection', (reason) => {
   console.error(reason);
@@ -16,6 +15,15 @@ try {
 }
 console.log("Starting DiscordBot\nNode version: " + process.version + "\nDiscord.js version: " + Discord.version); // send message notifying bot boot-up
 
+
+
+// Get authentication data
+try {
+	var AuthDetails = require("./auth.json");
+} catch (e){
+	console.log("Please create an auth.json like auth.json.example with a bot token or an email and password.\n"+e.stack); // send message for error - no token 
+	process.exit(); 
+}
 
 // Load custom permissions
 var dangerousCommands = ["eval","pullanddeploy","setUsername","cmdauth"]; // set array if dangerous commands
@@ -236,11 +244,11 @@ commands = {	// all commands list below
 	}
 };
 
-if(process.env.hasOwnProperty("CLIENT_ID")){
+if(AuthDetails.hasOwnProperty("client_id")){
 	commands["invite"] = {
 		description: "Generates an invite link you can use to invite the bot to your server.",
 		process: function(bot,msg,suffix){
-            msg.channel.send("Invite link: https://discordapp.com/oauth2/authorize?&client_id=" + process.env.CLIENT_ID + "&scope=bot&permissions=470019135"); // send link to invite bot into server.
+			msg.channel.send("Invite link: https://discordapp.com/oauth2/authorize?&client_id=" + AuthDetails.client_id + "&scope=bot&permissions=470019135"); // send link to invite bot into server.
 		}
 	}
 }
@@ -438,9 +446,9 @@ exports.addCommand = function(commandName, commandObject){
 exports.commandCount = function(){
     return Object.keys(commands).length;
 }
-if (process.env.BOT_TOKEN){
+if(AuthDetails.bot_token){
 	console.log("logging in with token");
-    bot.login(process.env.BOT_TOKEN);
+	bot.login(AuthDetails.bot_token);
 } else {
 	console.log("Logging in with user credentials is no longer supported!\nYou can use token based log in with a user account; see\nhttps://discord.js.org/#/docs/main/master/general/updating.");
 }

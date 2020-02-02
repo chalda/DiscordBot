@@ -1,4 +1,3 @@
-const request = require("request")
 exports.commands = [
     "date_fact",
     "year_fact",
@@ -10,7 +9,7 @@ exports.math_fact = {
         usage: "<random math>",
         description: "Gives a Random Math Fact",
         process: function(bot, msg, suffix) {
-            request("http://numbersapi.com/random/math?json",
+            require("request")("http://numbersapi.com/random/math?json",
                 function(err, res, body) {
                     var data = JSON.parse(body);
                     if (data && data.text) {
@@ -23,7 +22,7 @@ exports.math_fact = {
     exports.year_fact = {
         description: "Gives a Random Year Fact",
         process: function(bot, msg, suffix) {
-            request("http://numbersapi.com/random/year?json",
+            require("request")("http://numbersapi.com/random/year?json",
                 function(err, res, body) {
                     var data = JSON.parse(body);
                     if (data && data.text) {
@@ -36,7 +35,7 @@ exports.math_fact = {
     exports.joke = {
         description: "Gives a Random Joke",
         process: function(bot, msg, suffix) {
-            request("https://sv443.net/jokeapi/v2/joke/Any",
+            require("request")("https://sv443.net/jokeapi/v2/joke/Any",
                 function(err, res, body) {
                     var data = JSON.parse(body);
                     if (data && data.joke) {
@@ -49,7 +48,7 @@ exports.math_fact = {
     exports.date_fact = {
         description: "Gives a Random Date Fact",
         process: function(bot, msg, suffix) {
-            request("http://numbersapi.com/random/date?json",
+            require("request")("http://numbersapi.com/random/date?json",
                 function(err, res, body) {
                     var data = JSON.parse(body);
                     if (data && data.text) {
