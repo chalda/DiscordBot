@@ -17,19 +17,19 @@ const helpmsg = {
     embed: {
         description:
             '__**TIPS**__\n\n' +
-            '**Balance**: `$tipdngr balance`\n' +
-            '**Deposit Address**: `$tipdngr deposit`\n' +
-            '**Withdraw**: `$tipdngr withdraw <address> <amount>`\n' +
-            '**Private Tip**: `$tipdngr private <user> <amount>`\n\n' +
+            '**Balance**: `!tipdngr balance`\n' +
+            '**Deposit Address**: `!tipdngr deposit`\n' +
+            '**Withdraw**: `!tipdngr withdraw <address> <amount>`\n' +
+            '**Private Tip**: `!tipdngr private <user> <amount>`\n\n' +
             '__**ROLE TIPS**__ Use this to tip everyone in a role.\n\n' +
-            '**Role Tip**: `$roletipdngr <role> <amount>`\n' +
-            '**Private Role Tip**: `$privatetipdngr <role> <amount>`\n\n' +
+            '**Role Tip**: `!roletipdngr <role> <amount>`\n' +
+            '**Private Role Tip**: `!privatetipdngr <role> <amount>`\n\n' +
             '__**MULTI TIPS**__ Use this to tipdngr multiple people at once.\n\n' +
-            '**Multi Tip**: `$multitipdngr <user> <user> <amount>`\n' +
-            '**Private Multi Tip** `$multitipdngr private <user> <user> <amount>`\n' +
+            '**Multi Tip**: `!multitipdngr <user> <user> <amount>`\n' +
+            '**Private Multi Tip** `!multitipdngr private <user> <user> <amount>`\n' +
             '**Note**: Multi tipdngrs can contain any amount of users to tipdngr.\n\n' +
             '__**FURTHER INFORMATION**__\n\n' +
-            '**Help**: `$tipdngr help` *Get this message.\n',
+            '**Help**: `!tipdngr help` *Get this message.\n',
         color: 1109218
     }
 };
