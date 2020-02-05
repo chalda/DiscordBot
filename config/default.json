@@ -1,0 +1,8 @@
+{
+  "dngr": {
+    "port": 49003,
+    "user": "user",
+    "pass": "pass"
+  },
+  "botspamchannels": "671165066862788622"
+}
