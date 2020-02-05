@@ -488,13 +488,13 @@ function getAddress(userId, cb) {
             cb(null, addresses[0]);
         } else {
             dngr.getNewAddress(userId, function (err, address) {
-                if (err) {
-                    cb(err);
-                } else {
-                    cb(null, address);
-                }
-            });
+        if (err) {
+            cb(err);
+        } else {
+            cb(null, address);
         }
+            });
+               }
     });
 }
 
