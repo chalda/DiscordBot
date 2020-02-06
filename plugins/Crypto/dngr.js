@@ -10,7 +10,8 @@ exports.commands = [
     'tipdngr',
     'multitipdngr',
     'roletipdngr',
-    'tips'
+    'tips',
+    'rain'
 ];
 
 const helpmsg = {
@@ -118,6 +119,31 @@ exports.roletipdngr = {
     }
 };
 
+exports.rain = {
+    usage: '<subcommand>',
+    description: 'Tip all users in a specified role an amount of DNGR.',
+    process: async function (bot, msg, suffix) {
+        let tipper = msg.author.id.replace('!', ''),
+            words = msg.content
+                .trim()
+                .split(' ')
+                .filter(function (n) {
+                    return n !== '';
+                }),
+            subcommand = words.length >= 2 ? words[1] : 'help',
+            channelwarning = `Please use <#${spamchannel}> or DMs to talk to bots.`,
+            MultiorRole = true;
+        switch (subcommand) {
+            case 'help':
+                privateOrSandboxOnly(msg, channelwarning, doHelp, [helpmsg]);
+                break;
+            default:
+                doRain(bot, msg, tipper, words, helpmsg, MultiorRole);
+                break;
+        }
+    }
+};
+
 exports.tips = {
     usage: '',
     description: 'Lists all available tipbot commands with brief descriptions for each command.',
@@ -125,6 +151,37 @@ exports.tips = {
         msg.reply(helpmsg);
     }
 };
+
+
+function doRain(bot, message, tipper, words, helpmsg, MultiorRole) {
+    if (!words || words.length < 3) {
+        doHelp(message, helpmsg);
+        return;
+    }
+    let isPrivateTip = words.length >= 4 && words[1] === 'private';
+    let amountOffset = isPrivateTip ? 3 : 2;
+
+    let shareAmount = amount / onlineID.length;
+    if (amount === null) {
+        message.reply("I don't know how to tip that amount of DNGR...").then(message => message.delete(10000));
+        return;
+    }
+
+    let roleToTip = message.mentions.roles.first();
+    if (roleToTip !== null) {
+        let membersOfRole = roleToTip.members.keyArray();
+        if (membersOfRole.length > 0) {
+            let userIDs = membersOfRole.map(member => member.replace('!', ''));
+            userIDs.forEach(u => {
+                sendDNGR(bot, message, tipper, u, amount, isPrivateTip, MultiorRole);
+            });
+        } else {
+            return message.reply('Sorry, I could not find any users to tip in that role...').then(message => message.delete(10000));
+        }
+    } else {
+        return message.reply('Sorry, I could not find any roles in your tip...').then(message => message.delete(10000));
+    }
+}
 
 function privateorSpamChannel(message, wrongchannelmsg, fn, args) {
     if (!inPrivateOrBotSandbox(message)) {
