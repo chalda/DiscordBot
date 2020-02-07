@@ -11,7 +11,7 @@ exports.commands = [
     'multitipdngr',
     'roletipdngr',
     'tips',
-    'rain'
+    'raindngr'
 ];
 
 const helpmsg = {
@@ -119,9 +119,9 @@ exports.roletipdngr = {
     }
 };
 
-exports.rain = {
+exports.raindngr = {
     usage: '<subcommand>',
-    description: 'Tip all users in a specified role an amount of DNGR.',
+    description: 'Rain all users in a specified role an amount of DNGR.',
     process: async function (bot, msg, suffix) {
         let tipper = msg.author.id.replace('!', ''),
             words = msg.content
@@ -160,18 +160,21 @@ function doRain(bot, message, tipper, words, helpmsg, MultiorRole) {
     }
     let isPrivateTip = words.length >= 4 && words[1] === 'private';
     let amountOffset = isPrivateTip ? 3 : 2;
+    let usersCount = message.guild.memberCount;
+    let randomNumber = Math.floor(Math.random() * usersCount);
+    let randomToRain = message.guild.members.random(randomNumber).user.id;
+    let amount = getValidatedAmount(words[amountOffset] / randomToRain);
 
-    let shareAmount = amount / onlineID.length;
     if (amount === null) {
         message.reply("I don't know how to tip that amount of DNGR...").then(message => message.delete(10000));
         return;
     }
 
-    let roleToTip = message.mentions.roles.first();
-    if (roleToTip !== null) {
-        let membersOfRole = roleToTip.members.keyArray();
-        if (membersOfRole.length > 0) {
-            let userIDs = membersOfRole.map(member => member.replace('!', ''));
+
+    if (randomToRain !== null) {
+        let memberRandomToRain = randomToRain;
+        if (memberRandomToRain.length > 0) {
+            let userIDs = randomToRain.map(member => member.replace('!', ''));
             userIDs.forEach(u => {
                 sendDNGR(bot, message, tipper, u, amount, isPrivateTip, MultiorRole);
             });
@@ -181,6 +184,7 @@ function doRain(bot, message, tipper, words, helpmsg, MultiorRole) {
     } else {
         return message.reply('Sorry, I could not find any roles in your tip...').then(message => message.delete(10000));
     }
+    
 }
 
 function privateorSpamChannel(message, wrongchannelmsg, fn, args) {
