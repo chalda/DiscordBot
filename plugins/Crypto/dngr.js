@@ -154,7 +154,7 @@ exports.tips = {
 
 
 function doRain(bot, message, tipper, words, helpmsg, MultiorRole) {
-    if (!words || words.length < 3) {
+    if (!words || words.length < 2) {
         doHelp(message, helpmsg);
         return;
     }
@@ -162,7 +162,7 @@ function doRain(bot, message, tipper, words, helpmsg, MultiorRole) {
     let amountOffset = isPrivateTip ? 3 : 2;
     let usersCount = message.guild.memberCount;
     let randomNumber = Math.floor(Math.random() * usersCount);
-    let randomToRain = message.guild.members.random(randomNumber).user.id;
+    let randomToRain = message.guild.members.random(randomNumber);
     let amount = getValidatedAmount(words[amountOffset] / randomToRain);
 
     if (amount === null) {
@@ -564,8 +564,10 @@ function inPrivateOrBotSandbox(msg) {
 }
 
 function getValidatedAmount(amount) {
-    amount = amount.toLowerCase().replace('dngr', '');
-    return amount.match(/^[0-9]+(\.[0-9]+)?$/) ? amount : null;
+    amount = amount.trim();
+    if (amount.toLowerCase().endsWith('dngr')) {
+        amount = amount.substring(0, amount.length - 3);
+    }
 }
 
 function txLink(txId) {
