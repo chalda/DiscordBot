@@ -1,8 +1,0 @@
-{
-  "main": "dngr.js",
-  "dependencies": {
-    "request": "latest",
-    "bitcoin": "^3.0.1",
-    "config": "^1.27.0"
-  }
-}
