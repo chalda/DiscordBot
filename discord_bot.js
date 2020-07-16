@@ -42,8 +42,7 @@ for( var i=0; i<dangerousCommands.length;i++ ){
 	}
 }
 Permissions.checkPermission = function (userid,permission){
-	//var usn = user.username + "#" + user.discriminator;
-	//console.log("Checking " + permission + " permission for " + usn);
+	//console.log("Checking " + permission + " permission for " + userid);
 	try {
 		var allowed = true;
 		try{
@@ -138,14 +137,12 @@ commands = {	// all commands list below
         }
     },
     "idle": {
-		usage: "[status]",
         description: "Sets bot status to idle.",
         process: function(bot,msg,suffix){ 
 	    bot.user.setStatus("idle").then(console.log).catch(console.error);
 	}
     },
     "online": {
-		usage: "[status]",
         description: "Sets bot status to online.",
         process: function(bot,msg,suffix){ 
 	    bot.user.setStatus("online").then(console.log).catch(console.error);
@@ -171,16 +168,16 @@ commands = {	// all commands list below
 			if(user.startsWith('<@')){
 				user = user.substr(2,user.length-3);
 			}
-			var target = msg.channel.guild.members.find("id",user);
-			if(!target){
-				target = msg.channel.guild.members.find("username",user);
-			}
-			messagebox[target.id] = {
-				channel: msg.channel.id,
-				content: target + ", " + msg.author + " said: " + message
-			};
-			updateMessagebox();
-			msg.channel.send("Message saved.")
+			var target = msg.channel.guild.members.fetch({query:user, limit:1});
+			target.then((result)=>{
+				messagebox[target.id] = {
+					channel: msg.channel.id,
+					content: target + ", " + msg.author + " said: " + message
+				};
+				updateMessagebox();
+				msg.channel.send("Message saved.")
+			}).catch(console.error)
+			
 		}
 	},
 	"eval": {
@@ -271,12 +268,12 @@ var hooks = {
 }
 
 bot.on("ready", function () {
-	console.log("Logged in! Currently serving " + bot.guilds.array().length + " servers.");
+	console.log("Logged in! Currently serving " + bot.guilds.cache.array().length + " servers.");
 	require("./plugins.js").init(hooks);
 	console.log("Type "+Config.commandPrefix+"help on Discord for a command list.");
 	bot.user.setPresence({
-		game: {
-			name: Config.commandPrefix+"help | " + bot.guilds.array().length +" Servers"
+		activity: {
+			name: Config.commandPrefix+"help | " + bot.guilds.cache.array().length +" Servers"
 		}
 	}); 
 });
@@ -292,11 +289,11 @@ function checkMessageForCommand(msg, isEdit) {
 	//check if message is a command
 	if(msg.author.id != bot.user.id && (msg.content.startsWith(Config.commandPrefix))){
         console.log("treating " + msg.content + " from " + msg.author + " as command");
-		var cmdTxt = msg.content.split(" ")[0].substring(Config.commandPrefix.length);
+		var cmdTxt = msg.content.split(/\s/)[0].substring(Config.commandPrefix.length);
         var suffix = msg.content.substring(cmdTxt.length+Config.commandPrefix.length+1);//add one for the ! and one for the space
-        if(msg.isMentioned(bot.user)){
+        if(msg.mentions.has(bot.user)){
 			try {
-				cmdTxt = msg.content.split(" ")[1];
+				cmdTxt = msg.content.split(/\s/)[1];
 				suffix = msg.content.substring(bot.user.mention().length+cmdTxt.length+Config.commandPrefix.length+1);
 			} catch(e){ //no command
 				//msg.channel.send("Yes?");
@@ -331,7 +328,11 @@ function checkMessageForCommand(msg, isEdit) {
 					}
 					info += "\n"
 				}
-				msg.channel.send(info);
+				if(info.length > 0){
+					msg.channel.send(info);
+				} else {
+					msg.channel.send(`no command ${suffix}`);
+				}
 			} else {
 				msg.author.send("**Available Commands:**").then(function(){
 					var batch = "";
@@ -385,7 +386,7 @@ function checkMessageForCommand(msg, isEdit) {
 			}
 			return true;
 		} else {
-			msg.channel.send(cmdTxt + " is not not recognized as a command!").then((message => message.delete(5000)))
+			msg.channel.send(cmdTxt + " is not not recognized as a command!").then((message => message.delete({timeout: 5000})))
 			return true;
 		}
 	} else {
@@ -395,7 +396,7 @@ function checkMessageForCommand(msg, isEdit) {
             return true; //returning true to prevent feedback from commands
         }
 
-        if (msg.author != bot.user && msg.isMentioned(bot.user)) {
+        if (msg.author != bot.user && msg.mentions.has(bot.user)) {
                 //msg.channel.send("yes?"); //using a mention here can lead to looping
         } else {
 

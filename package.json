@@ -23,7 +23,7 @@
     "bufferutil": "^4.0.1",
     "cleverbot-node": "^0.2.8",
     "d20": "^1.4.1",
-    "discord.js": "^11.5.1",
+    "discord.js": "*",
     "feedparser": "1.1.x",
     "html-to-text": "^3.3.0",
     "imgflipper": "^1.0.1",
