@@ -92,7 +92,9 @@ class Player {
             this.stream.destroy();
             this.dispatcher.end();
             this.dispatcher.destroy();
+            const voiceChannel = this.voiceChannel;
             this.stop_playing(this.connection);
+            this.voiceChannel = voiceChannel;
             this.play_queue();
             return song.info.title;
         } else {
@@ -291,7 +293,7 @@ exports.dequeue = {
             } else {
                 player.queue.splice(index, 1);
             }
-            msg.channel.send(`Removed ${songRemoved} (index ${index} from the queue.`);
+            msg.channel.send(`Removed ${songRemoved} (index ${index}) from the queue.`);
         }
     }
 }
