@@ -268,14 +268,15 @@ var hooks = {
 }
 
 bot.on("ready", function () {
-	console.log("Logged in! Currently serving " + bot.guilds.cache.array().length + " servers.");
 	require("./plugins.js").init(hooks);
-	console.log("Type "+Config.commandPrefix+"help on Discord for a command list.");
+	console.log("Logged in! Currently serving " + bot.guilds.cache.array().length + " servers.");
 	bot.user.setPresence({
 		activity: {
 			name: Config.commandPrefix+"help | " + bot.guilds.cache.array().length +" Servers"
 		}
 	}); 
+	console.log("Type "+Config.commandPrefix+"help on Discord for a command list.");
+	
 });
 
 bot.on("disconnected", function () {
