@@ -64,6 +64,10 @@ Before the first run you will need to create an `auth.json` file. A bot token or
 To start the bot just run
 `node discord_bot.js`.
 
+# FAQ
+1) Music is always saying "invalid video"
+you likely need to update youtube-dl. you can do so with `node ./node_modules/youtube-dl/scripts/download.js`
+
 # Running on Repl.it
 You will also need to create an `auth.json` file with your credentials with this process, follow the steps above.
 [![Run on Repl.it](https://repl.it/badge/github/chalda/DiscordBot)](https://repl.it/github/chalda/DiscordBot)
