@@ -3,6 +3,12 @@ const Discord = require('discord.js');
 const url = require('url');
 const stream = require('stream');
 
+let options = false;
+const MUSIC_CHANNEL_NAME = (options && options.musicChannelName) || 'music';
+let GLOBAL_QUEUE = (options && options.global) || false;
+let MAX_QUEUE_SIZE = (options && options.maxQueueSize) || 20;
+let DEBUG = false;
+
 exports.commands = [
     "play",
     "skip",
@@ -60,12 +66,6 @@ function wrap(text) {
 	return '```\n' + text.replace(/`/g, '`' + String.fromCharCode(8203)) + '\n```';
 }
 
-let options = false;
-const MUSIC_CHANNEL_NAME = (options && options.musicChannelName) || 'music';
-let GLOBAL_QUEUE = (options && options.global) || false;
-let MAX_QUEUE_SIZE = (options && options.maxQueueSize) || 20;
-let DEBUG = true;
-
 class Player {
     constructor() {
         this.queue = [];
@@ -84,21 +84,10 @@ class Player {
         this.play_queue();
     }
     skip(){
-        console.log("skip 1");
         if(this.dispatcher){
-            console.log("skip 2");
-            const song = this.queue.shift();
-            this.dispatcher.resume();
-            this.stream.destroy();
-            this.dispatcher.end();
-            this.dispatcher.destroy();
-            const voiceChannel = this.voiceChannel;
-            this.stop_playing(this.connection);
-            this.voiceChannel = voiceChannel;
-            this.play_queue();
-            return song.info.title;
+            this.dispatcher.pause();
+            return true;
         } else {
-            console.log("skip 3");
             return false;
         }
     }
