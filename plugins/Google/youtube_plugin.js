@@ -15,7 +15,7 @@ function YoutubePlugin () {
 YoutubePlugin.prototype.respond = function (query, channel, bot) {
 	this.youtube.search(query, 1, function(error, result) {
 			if (error) {
-				channel.send("Syntax: " + Config.commandPrefix + "youtube <video tags>");
+				channel.send(`${error.code}: ${error.message}`);
 			}
 			else {
 				if (!result || !result.items || result.items.length < 1) {
