@@ -1,6 +1,9 @@
+const Discord = require("discord.js");
+
 exports.commands = [
 	"chuckNorris",
-	"watchtogether"
+	"watchtogether",
+	"lmgtfy"
 ]
 
 //a collection of simple self contained commands with no dependencies beyond request
@@ -28,5 +31,16 @@ exports.watchtogether = {
 			"watch2gether link").then(function(){
 				msg.channel.send(watch2getherUrl + suffix)
 		})
+	}
+}
+
+exports.lmgtfy = {
+	usage: "<search terms>",
+	description: "Generates a disguised Let Me Google That For You link for when you're feeling snarky.",
+	process: function(bot, msg, suffix){
+		const embed = new Discord.MessageEmbed();
+		embed.title = "Click Here";
+		embed.url = "https://lmgtfy.com/?q="+encodeURIComponent(suffix);
+		msg.channel.send("",embed);
 	}
 }
