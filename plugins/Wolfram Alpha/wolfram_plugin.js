@@ -76,7 +76,9 @@ WolframPlugin.prototype.respond = function (query, channel, bot,tmpMsg) {
 							message += "\nAdditional Info:"
 							for(infos of pod.infos){	
 								for(info of infos.info){
-									message += '\n' + info.$.text;
+									if(info.hasOwnProperty('$') && info.$.hasOwnProperty("text")){
+										message += '\n' + info.$.text;
+									}
 									if(info.hasOwnProperty("link")){
 										for(link of info.link){
 											message += '\n' + `${link.$.title} ${link.$.text}: ${link.$.url}`;
