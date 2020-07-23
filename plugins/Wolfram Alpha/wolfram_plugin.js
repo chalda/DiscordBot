@@ -1,3 +1,4 @@
+var Discord = require("discord.js");
 var Wolfram = require('node-wolfram');
 var AuthDetails = require("../../auth.json");
 
@@ -12,7 +13,6 @@ WolframPlugin.prototype.respond = function (query, channel, bot,tmpMsg) {
 				tmpMsg.edit("Couldn't talk to Wolfram Alpha :(")
 			} else {
 				console.log(JSON.stringify(result));
-				var response = "";
 				if(result.queryresult.$.success == "true"){
 					tmpMsg.delete();
 					if(result.queryresult.hasOwnProperty("warnings")){
@@ -42,27 +42,62 @@ WolframPlugin.prototype.respond = function (query, channel, bot,tmpMsg) {
 						}
 					}
 					for(var a=0; a<result.queryresult.pod.length; a++)
-	        {
-	            var pod = result.queryresult.pod[a];
-	            response += "**"+pod.$.title+"**:\n";
-	            for(var b=0; b<pod.subpod.length; b++)
-	            {
-	                var subpod = pod.subpod[b];
-									//can also display the plain text, but the images are prettier
-	                /*for(var c=0; c<subpod.plaintext.length; c++)
-	                {
-	                    response += '\t'+subpod.plaintext[c];
-	                }*/
-									for(var d=0; d<subpod.img.length;d++)
-									{
-										response += "\n" + subpod.img[d].$.src;
-										channel.send(response);
-										response = "";
+					{
+						var pod = result.queryresult.pod[a];
+						const title = "**"+pod.$.title+"**:";
+						var embeds = []
+						for(var b=0; b<pod.subpod.length; b++)
+						{
+							var subpod = pod.subpod[b];
+											//can also display the plain text, but the images are prettier
+							/*for(var c=0; c<subpod.plaintext.length; c++)
+							{
+								response += '\t'+subpod.plaintext[c];
+							}*/
+							for(var d=0; d<subpod.img.length;d++)
+							{
+								var embed = new Discord.MessageEmbed();
+								embed.title = title;
+								if(subpod.$.title.length > 0){
+									embed.description = subpod.$.title;
+								}
+								embed.type = 'image';
+								embed.image = {url: subpod.img[d].$.src};
+								embed.color = 0xff9339;
+								embed.provider = {
+									name: "WolframAlpha",
+									url: "https://www.wolframalpha.com/"
+								};
+								channel.send("",embed);
+							}
+						}
+						if(pod.hasOwnProperty("infos")){
+							var message = title;
+							message += "\nAdditional Info:"
+							for(infos of pod.infos){	
+								for(info of infos.info){
+									message += '\n' + info.$.text;
+									if(info.hasOwnProperty("link")){
+										for(link of info.link){
+											message += '\n' + `${link.$.title} ${link.$.text}: ${link.$.url}`;
+										}
 									}
-	            }
-							response += "\n";
-	        }
-				}	else {
+									embeds = []
+									if(info.hasOwnProperty("img")){
+										for(img of info.img){
+											var embed = new Discord.MessageEmbed();
+											embed.description = img.$.title;
+											embed.image = {url:img.$.src};
+											embed.color = 0xffc230;
+											embeds.push(embed);
+										}						
+									}	
+								}
+							}
+							channel.send(message,embeds);
+						}
+					}
+				} else {
 					if(result.queryresult.hasOwnProperty("didyoumeans")){
 						var msg = [];
 						for(var i in result.queryresult.didyoumeans){
