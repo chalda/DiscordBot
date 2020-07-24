@@ -4,6 +4,7 @@ exports.commands = [
 
 const Wiki = require('wikijs').default;
 const Discord = require('discord.js');
+const toWords = require('split-camelcase-to-words');
 
 const options = {
 	headers: {
@@ -16,30 +17,42 @@ function ShowPage(msg,page_title){
 		const title = page_title;
 		page.mainImage().then((image)=>{
 			page.summary().then((summary) => {
-				var embed = new Discord.MessageEmbed();
-				embed.title = title;
-				embed.color = 0xfefefe;
-				embed.type = "article";
-				embed.thumbnail = {url:"https://en.wikipedia.org/static/images/project-logos/enwiki.png"};
-				embed.url = page.url();
-				if(image !== undefined){
-					embed.image = {url:image}
-				}
-				if(summary.length > 2048){
-					msg.channel.send("",embed).then(()=>{
-						var sumText = summary.toString().split('\n');
-						var continuation = function() {
-							var paragraph = sumText.shift();
-							if(paragraph){
-								msg.channel.send(paragraph).then(continuation);
-							}
-						};
-						continuation();
-					});
-				} else {
-					embed.description = summary.toString();
-					msg.channel.send("",embed);
-				}
+				page.fullInfo().then((info)=>{
+					var embed = new Discord.MessageEmbed();
+					embed.title = title;
+					embed.color = 0xfefefe;
+					embed.type = "article";
+					embed.thumbnail = {url:"https://en.wikipedia.org/static/images/project-logos/enwiki.png"};
+					embed.url = page.url();
+					if(image !== undefined){
+						embed.image = {url:image}
+					}
+					for(prop in info.general){
+						if(prop == "name") continue;
+						// Embedded image, but isn't a URL
+						if(prop.includes("image")) {
+							continue;
+						}
+						// Image caption
+						if(prop == "caption") continue;
+						embed.addField(toWords(prop),info.general[prop].toString(),true);
+					}
+					if(summary.length > 2048){
+						msg.channel.send("",embed).then(()=>{
+							var sumText = summary.toString().split('\n');
+							var continuation = function() {
+								var paragraph = sumText.shift();
+								if(paragraph){
+									msg.channel.send(paragraph).then(continuation);
+								}
+							};
+							continuation();
+						});
+					} else {
+						embed.description = summary.toString();
+						msg.channel.send("",embed);
+					}
+				});
 			});
 		});
 	});
