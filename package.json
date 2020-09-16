@@ -54,7 +54,7 @@
   },
   "main": "discord_bot.js",
   "scripts": {
-    "start": "node ./discord_bot.js"
+    "start": "node ./discord_bot.js",
     "postinstall": "node ./node_modules/youtube-dl/scripts/download.js"
   }
 }
