@@ -20,7 +20,7 @@
   },
   "license": "GPL-2.0",
   "dependencies": {
-    "@discordjs/opus": "*",
+    "@discordjs/opus": "^0.3.2",
     "axios": "^0.19.2",
     "bufferutil": "^4.0.1",
     "cheerio": "^1.0.0-rc.3",
@@ -32,8 +32,8 @@
     "imgflipper": "^1.0.1",
     "leet": "^1.3.0",
     "lodash": "^4.17.15",
+    "memorystream": "^0.3.1",
     "nock": "1.7.x",
-    "node-opus": "^0.3.3",
     "node-wolfram": "0.0.1",
     "npm": "",
     "querystring": "0.2.x",

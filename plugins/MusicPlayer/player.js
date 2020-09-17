@@ -1,13 +1,14 @@
 const YoutubeDL = require('youtube-dl');
 const Discord = require('discord.js');
-const url = require('url');
-const stream = require('stream');
+const MemoryStream = require('memorystream');
 
 let options = false;
 const MUSIC_CHANNEL_NAME = (options && options.musicChannelName) || 'music';
 let GLOBAL_QUEUE = (options && options.global) || false;
 let MAX_QUEUE_SIZE = (options && options.maxQueueSize) || 20;
 let DEBUG = false;
+let MAXIMUM_SONG_BUFFER_SIZE = (options && options.maxSongBufferSize) || 1024 * 1024 * 1024;
+let SONG_BUFFER_TIME = (options && options.songBufferTimeMS) || 1000;
 
 exports.commands = [
     "play",
@@ -112,17 +113,35 @@ class Player {
     }
     play_song(connection){
         const video_info = this.queue[0].info;
+        
         const stream = YoutubeDL(video_info,['-f', 'bestaudio[acodec=opus]/bestaudio/bestvideo']);
+        const buffer = new MemoryStream(null,{maxbufsize:MAXIMUM_SONG_BUFFER_SIZE});
+        stream.pipe(buffer);
         stream.on('error',(error)=>{
             console.log("YoutubeDL Stream error: " + error);
         })
         stream.on('close',()=>{
             console.log("YoutubeDL stream close");
         })
+        
+        stream.on('info', (info)=>{
+            console.log('Download started')
+            console.log('filename: ' + info._filename)
+            console.log('size: ' + info.size)
+            //const buffer = Buffer.allocUnsafe(info.size);
+            //console.log(buffer)
+        })
+        
         stream.on('end',() => {
             console.log("YoutubeDL Stream end");
         })
-        const dispatcher = connection.play(stream,{bitrate:'auto',volume:false,highWaterMark:1 << 30});
+        setTimeout(()=>{
+            if(this.queue[0].response.channel){
+                const embed = generateResultEmbed('Now Playing',video_info,this.queue[0].queuer);
+                this.queue[0].response.channel.send('',embed);
+                this.queue[0].response.delete();
+            }
+        const dispatcher = connection.play(buffer,{bitrate:'auto',volume:true});
         this.stream = stream;
         this.dispatcher = dispatcher;
         if(DEBUG){
@@ -153,6 +172,7 @@ class Player {
                 this.play_song(connection,video);
             }
         });
+    },SONG_BUFFER_TIME);
     }
     stop_playing(connection){
         connection.disconnect();
@@ -201,7 +221,8 @@ exports.play = {
         if (!suffix) return msg.channel.send( wrap('No video specified!'));
         
         // Get the player for this guild.
-		let player = getPlayer(msg.guild.id);
+        let player = getPlayer(msg.guild.id);
+        player.responseChannel = responseChannel;
 
 		// Check if the queue has reached its maximum size.
 		if (player.queue.length >= MAX_QUEUE_SIZE) {
