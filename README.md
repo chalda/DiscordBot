@@ -32,7 +32,7 @@ Install [node 12 or newer]((https://nodejs.org/en/download/)), Python, and FFmpe
 
 Run `npm install` in the bot directory and make sure it passes.
 
-Now set up your `auth.json` and run `node discord_bot.js` to test the bot out!
+Now set up your `auth.json` and run `npm start` or `node discord_bot.js` to test the bot out!
 
 ### Ubuntu
 
@@ -43,7 +43,7 @@ First install the needed system dependencies:
 
 Run `npm install` in the bot directory and make sure it passes.
 
-Now set up your `auth.json` and run `node discord_bot.js` to test the bot out!
+Now set up your `auth.json` and run `npm start` or `node discord_bot.js` to test the bot out!
 
 ## Windows
 
@@ -54,7 +54,13 @@ Now set up your `auth.json` and run `node discord_bot.js` to test the bot out!
 5. Open `x64 Native Tools Command Prompt for VS 2019` and cd to the bot's folder
 6. Run `npm install` and make sure it succeeds
 7. Set up your `auth.json`
-8. Run `node discord_bot.js` to test the bot out!
+8. Run `npm start` or `node discord_bot.js` to test the bot out!
+
+## Running the bot longterm
+
+Once you've setup the bot and checked that the features you want are working we would recommend running the bot in "forever" mode.
+Run `npm run forever` to start the bot in a process that will restart it on crashes.
+It's probably a good idea to run your bot on a separate computer such as a linux server or a Raspberry Pi.
 
 ### Additional Resources
 
