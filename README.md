@@ -93,7 +93,8 @@ There is a number of cloud hosting providers that can run small node.js applicat
 - Create heroku account, install heroku-cli, create a new Dyno.
 - Git clone the repo and follow the instructions in the Deploy section to setup pushing to heroku
 - Go to settings and setup Config Vars the name of the vars are exactly the same as the auth.json file. You **DO NOT** need the quotes around the values in config vars
-- You _might_ need to restart once or twice to download all the dependencies.
+- Run `heroku scale worker=1` in the bot installation directory to run the bot as a worker rather than a webserver.
+- SOME COMMANDS ARE NOT WORKING, I AM WORKING TO FIX THIS.
 
 ### Running on Repl.it
 You will still need to create an `auth.json` file with your credentials with this process, follow the steps above.
