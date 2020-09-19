@@ -35,3 +35,10 @@ messagebox.json
 config.json
 memes.json
 meme_channels.json
+
+# Sound Effect Storage
+sfx_files
+
+# IDE files
+.vs
+.idea
