@@ -3,16 +3,16 @@ const fs = require('fs');
 const axios = require('axios').default;
 
 exports.commands = [
-    "addsfx",
-    "rmsfx",
+    "sfxadd",
+    "sfxrm",
     "sfx",
-    "listsfx"
+    "sfxlist"
 ]
 
 let options = false;
 SFX_LOCATION = (options && options.sfxLocation) || 'sfx_files/';
 
-exports.addsfx = {
+exports.sfxadd = {
     usage: "<sound name>",
     description: "Uploads the sound effect attached to the message for use with the sfx command",
     process: async (client, msg, suffix, isEdit) => {
@@ -44,7 +44,7 @@ exports.addsfx = {
     }
 }
 
-exports.rmsfx = {
+exports.sfxrm = {
     usage: "<sound name>",
     description: "Removes the given sound effect",
     process: async (client, msg, suffix, isEdit) => {
@@ -104,7 +104,7 @@ exports.sfx = {
     }
 }
 
-exports.listsfx = {
+exports.sfxlist = {
     usage: "",
     description: "Lists all available sound effects",
     process: async (client, msg, suffix, isEdit) => {
