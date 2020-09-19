@@ -59,8 +59,10 @@ Now set up your `auth.json` and run `npm start` or `node discord_bot.js` to test
 ## Running the bot longterm
 
 Once you've setup the bot and checked that the features you want are working we would recommend running the bot in "forever" mode.
-Run `npm run forever` to start the bot in a process that will restart it on crashes.
-It's probably a good idea to run your bot on a separate computer such as a linux server or a Raspberry Pi.
+Run `npm run forever` to start the bot in a process that will restart it on crashes. If you need to stop running it, navigate to the bot installation folder in a terminal and run `npx forever stopall`.
+Running the bot in this mode will save error and console logs to err.log and out.log respectively. You can use Notepad or similar to open these files.
+
+It's probably a good idea to run your bot on a separate computer such as a linux server or a Raspberry Pi so it does not interfere with your normal operations and to keep it running even if you were to sleep or shutdown your PC. 
 
 ### Additional Resources
 

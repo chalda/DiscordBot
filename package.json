@@ -26,7 +26,6 @@
     "cheerio": "^1.0.0-rc.3",
     "d20": "^1.4.1",
     "discord.js": "12.2.0",
-    "erlpack": "^0.1.3",
     "feedparser": "1.1.x",
     "ffmpeg-static": "^4.2.7",
     "forever": "3.0.2",
