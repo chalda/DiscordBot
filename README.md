@@ -6,7 +6,6 @@ A chat bot for Discord, built on top of <a href="https://discord.js.org">discord
 This bot has many many commands. Here are a few highlights:
 
 - `!help [command]` -> Lists all commands or just help for one command.
-- `!play song` -> Plays the requested song in voice.
 - `!gif query` -> Returns a gif connected to search query. Example = !gif dogs
 - `!image query` -> Returns an image from Google Images (careful, no adult filter) Example: `!image dogs`
 - `!youtube query` -> Returns a youtube link. Example: `!youtube Fortnite`
@@ -17,6 +16,12 @@ This bot has many many commands. Here are a few highlights:
 - `!alias` -> Create custom shorthand commands in Discord!
 - `!join-server` -> Bot will join the requested server, easy way to get the bot in multiple servers.
 - Channel management!
+
+Music streaming:
+- `!play song` -> Plays the requested song in voice.
+- `!skip song` -> Skip currently playing song
+- `!queue` -> The queue of songs
+- `!queue [number]` -> The removes song from queue
 
 And much more! Try `!help` to get a full list of available commands.
 
@@ -56,14 +61,6 @@ Now set up your `auth.json` and run `npm start` or `node discord_bot.js` to test
 7. Set up your `auth.json`
 8. Run `npm start` or `node discord_bot.js` to test the bot out!
 
-## Running the bot longterm
-
-Once you've setup the bot and checked that the features you want are working we would recommend running the bot in "forever" mode.
-Run `npm run forever` to start the bot in a process that will restart it on crashes. If you need to stop running it, navigate to the bot installation folder in a terminal and run `npx forever stopall`.
-Running the bot in this mode will save error and console logs to err.log and out.log respectively. You can use Notepad or similar to open these files.
-
-It's probably a good idea to run your bot on a separate computer such as a linux server or a Raspberry Pi so it does not interfere with your normal operations and to keep it running even if you were to sleep or shutdown your PC. 
-
 ### Additional Resources
 
 * [Installing Node on Windows](http://blog.teamtreehouse.com/install-node-js-npm-windows)
@@ -73,17 +70,36 @@ It's probably a good idea to run your bot on a separate computer such as a linux
 
 [Tuck 64 was kind enough to make a video walkthrough of the setup process](https://www.youtube.com/watch?v=H-82S2jFOII)
 
-## Running on Repl.it
-You will still need to create an `auth.json` file with your credentials with this process, follow the steps above.
-[![Run on Repl.it](https://repl.it/badge/github/chalda/DiscordBot)](https://repl.it/github/chalda/DiscordBot)
-
-# Running
+# Setting up
 Before the first run you will need to create an `auth.json` file. A bot token is required. The other credentials are not required for the bot to run, but they are highly recommended as commands that depend on them will not function. See `auth.json.example`.
 
 [Please see this excellent guide for how to create your discord bot's account and get your bot token.](https://discordjs.guide/preparations/setting-up-a-bot-application.html)
 
-To start the bot just run
-`node discord_bot.js`.
+Verify that the bot runs with your config by running `npm start`.
+
+# Running longterm
+Once you've setup your keys and checked that the features you want are working, you have a couple of options for running the bot.
+
+## Selfhosted
+You could run the bot along side everything else on your pc. However it's probably a good idea to run your bot on a separate computer such as a linux server or a Raspberry Pi so it does not interfere with your normal operations and to keep it running even if you were to sleep or shutdown your PC. 
+We would recommend running the bot in "forever" mode.
+Run `npm run forever` to start the bot in a process that will restart it on crashes. If you need to stop running it, navigate to the bot installation folder in a terminal and run `npx forever stopall`.
+Running the bot in this mode will save error and console logs to err.log and out.log respectively. You can use Notepad or similar to open these files.
+
+## Cloud Hosted
+There is a number of cloud hosting providers that can run small node.js applications like this. The following have been tested to work, you'll have to extrapolate if you want to use some other provider (AWS, etc)
+
+### Running on Heroku
+- Create heroku account, install heroku-cli, create a new Dyno.
+- Git clone the repo and follow the instructions in the Deploy section to setup pushing to heroku
+- Go to settings and setup Config Vars the name of the vars are exactly the same as the auth.json file. You **DO NOT** need the quotes around the values in config vars
+- You _might_ need to restart once or twice to download all the dependencies.
+
+### Running on Repl.it
+You will still need to create an `auth.json` file with your credentials with this process, follow the steps above.
+[![Run on Repl.it](https://repl.it/badge/github/chalda/DiscordBot)](https://repl.it/github/chalda/DiscordBot)
+
+
 
 # FAQ
 ## Music is always saying "invalid video"
