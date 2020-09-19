@@ -1,6 +1,6 @@
 var Discord = require("discord.js");
 var Wolfram = require('node-wolfram');
-var AuthDetails = require("../../auth.json");
+var AuthDetails = require("../../auth.js").getAuthDetails();
 
 function WolframPlugin () {
 	this.wolfram = new Wolfram(AuthDetails.wolfram_api_key)

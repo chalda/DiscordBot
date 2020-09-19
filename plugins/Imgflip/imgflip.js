@@ -2,7 +2,7 @@ exports.commands = [
 	"meme"
 ]
 
-var AuthDetails = require("../../auth.json");
+var AuthDetails = require("../../auth.js").getAuthDetails();
 var Config = require("../../config.json");
 
 //https://api.imgflip.com/popular_meme_ids
