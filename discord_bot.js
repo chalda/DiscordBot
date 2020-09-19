@@ -387,7 +387,7 @@ function checkMessageForCommand(msg, isEdit) {
 			}
 			return true;
 		} else {
-			msg.channel.send(cmdTxt + " is not not recognized as a command!").then((message => message.delete({timeout: 5000})))
+			msg.channel.send(cmdTxt + " is not recognized as a command!").then((message => message.delete({timeout: 5000})))
 			return true;
 		}
 	} else {
