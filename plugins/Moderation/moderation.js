@@ -1,8 +1,8 @@
 //None of these commands actually work. Disabling them for now
 exports.commands = [
 	"myid",
-	"permission",
-	"votekick",
+	//"perm",
+	//"votekick",
 	"kick"
 ]
 
@@ -54,7 +54,7 @@ exports.myid = {
 	process: function(bot,msg){msg.channel.send(msg.author.id);}
 }
 
-exports.permission = {
+exports.perm = {
 	usage: "[user]",
 	description: "Returns the user's permissions in this channel",
 	process: function(bot,msg,suffix) {
