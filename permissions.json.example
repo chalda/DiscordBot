@@ -11,16 +11,17 @@
     "setUsername": false,
     "cmdauth": false
   },
-  "users":{
-	"userid":{
-		"eval": false,
-		"pullanddeploy": true
-	}
-  },
-  "roles":{
-	"roleid":{
-		"eval": true,
-		"pullanddeploy": false
-	}
+  "users": {
+    "12300000000000004": {
+      "eval": true,
+      "cmdauth": true,
+      "*": true
+    },
+    "56700000000000008": {
+      "eval": false,
+      "say": false,
+      "cmdauth": false,
+      "year_fact": false
+    }
   }
 }
