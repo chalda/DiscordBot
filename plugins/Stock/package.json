@@ -1,6 +1,9 @@
 {
   "main": "stock.js",
   "dependencies": {
-    "yahoo-finance": "0.2.x"
+    "request": "2.x.x",
+    "string-sanitizer": "1.1.1",
+    "axios": "0.19.x",
+    "cheerio": "1.0.0-rc.3"
   }
 }

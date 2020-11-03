@@ -1,28 +1,12 @@
+const Discord = require("discord.js");
+
 exports.commands = [
-	"mixer",
 	"chuckNorris",
-	"watchtogether"
+	"watchtogether",
+	"lmgtfy"
 ]
 
 //a collection of simple self contained commands with no dependencies beyond request
-
-exports.mixer = {
-	usage: "<stream>",
-	description: "checks if the given Mixer stream is online",
-	process: function(bot,msg,suffix){
-		require("request")("https://mixer.com/api/v1/channels/"+suffix,
-		function(err,res,body){
-			var data = JSON.parse(body);
-			if(data && data.online){
-				msg.channel.send( suffix
-					+" is online"
-					+"\n"+data.thumbnail.url)
-			}else{
-				msg.channel.send( suffix+" is offline")
-			}
-		});
-	}
-}
 
 exports.chuckNorris = {
 	usage: "<joke>",
@@ -47,5 +31,16 @@ exports.watchtogether = {
 			"watch2gether link").then(function(){
 				msg.channel.send(watch2getherUrl + suffix)
 		})
+	}
+}
+
+exports.lmgtfy = {
+	usage: "<search terms>",
+	description: "Generates a disguised Let Me Google That For You link for when you're feeling snarky.",
+	process: function(bot, msg, suffix){
+		const embed = new Discord.MessageEmbed();
+		embed.title = "Click Here";
+		embed.url = "https://lmgtfy.com/?q="+encodeURIComponent(suffix);
+		msg.channel.send("",embed);
 	}
 }

@@ -1,6 +1,0 @@
-{
-  "main": "cleverbot.js",
-  "dependencies": {
-    "cleverbot-node": "0.2.x"
-  }
-}

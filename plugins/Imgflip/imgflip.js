@@ -2,7 +2,8 @@ exports.commands = [
 	"meme"
 ]
 
-var AuthDetails = require("../../auth.json");
+var AuthDetails = require("../../auth.js").getAuthDetails();
+var Config = require("../../config.json");
 
 //https://api.imgflip.com/popular_meme_ids
 var meme = {
@@ -39,7 +40,12 @@ exports.meme = {
 		imgflipper.generateMeme(meme[memetype], tags[1]?tags[1]:"", tags[3]?tags[3]:"", function(err, image){
 			console.log(arguments);
 			console.log(image);
+			if(image){
 			msg.channel.send(image);
+		}
+		else  {
+			msg.channel.send(Config.commandPrefix + "meme <Template> <first text> <last text>");
+	}
 		});
 	}
 }

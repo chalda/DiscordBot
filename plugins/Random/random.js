@@ -35,7 +35,7 @@ exports.math_fact = {
     exports.joke = {
         description: "Gives a Random Joke",
         process: function(bot, msg, suffix) {
-            require("request")("http://tambal.azurewebsites.net/joke/random",
+            require("request")("https://tambalapi.herokuapp.com/joke/random",
                 function(err, res, body) {
                     var data = JSON.parse(body);
                     if (data && data.joke) {
