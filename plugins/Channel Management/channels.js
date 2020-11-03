@@ -1,3 +1,5 @@
+var Discord = require("discord.js");
+
 exports.commands = [
 	"create",
 	"voice",
@@ -10,18 +12,22 @@ exports.create = {
 	usage: "<channel name>",
 	description: "creates a new text channel with the given name.",
 	process: function(bot,msg,suffix) {
-		msg.channel.guild.createChannel(suffix,"text").then(function(channel) {
-			msg.channel.send("created " + channel);
-		}).catch(function(error){
-			msg.channel.send("failed to create channel: " + error);
-		});
+		if(msg.channel.permissionsFor(bot.user).any(Discord.Permissions.MANAGE_CHANNELS)){
+			msg.channel.guild.channels.create(suffix,{type:"text"}).then(function(channel) {
+				msg.channel.send("created " + channel);
+			}).catch(function(error){
+				msg.channel.send("failed to create channel: " + error);
+			});
+		} else {
+			msg.channel.send("I don't have permission to manage channels!");
+		}
 	}
 }
 
 exports.servers = {
 description: "Tells you what servers the bot is in",
 process: function(bot,msg) {
-	msg.channel.send(`__**${bot.user.username} is currently on the following servers:**__ \n\n${bot.guilds.map(g => `${g.name} - **${g.memberCount} Members**`).join(`\n`)}`, {split: true});
+	msg.channel.send(`__**${bot.user.username} is currently on the following servers:**__ \n\n${bot.guilds.cache.map(g => `${g.name} - **${g.memberCount} Members**`).join(`\n`)}`, {split: true});
 }
 },
 
@@ -31,47 +37,40 @@ exports.voice = {
 	usage: "<channel name>",
 	description: "creates a new voice channel with the give name.",
 	process: function(bot,msg,suffix) {
-		msg.channel.guild.createChannel(suffix,"voice").then(function(channel) {
-			msg.channel.send("created " + channel.id);
-			console.log("created " + channel);
-		}).catch(function(error){
-			msg.channel.send("failed to create channel: " + error);
-		});
+		if(msg.channel.permissionsFor(bot.user).any(Discord.Permissions.MANAGE_CHANNELS)){
+			msg.channel.guild.channels.create(suffix,{type:"voice"}).then(function(channel) {
+				msg.channel.send("created " + channel.id);
+				console.log("created " + channel);
+			}).catch(function(error){
+				msg.channel.send("failed to create channel: " + error);
+			});
+		} else {
+			msg.channel.send("I don't have permission to manage channels!");
+		}
 	}
 },
 exports["delete"] = {
 	usage: "<channel name>",
 	description: "deletes the specified channel",
 	process: function(bot,msg,suffix) {
-		var channel = bot.channels.get(suffix);
-		if(suffix.startsWith('<#')){
-			channel = bot.channels.get(suffix.substr(2,suffix.length-3));
-		}
-		if(!channel){
-			var channels = msg.channel.guild.channels.findAll("name",suffix);
-			if(channels.length > 1){
-				var response = "Multiple channels match, please use id:";
-				for(var i=0;i<channels.length;i++){
-					response += channels[i] + ": " + channels[i].id;
-				}
-				msg.channel.send(response);
-				return;
-			}else if(channels.length == 1){
-				channel = channels[0];
-			} else {
-				msg.channel.send( "Couldn't find channel " + suffix + " to delete!");
-				return;
+		if(msg.channel.permissionsFor(bot.user).any(Discord.Permissions.MANAGE_CHANNELS)){
+			var channel = bot.channels.resolve(suffix);
+			if(!channel && suffix.startsWith('<#')){
+				channel = bot.channels.resolve(suffix.substr(2,suffix.length-3));
 			}
+			if(!channel){
+				msg.channel.send( "Couldn't find channel " + suffix + " to delete!");
+				return
+			}
+			msg.channel.send(`deleting channel ${suffix} at ${msg.author}'s request`);
+			channel.delete().then(function(channel){
+				console.log(`deleted ${suffix} at ${msg.author}'s request`);
+			}).catch(function(error){
+				msg.channel.send("couldn't delete channel: " + error);
+			});
+		} else {
+			msg.channel.send("I don't have permission to manage channels!");
 		}
-		msg.channel.guild.defaultChannel.send("deleting channel " + suffix + " at " +msg.author + "'s request");
-		if(msg.channel.guild.defaultChannel != msg.channel){
-			msg.channel.send("deleting " + channel);
-		}
-		channel.delete().then(function(channel){
-			console.log("deleted " + suffix + " at " + msg.author + "'s request");
-		}).catch(function(error){
-			msg.channel.send("couldn't delete channel: " + error);
-		});
 	}
 }
 
@@ -79,6 +78,11 @@ exports.topic = {
 	usage: "[topic]",
 	description: 'Sets the topic for the channel. No topic removes the topic.',
 	process: function(bot,msg,suffix) {
-		msg.channel.setTopic(suffix);
+		if(msg.channel.permissionsFor(bot.user).any(Discord.Permissions.MANAGE_CHANNELS)){
+			msg.channel.setTopic(suffix);
+		} else {
+			msg.channel.send("I don't have permission to manage channels!");
+		}
+		
 	}
 }

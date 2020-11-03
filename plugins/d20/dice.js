@@ -1,5 +1,5 @@
 exports.commands = [
-	"roll"
+	"roll", "vroll"
 ]
 
 var d20 = require('d20')
@@ -20,10 +20,18 @@ exports.roll = {
 				};
 			}
 			if (passing == eachDie.length) {
-				msg.channel.send(msg.author + " rolled a " + d20.roll(suffix));
+				msg.channel.send(`${msg.author} rolled a ${d20.roll(suffix)}`);
 			}  else {
-				msg.channel.send(msg.author + " tried to roll too many dice at once!");
+				msg.channel.send(`${msg.author} tried to roll too many dice at once!`);
 			}
 		}
+	}
+}
+
+exports.vroll = {
+	usage: "[# of dice]d[# of sides]",
+	description: "verbose way to roll multiple of the same die",
+	process: function(bot,msg,suffix) {
+		msg.channel.send(`${msg.author} rolled ${d20.verboseRoll(suffix)}`);
 	}
 }

@@ -6,7 +6,7 @@ exports.commands = [
 try{
 	var rssFeeds = require("../../rss.json");
 } catch(e) {
-    console.log("Couldn't load rss.json. See rss.json.example if you want rss feed commands. error: " + e);
+    console.log("Couldn't load rss.json. See rss.json.example if you want rss feed commands. " + e);
 }
 function loadFeeds(){
     for(var cmd in rssFeeds){

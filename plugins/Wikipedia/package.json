@@ -1,6 +1,7 @@
 {
   "main": "wikipedia.js",
   "dependencies": {
-    "wikijs": "0.1.x"
+    "wikijs": "6.0.1",
+    "split-camelcase-to-words": "1.0.1"
   }
 }
