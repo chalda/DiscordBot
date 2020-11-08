@@ -27,7 +27,7 @@ build/Release
 node_modules
 
 #lock file
-package-lock.json
+#package-lock.json
 
 #config files
 auth.json
