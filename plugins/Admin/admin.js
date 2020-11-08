@@ -57,7 +57,7 @@ exports.userRole = {
     process: function(bot,msg,arg){
         var args = arg.split(" ");
         var user, role;
-        if(typeof args[0] != 'undefined' && typeof args[1] != 'undefined'){
+        if(typeof args[0] !== 'undefined' && typeof args[1] !== 'undefined'){
             try{
                 if(msg.mentions.members.first()){ console.log('User mention '+msg.mentions.members.first().id); user = msg.mentions.members.first(); }
                 if(msg.mentions.roles.first()){ console.log('Role mention '+msg.mentions.roles.first().id); roleid = msg.mentions.roles.first().id; }
