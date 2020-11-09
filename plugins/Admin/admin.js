@@ -2,7 +2,7 @@ exports.commands = [
 	"setUsername",
 	"log",
 	"uptime",
-	"userRole"
+	"userrole"
 ]
 
 var startTime = Date.now();
@@ -51,19 +51,39 @@ exports.uptime = {
 	}
 }
 
-exports.userRole = {
-    usage: "<@user> <@role>",
+exports.userrole = {
+	usage: "<@user> <@role>",
     description: "Used to toggle @role of specified @user",
     process: function(bot,msg,arg){
         var args = arg.split(" ");
-        var user, role;
-        if(typeof args[0] !== 'undefined' && typeof args[1] !== 'undefined'){
-            try{
-                if(msg.mentions.members.first()){ console.log('User mention '+msg.mentions.members.first().id); user = msg.mentions.members.first(); }
-                if(msg.mentions.roles.first()){ console.log('Role mention '+msg.mentions.roles.first().id); roleid = msg.mentions.roles.first().id; }
-            }catch(err){ console.log('Error occured at: '+err+' Mentions.first() is undefined'); }
-				if(user.roles.cache.find(role => role.id === roleid)){ user.roles.remove(roleid); msg.channel.send("Removed the role from <@!"+user+">.");
-				}else{ user.roles.add(roleid); msg.channel.send("Added the role to <@!"+user+">."); }
-        } else{ msg.channel.send('__Parameters can\'t be left blank: USer: '+typeof args[0]+', Role: '+typeof args[1]+'__'); }
+		var user, role;
+		if(msg.member.hasPermission("MANAGE_ROLES")){
+        	if(typeof args[0] !== 'undefined' && typeof args[1] !== 'undefined'){
+            	try{
+                	if(msg.mentions.members.first()){ 
+						console.log('User mention '+msg.mentions.members.first().id); 
+						user = msg.mentions.members.first(); 
+					}
+                	if(msg.mentions.roles.first()){ 
+						console.log('Role mention '+msg.mentions.roles.first().id); 
+						roleid = msg.mentions.roles.first().id; 
+					}
+            	}catch(err){ 
+					console.log('Error occured at: '+err+' Mentions.first() is undefined'); 
+				}
+				if(user.roles.cache.find(role => role.id === roleid)){ 
+					user.roles.remove(roleid); 
+					msg.channel.send("Removed the role from <@!"+user+">.");
+				}else{ 
+					user.roles.add(roleid); 
+					msg.channel.send("Added the role to <@!"+user+">."); 
+				}
+        	} else{ 
+				msg.channel.send('__Parameters can\'t be left blank: USer: '+typeof args[0]+', Role: '+typeof args[1]+'__'); }
+		}else{
+			msg.author.send('You do not have proper permissions to run this command!')
+				.then(message => console.log('sent message: ${message.content}'))
+				.catch(console.error);
+		}
 	}
 }
