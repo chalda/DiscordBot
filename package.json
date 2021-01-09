@@ -21,7 +21,7 @@
   "license": "GPL-2.0",
   "dependencies": {
     "@discordjs/opus": "0.3.2",
-    "axios": "0.20.0",
+    "axios": "0.21.1",
     "bufferutil": "^4.0.1",
     "cheerio": "^1.0.0-rc.3",
     "d20": "^1.4.1",
