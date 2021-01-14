@@ -11,12 +11,12 @@ let MAXIMUM_SONG_BUFFER_SIZE = (options && options.maxSongBufferSize) || 1024 * 
 let SONG_BUFFER_TIME = (options && options.songBufferTimeMS) || 1000;
 
 exports.commands = [
-    "play",
-    "skip",
+    "oynat",
+    "geç",
     "queue",
     "dequeue",
-    "pause",
-    "resume"
+    "durdur",
+    "devamet"
 ]
 
 function getResultTitle(result){
@@ -312,7 +312,7 @@ exports.dequeue = {
     * Pause command.
     *
     * @param msg Original message.
-    * @param suffix Command suffix.
+    * @param suffix Command s>uffix
     */
 exports.pause = {
     description: "pauses music playback",
