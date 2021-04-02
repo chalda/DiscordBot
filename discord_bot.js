@@ -1,32 +1,29 @@
-var fs = require('fs');
-var _ = require('lodash');
+const fs = require('fs');
+const _ = require('lodash');
 
-process.on('unhandledRejection', (reason) => {
-  console.error(reason);
-  process.exit(1);
-});
+// not needed if you don't have errors
+//-------------------------------------------------
+//process.on('unhandledRejection', (reason) => {
+//  console.error(reason);
+//  process.exit(1);
+//});
 
-try {
-	var Discord = require("discord.js");
-} catch (e){
-	console.log(e.stack);
-	console.log(process.version);
-	console.log("Please run npm install and ensure it passes with no errors!"); // if there is an error, tell to install dependencies.
-	process.exit();
-}
+// you don't have to try to require discord.js. 
+// es6
+const Discord = require("discord.js");
 console.log("Starting DiscordBot\nNode version: " + process.version + "\nDiscord.js version: " + Discord.version); // send message notifying bot boot-up
 
 
-var AuthDetails = require('./auth.js').getAuthDetails()
+const AuthDetails = require('./auth.js').getAuthDetails()
 
-if(!AuthDetails.hasOwnProperty('bot_token') || AuthDetails.bot_token === '') {
+if (!AuthDetails.hasOwnProperty('bot_token') || AuthDetails.bot_token === '') {
 	console.error("Please create an auth.json or specify environmental variables, the bot cannot run without a bot_token"); // send message for error - no token 
 	process.exit()
 }
 
 // Load custom permissions
-var dangerousCommands = ["eval","pullanddeploy","setUsername","cmdauth"]; // set array if dangerous commands
-var Permissions = {};
+let dangerousCommands = ["eval","pullanddeploy","setUsername","cmdauth"]; // set array of dangerous commands
+let Permissions = {};
 try{
 	Permissions = require("./permissions.json");
 } catch(e){
@@ -34,16 +31,16 @@ try{
 	Permissions.users = {};
 }
 
-for( var i=0; i<dangerousCommands.length;i++ ){
-	var cmd = dangerousCommands[i];
-	if(!Permissions.global.hasOwnProperty(cmd)){
+for(let i = 0;i < dangerousCommands.length; i++) {
+	let cmd = dangerousCommands[i];
+	if (!Permissions.global.hasOwnProperty(cmd)) {
 		Permissions.global[cmd] = false;
 	}
 }
 Permissions.checkPermission = function (userid,permission){
 	//console.log("Checking " + permission + " permission for " + userid);
 	try {
-		var allowed = true;
+		let allowed = true;
 		try{
 			if(Permissions.global.hasOwnProperty(permission)){
 				allowed = Permissions.global[permission] === true;
@@ -66,7 +63,7 @@ fs.writeFile("./permissions.json",JSON.stringify(Permissions,null,2), (err) => {
 });
 
 //load config data
-var Config = {};
+let Config = {};
 try{
 	Config = require("./config.json");
 } catch(e){ //no config file, use defaults
@@ -86,8 +83,8 @@ if(!Config.hasOwnProperty("commandPrefix")){
 	Config.commandPrefix = '!'; // set bots prefix
 }
 
-var messagebox;
-var aliases;
+let messagebox;
+let aliases;
 try{
 	aliases = require("./alias.json");
 } catch(e) {
@@ -100,14 +97,14 @@ commands = {	// all commands list below
 		usage: "<name> <actual command>",
 		description: "Creates command aliases. Useful for making simple commands on the fly.",
 		process: function(bot,msg,suffix) {
-			var args = suffix.split(" ");
-			var name = args.shift();
+			let args = suffix.split(" ");
+			let name = args.shift();
 			if(!name){
 				msg.channel.send(Config.commandPrefix + "alias " + this.usage + "\n" + this.description);
 			} else if(commands[name] || name === "help"){
 				msg.channel.send("overwriting commands with aliases is not allowed!");
 			} else {
-				var command = args.shift();
+				let command = args.shift();
 				aliases[name] = [command, args.join(" ")];
 				//now save the new alias
 				require("fs").writeFile("./alias.json",JSON.stringify(aliases,null,2), null);
@@ -118,8 +115,8 @@ commands = {	// all commands list below
 	"aliases": {
 		description: "Lists all recorded aliases.",
 		process: function(bot, msg, suffix) {
-			var text = "current aliases:\n";
-			for(var a in aliases){
+			let text = "current aliases:\n";
+			for(let a in aliases){
 				if(typeof a === 'string')
 					text += a + " ";
 			}
@@ -161,13 +158,13 @@ commands = {	// all commands list below
 		usage: "<user> <message to send user>",
 		description: "Sends a message to a user the next time they come online.",
 		process: function(bot,msg,suffix) {
-			var args = suffix.split(' ');
-			var user = args.shift();
-			var message = args.join(' ');
+			let args = suffix.split(' ');
+			let user = args.shift();
+			let message = args.join(' ');
 			if(user.startsWith('<@')){
 				user = user.substr(2,user.length-3);
 			}
-			var target = msg.channel.guild.members.fetch({query:user, limit:1});
+			let target = msg.channel.guild.members.fetch({query:user, limit:1});
 			target.then((result)=>{
 				messagebox[target.id] = {
 					channel: msg.channel.id,
@@ -193,26 +190,26 @@ commands = {	// all commands list below
 		usage: "<userid> <get/toggle> <command>",
 		description: "Gets/toggles command usage permissions for the specified user.",
 		process: function(bot,msg,suffix) {
-			var Permissions = require("./permissions.json");
-			var fs = require('fs');
+			let Permissions = require("./permissions.json");
+			let fs = require('fs');
 
-			var args = suffix.split(' ');
-			var userid = args.shift();
-			var action = args.shift();
-			var cmd = args.shift();
+			let args = suffix.split(' ');
+			let userid = args.shift();
+			let action = args.shift();
+			let cmd = args.shift();
 
 			if(userid.startsWith('<@')){
 				userid = userid.substr(2,userid.length-3);
 			}
 
-			var target = msg.channel.guild.members.find("id",userid);
-			if(!target) {
+			let target = msg.channel.guild.members.find("id",userid);
+			if (!target) {
 				msg.channel.send("Could not find user.");
 			} else {
-				if(commands[cmd] || cmd === "*") {
-					var canUse = Permissions.checkPermission(userid,cmd);
-					var strResult;
-					if(cmd === "*") {
+				if (commands[cmd] || cmd === "*") {
+					let canUse = Permissions.checkPermission(userid,cmd);
+					let strResult;
+					if (cmd === "*") {
 						strResult = "All commands"
 					} else {
 						strResult = 'Command "' + cmd + '"';
@@ -260,9 +257,9 @@ function updateMessagebox(){
 	require("fs").writeFile("./messagebox.json",JSON.stringify(messagebox,null,2), null);
 }
 
-var bot = new Discord.Client();
+const bot = new Discord.Client();
 
-var hooks = {
+let hooks = {
 	onMessage: []
 }
 
@@ -289,7 +286,7 @@ function checkMessageForCommand(msg, isEdit) {
 	//check if message is a command
 	if(msg.author.id != bot.user.id && (msg.content.startsWith(Config.commandPrefix))){
         console.log("treating " + msg.content + " from " + msg.author + " as command");
-		var cmdTxt = msg.content.split(/\s/)[0].substring(Config.commandPrefix.length);
+		let cmdTxt = msg.content.split(/\s/)[0].substring(Config.commandPrefix.length);
         var suffix = msg.content.substring(cmdTxt.length+Config.commandPrefix.length+1);//add one for the ! and one for the space
         if(msg.mentions.has(bot.user)){
 			try {
@@ -310,16 +307,16 @@ function checkMessageForCommand(msg, isEdit) {
         if(cmdTxt === "help"){
             //help is special since it iterates over the other commands
 			if(suffix){
-				var cmds = suffix.split(" ").filter(function(cmd){return commands[cmd]});
-				var info = "";
+				let cmds = suffix.split(" ").filter(function(cmd){return commands[cmd]});
+				let info = "";
 				for(var i=0;i<cmds.length;i++) {
-					var cmd = cmds[i];
+					let cmd = cmds[i];
 					info += "**"+Config.commandPrefix + cmd+"**";
-					var usage = commands[cmd].usage;
+					let usage = commands[cmd].usage;
 					if(usage){
 						info += " " + usage;
 					}
-					var description = commands[cmd].description;
+					let description = commands[cmd].description;
 					if(description instanceof Function){
 						description = description();
 					}
@@ -335,23 +332,23 @@ function checkMessageForCommand(msg, isEdit) {
 				}
 			} else {
 				msg.author.send("**Available Commands:**").then(function(){
-					var batch = "";
-					var sortedCommands = Object.keys(commands).sort();
-					for(var i in sortedCommands) {
-						var cmd = sortedCommands[i];
-						var info = "**"+Config.commandPrefix + cmd+"**";
-						var usage = commands[cmd].usage;
+					let batch = "";
+					let sortedCommands = Object.keys(commands).sort();
+					for(let i in sortedCommands) {
+						let cmd = sortedCommands[i];
+						let info = "**"+Config.commandPrefix + cmd+"**";
+						let usage = commands[cmd].usage;
 						if(usage){
 							info += " " + usage;
 						}
-						var description = commands[cmd].description;
+						let description = commands[cmd].description;
 						if(description instanceof Function){
 							description = description();
 						}
 						if(description){
 							info += "\n\t" + description;
 						}
-						var newBatch = batch + "\n" + info;
+						let newBatch = batch + "\n" + info;
 						if(newBatch.length > (1024 - 8)){ //limit message length
 							msg.author.send(batch);
 							batch = info;
@@ -366,12 +363,12 @@ function checkMessageForCommand(msg, isEdit) {
 			}
 			return true;
         }
-		else if(cmd) {
-			if(Permissions.checkPermission(msg.author.id,cmdTxt)){
+		else if (cmd) {
+			if (Permissions.checkPermission(msg.author.id,cmdTxt)){
 				try{
 					cmd.process(bot,msg,suffix,isEdit);
 				} catch(e){
-					var msgTxt = "command " + cmdTxt + " failed :(";
+					let msgTxt = "command " + cmdTxt + " failed :(";
 					console.error(e);
 					if(Config.debug){
 						 msgTxt += "\n" + e.stack;
@@ -427,8 +424,8 @@ bot.on("presence", function(user,status,gameId) {
 	if(status != 'offline'){
 		if(messagebox.hasOwnProperty(user.id)){
 			console.log("Found message for " + user.id);
-			var message = messagebox[user.id];
-			var channel = bot.channels.get("id",message.channel);
+			let message = messagebox[user.id];
+			let channel = bot.channels.get("id",message.channel);
 			delete messagebox[user.id];
 			updateMessagebox();
 			bot.send(channel,message.content);
