@@ -15,7 +15,9 @@ if(!AuthDetails.hasOwnProperty('bot_token')) {
 		imgflip_username: process.env.imgflip_username,
 		imgflip_password: process.env.imgflip_password,
 		wolfram_api_key: process.env.wolfram_api_key,
-		twitch_client_id: process.env.twitch_client_id
+		twitch_client_id: process.env.twitch_client_id,
+		spotify_client_id: process.env.spotify_client_id,
+		spotify_client_secret: process.env.spotify_client_secret
 	}
 }
 
