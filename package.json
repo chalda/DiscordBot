@@ -32,7 +32,7 @@
     "html-to-text": "^3.3.0",
     "imgflipper": "^1.0.1",
     "leet": "^1.3.0",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "memorystream": "0.3.1",
     "node-wolfram": "0.0.1",
     "npm": "^6.14.8",
