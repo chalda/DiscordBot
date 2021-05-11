@@ -6,8 +6,9 @@ process.on("unhandledRejection", (reason) => {
   process.exit(1);
 });
 
+let Discord;
 try {
-  const Discord = require("discord.js");
+  Discord = require("discord.js");
 } catch (e) {
   console.log(e.stack);
   console.log(process.version);
