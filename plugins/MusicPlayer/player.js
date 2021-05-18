@@ -56,8 +56,12 @@ function isUrl(str) {
 
 function getUserVoiceChannel(msg) {
 	var voiceChannelArray = msg.guild.channels.cache.filter((v)=>v.type == "voice").filter((v)=>v.members.has(msg.author.id)).array();
-	if(voiceChannelArray.length == 0) return null;
-	else return voiceChannelArray[0];
+	try{
+		if(voiceChannelArray.length != 0) return voiceChannelArray[0];
+	} catch(e){
+		user = msg.author.username;
+		warn("User "+String.user+" tried to play music while not in a voice channel. "+e);
+	}
 }
 
   /*
