@@ -10,7 +10,7 @@ Un bot Discord basé sur <a href="https://github.com/hydrabolt/discord.js/">disc
 - !meme memetype "texte1" "texte2" => Retourne un meme. Attention, les guillemets autour de text1 et text2 sont très importants.
 - !say texte => Envoie un message contenant le texte
 - !alias => Créer un raccourci de commande personnalisé dans le channel.
-- !join-server => Le bot rejoint le serveur demandé.
+- !invite => Le bot rejoint le serveur demandé.
 - !talk => Parler avec le bot !
 - @botname => Répond quand il est @mentionné
 - Gérer les channels!
