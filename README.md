@@ -14,7 +14,7 @@ This bot has many many commands. Here are a few highlights:
 - `!meme memetype "text1" "text2"` => Returns a meme image. notice the quotes around text, they are vitally important!
 - `!say text` -> Make the bot say text, useful mostly in combination with `alias`.
 - `!alias` -> Create custom shorthand commands in Discord!
-- `!join-server` -> Bot will join the requested server, easy way to get the bot in multiple servers.
+- `!invite` -> Generates an invite link for the Bot to join the requested server, easy way to get the bot in multiple servers.
 - Channel management!
 
 Music streaming:
