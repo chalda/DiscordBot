@@ -158,16 +158,19 @@ commands = {
       }
     },
   },
-  idle: {
-    description: "Sets bot status to idle.",
+  status: {
+    description: "Sets bot status to idle/online.",
     process: function (bot, msg, suffix) {
-      bot.user.setStatus("idle").then(console.log).catch(console.error);
-    },
-  },
-  online: {
-    description: "Sets bot status to online.",
-    process: function (bot, msg, suffix) {
-      bot.user.setStatus("online").then(console.log).catch(console.error);
+      if(massage.author.id !== yor id here) return; // here you check if the message auhor id was the same (so only you can use it)
+      if (args[0] === "idle") {
+      type = 0
+      } else if (args[0] === "online"){
+      type = 1
+      }
+      args.shift()
+      bot.user.setStatus(type).then(console.log).catch(console.error);
+      
+      message.channel.send('status changed')
     },
   },
   say: {
