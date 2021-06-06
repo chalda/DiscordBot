@@ -411,7 +411,8 @@ function checkMessageForCommand(msg, isEdit) {
           msg.channel.send(`no command ${suffix}`);
         }
       } else {
-        msg.author.send("**Available Commands:**").then(function () {
+        try{
+          msg.author.send("**Available Commands:**").then(function () {
           let batch = "";
           let sortedCommands = Object.keys(commands).sort();
           for (let i in sortedCommands) {
@@ -440,6 +441,12 @@ function checkMessageForCommand(msg, isEdit) {
           if (batch.length > 0) {
             msg.author.send(batch);
           }
+        }catch(e) {
+           console.error("UNABLE TO SEND. Command requester "+msg.author.username+" has not turned on 'Allow Direct Messages from Server Members'. This is not a crash.");
+           msg.channel
+            .send(msg.author.username + ", Please allow direct messages for this server before running this command!")
+            .then((message) => message.delete({ timeout: 5000 }));
+        }
         });
       }
       return true;
