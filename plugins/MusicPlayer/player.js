@@ -15,6 +15,7 @@ let SONG_BUFFER_TIME = (options && options.songBufferTimeMS) || 1000;
 exports.commands = [
     "play",
     "skip",
+    "stop_playback",
     "queue",
     "dequeue",
     "pause",
@@ -100,6 +101,15 @@ class Player {
         this.play_queue();
     }
     skip(){
+        if(this.dispatcher){
+            this.dispatcher.pause();
+            return true;
+        } else {
+            return false;
+        }
+    }
+    stop_playback(){
+        this.queue = [];
         if(this.dispatcher){
             this.dispatcher.pause();
             return true;
@@ -284,6 +294,16 @@ exports.skip = {
     }
 }
 
+exports.stop_playback = {
+    description: "stops music playback",
+    process: function(client, msg, suffix){
+        let player = getPlayer(msg.guild.id);
+        if(!player.stop_playback()){
+            msg.channel.send("Couldn't stop playback :( Were you playing anything?");
+        }
+    }
+}
+
 exports.queue = {
     usage: "[-s]",
     description: "prints the current music queue for this server. -s to print in concise form",
@@ -388,8 +408,8 @@ exports.resume = {
 }
 
 exports.playlist = {
-    usage: "`<https://open.spotify.com/playlist/...|spotify:playlist:...>`",
-    description: "plays spotify playlists",
+    usage: "`<https://open.spotify.com/playlist/...|spotify:playlist:...|https://www.youtube.com/playlist?...>`",
+    description: "plays Spotify or YouTube playlists",
     process: async function(client, msg, suffix, isEdit) {
         if(isEdit) return;
         // Make sure the suffix exists.
@@ -402,6 +422,30 @@ exports.playlist = {
 
         var show_playlist = true;
 
+        // Youtube
+        let youtube_uri_re = /https:\/\/www.youtube.com\/playlist\?.*list=(\w+)/i;
+        let youtube_uri = youtube_uri_re.exec(suffix);
+        if(youtube_uri) {
+            let youtube_playlist_id = youtube_uri[1];
+            console.log("youtube playlist: " + youtube_playlist_id);
+            let rsp = await msg.channel.send("Downloading YouTube playlist");
+            YoutubeDL.getInfo(suffix,["-i","--yes-playlist"], (err, output) => {
+                if(err) {
+                    console.log("errors: " + JSON.stringify(err));
+                    rsp.edit("Couldn't download that playlist :( Make sure it's publicly available!");
+                    return;
+                } else {
+                    let player = getPlayer(msg.guild.id);
+                    for(song of output) {
+                        player.enqueue(client,msg,null,song);
+                    }
+                    rsp.edit("queued " + output.length + " songs");
+                }
+            });
+            return;
+        }
+        
+        // Spotify
         var playlist_id = null;
         let uri_re = /spotify:playlist:(\w+)/i;
         let uri = uri_re.exec(suffix);
@@ -417,7 +461,7 @@ exports.playlist = {
             show_playlist = false;
         }
         if(!playlist_id){
-            return msg.channel.send("This doesn't look like a spotify playlist to me...");
+            return msg.channel.send("This doesn't look like a youtube or spotify playlist to me...");
         } else {
             try {
                 var spotifyApi = new SpotifyWebApi({

@@ -1,0 +1,2 @@
+- Added `stop_playback` command
+- Made `playlist` command support YouTube playlists
