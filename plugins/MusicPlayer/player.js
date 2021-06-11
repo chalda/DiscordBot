@@ -423,16 +423,15 @@ exports.playlist = {
         var show_playlist = true;
 
         // Youtube
-        let youtube_uri_re = /https:\/\/www.youtube.com\/playlist\?.*list=(\w+)/i;
+        let youtube_uri_re = /www.youtube.com\//i;
         let youtube_uri = youtube_uri_re.exec(suffix);
         if(youtube_uri) {
-            let youtube_playlist_id = youtube_uri[1];
-            console.log("youtube playlist: " + youtube_playlist_id);
-            let rsp = await msg.channel.send("Downloading YouTube playlist");
-            YoutubeDL.getInfo(suffix,["-i","--yes-playlist"], (err, output) => {
+            let rsp = msg.channel.send("Downloading YouTube playlist...");
+            YoutubeDL.getInfo(suffix,["-i","--yes-playlist"], async (err, output) => {
                 if(err) {
                     console.log("errors: " + JSON.stringify(err));
-                    rsp.edit("Couldn't download that playlist :( Make sure it's publicly available!");
+                    let response = await rsp;
+                    response.edit("Couldn't download that playlist :( Make sure it's publicly available!");
                     return;
                 } else {
                     try {
@@ -442,14 +441,17 @@ exports.playlist = {
                             for(song of output) {
                                 player.enqueue(client,msg,null,song);
                             }
-                            rsp.edit("queued " + output.length + " songs");
+                            let response = await rsp;
+                            response.edit("queued " + output.length + " songs");
                         } else {
                             // For playlists of one song the song is returned directly without an enclosing array.
                             player.enqueue(client,msg,null,output);
-                            rsp.edit("queued 1 song");
+                            let response = await rsp;
+                            response.edit("queued 1 song");
                         }
                     } catch(e) {
-                        rsp.edit("Error: " + e);
+                        let response = await rsp;
+                        response.edit("Error: " + e);
                         console.log("Error: " + e + "\n When parsing Output: " + JSON.stringify(output));
                     }
                 }
