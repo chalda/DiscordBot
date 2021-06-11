@@ -1,2 +1,3 @@
+- Improved default behavior of `queue` for long play queues
 - Added `stop_playback` command
 - Made `playlist` command support YouTube playlists

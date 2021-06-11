@@ -306,12 +306,13 @@ exports.stop_playback = {
 
 exports.queue = {
     usage: "[-s]",
-    description: "prints the current music queue for this server. -s to print in concise form",
+    description: "prints the current music queue for this server. -s to always print in concise form",
 	process: async function(client, msg, suffix) {
         let player = getPlayer(msg.guild.id);
         const length = player.queue.length;
         var count = 0;
-        if(suffix.includes("-s")){
+        // Always output long queues in concise form to avoid excessive spamming.
+        if(suffix.includes("-s") || length > 5){
             let list = player.queue.map((song)=>{
                 let entry = (count == 0 ? 'Now Playing: ' : `${count}: `) + getResultTitle(song.info) + '\n';
                 count++;

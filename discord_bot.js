@@ -18,9 +18,9 @@ try {
 
 console.log(
   "Starting DiscordBot\nNode version: " +
-    process.version +
-    "\nDiscord.js version: " +
-    Discord.version
+  process.version +
+  "\nDiscord.js version: " +
+  Discord.version
 ); // send message notifying bot boot-up
 
 const AuthDetails = require("./auth.js").getAuthDetails();
@@ -56,7 +56,7 @@ Permissions.checkPermission = function (userid, permission) {
       if (Permissions.global.hasOwnProperty(permission)) {
         allowed = Permissions.global[permission] === true;
       }
-    } catch (e) {}
+    } catch (e) { }
     try {
       if (Permissions.users[userid].hasOwnProperty("*")) {
         allowed = Permissions.users[userid]["*"] === true;
@@ -64,9 +64,9 @@ Permissions.checkPermission = function (userid, permission) {
       if (Permissions.users[userid].hasOwnProperty(permission)) {
         allowed = Permissions.users[userid][permission] === true;
       }
-    } catch (e) {}
+    } catch (e) { }
     return allowed;
-  } catch (e) {}
+  } catch (e) { }
   return false;
 };
 fs.writeFile(
@@ -264,9 +264,9 @@ commands = {
 
             msg.channel.send(
               "User permission for " +
-                strResult +
-                " set to " +
-                Permissions.users[userid][cmd]
+              strResult +
+              " set to " +
+              Permissions.users[userid][cmd]
             );
           } else {
             msg.channel.send('Requires "get" or "toggle" parameter.');
@@ -286,8 +286,8 @@ if (AuthDetails.hasOwnProperty("client_id")) {
     process: function (bot, msg, suffix) {
       msg.channel.send(
         "Invite link: https://discordapp.com/oauth2/authorize?&client_id=" +
-          AuthDetails.client_id +
-          "&scope=bot&permissions=470019135"
+        AuthDetails.client_id +
+        "&scope=bot&permissions=470019135"
       ); // send link to invite bot into server.
     },
   };
@@ -317,8 +317,8 @@ bot.on("ready", function () {
   require("./plugins.js").init(hooks);
   console.log(
     "Logged in! Currently serving " +
-      bot.guilds.cache.array().length +
-      " servers."
+    bot.guilds.cache.array().length +
+    " servers."
   );
   bot.user.setPresence({
     activity: {
@@ -359,9 +359,9 @@ function checkMessageForCommand(msg, isEdit) {
         cmdTxt = msg.content.split(/\s/)[1];
         suffix = msg.content.substring(
           bot.user.mention().length +
-            cmdTxt.length +
-            Config.commandPrefix.length +
-            1
+          cmdTxt.length +
+          Config.commandPrefix.length +
+          1
         );
       } catch (e) {
         //no command
@@ -373,10 +373,10 @@ function checkMessageForCommand(msg, isEdit) {
     if (alias) {
       console.log(
         cmdTxt +
-          " is an alias, constructed command is " +
-          alias.join(" ") +
-          " " +
-          suffix
+        " is an alias, constructed command is " +
+        alias.join(" ") +
+        " " +
+        suffix
       );
       cmdTxt = alias[0];
       suffix = alias[1] + " " + suffix;
@@ -411,42 +411,42 @@ function checkMessageForCommand(msg, isEdit) {
           msg.channel.send(`no command ${suffix}`);
         }
       } else {
-        try{
-          msg.author.send("**Available Commands:**").then(function () {
-          let batch = "";
-          let sortedCommands = Object.keys(commands).sort();
-          for (let i in sortedCommands) {
-            let cmd = sortedCommands[i];
-            let info = "**" + Config.commandPrefix + cmd + "**";
-            let usage = commands[cmd].usage;
-            if (usage) {
-              info += " " + usage;
+        msg.author.send("**Available Commands:**").then(function () {
+          try {
+            let batch = "";
+            let sortedCommands = Object.keys(commands).sort();
+            for (let i in sortedCommands) {
+              let cmd = sortedCommands[i];
+              let info = "**" + Config.commandPrefix + cmd + "**";
+              let usage = commands[cmd].usage;
+              if (usage) {
+                info += " " + usage;
+              }
+              let description = commands[cmd].description;
+              if (description instanceof Function) {
+                description = description();
+              }
+              if (description) {
+                info += "\n\t" + description;
+              }
+              let newBatch = batch + "\n" + info;
+              if (newBatch.length > 1024 - 8) {
+                //limit message length
+                msg.author.send(batch);
+                batch = info;
+              } else {
+                batch = newBatch;
+              }
             }
-            let description = commands[cmd].description;
-            if (description instanceof Function) {
-              description = description();
-            }
-            if (description) {
-              info += "\n\t" + description;
-            }
-            let newBatch = batch + "\n" + info;
-            if (newBatch.length > 1024 - 8) {
-              //limit message length
+            if (batch.length > 0) {
               msg.author.send(batch);
-              batch = info;
-            } else {
-              batch = newBatch;
             }
+          } catch (e) {
+            console.error("UNABLE TO SEND. Command requester " + msg.author.username + " has not turned on 'Allow Direct Messages from Server Members'. This is not a crash.");
+            msg.channel
+              .send(msg.author.username + ", Please allow direct messages for this server before running this command!")
+              .then((message) => message.delete({ timeout: 5000 }));
           }
-          if (batch.length > 0) {
-            msg.author.send(batch);
-          }
-        }catch(e) {
-           console.error("UNABLE TO SEND. Command requester "+msg.author.username+" has not turned on 'Allow Direct Messages from Server Members'. This is not a crash.");
-           msg.channel
-            .send(msg.author.username + ", Please allow direct messages for this server before running this command!")
-            .then((message) => message.delete({ timeout: 5000 }));
-        }
         });
       }
       return true;
@@ -520,7 +520,7 @@ bot.on("presence", function (user, status, gameId) {
         bot.send(channel, message.content);
       }
     }
-  } catch (e) {}
+  } catch (e) { }
 });
 
 exports.addCommand = function (commandName, commandObject) {
