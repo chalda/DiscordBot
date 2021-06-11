@@ -435,11 +435,23 @@ exports.playlist = {
                     rsp.edit("Couldn't download that playlist :( Make sure it's publicly available!");
                     return;
                 } else {
-                    let player = getPlayer(msg.guild.id);
-                    for(song of output) {
-                        player.enqueue(client,msg,null,song);
+                    try {
+                        let player = getPlayer(msg.guild.id);
+                        
+                        if(Array.isArray(output)){
+                            for(song of output) {
+                                player.enqueue(client,msg,null,song);
+                            }
+                            rsp.edit("queued " + output.length + " songs");
+                        } else {
+                            // For playlists of one song the song is returned directly without an enclosing array.
+                            player.enqueue(client,msg,null,output);
+                            rsp.edit("queued 1 song");
+                        }
+                    } catch(e) {
+                        rsp.edit("Error: " + e);
+                        console.log("Error: " + e + "\n When parsing Output: " + JSON.stringify(output));
                     }
-                    rsp.edit("queued " + output.length + " songs");
                 }
             });
             return;
