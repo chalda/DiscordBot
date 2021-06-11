@@ -1,9 +1,10 @@
 # DiscordBot
-A chat bot for Discord, built on top of <a href="https://discord.js.org">discord.js</a>.
+DiscordBot is a free, open-source, extensible bot for Discord servers, built on top of <a href="https://discord.js.org">discord.js</a>. This bot is generally self-hosted either on a dedicated server (like a Raspberry pi) or general cloud hosting like AWS etc. You can think of this bot as privacy focused as you are in total control of the code, so you can be sure that your information is secure.
 
 # Features:
+This bot has been in development since 2015 and has accumulated a ton of commands. Here are a few highlights:
 
-This bot has many many commands. Here are a few highlights:
+### General Commands
 
 - `!help [command]` -> Lists all commands or just help for one command.
 - `!gif query` -> Returns a gif connected to search query. Example = !gif dogs
@@ -15,13 +16,26 @@ This bot has many many commands. Here are a few highlights:
 - `!say text` -> Make the bot say text, useful mostly in combination with `alias`.
 - `!alias` -> Create custom shorthand commands in Discord!
 - `!invite` -> Generates an invite link for the Bot to join the requested server, easy way to get the bot in multiple servers.
+- `!twitch` -> pulls info on a twitch streamer
+- `!stock` -> check a ticker value
 - Channel management!
 
-Music streaming:
-- `!play song` -> Plays the requested song in voice.
-- `!skip song` -> Skip currently playing song
+do !help to get all the availble commands. Submissions for new generic commands are welcome. A lot of code is submitted and merged from users if it seems interesting enough but is not actively maintained by the main contributors so please report if you see any suspected bugs ;)
+
+!alias can be very powerful to create shotcuts for other commands or create copypastas. eg `!alias tsla stock $TSLA` will create a `!tsla` alias to run `"stock $TSLA"`
+
+### Music Playback Commands
+
+- `!play "text"` -> Plays the requested song in voice channel you are in.
+- `!play https://www.youtube.com/watch?v=wJelEXaPhJ8` -> Play a youtube song directly. Also supports soundcloud, spotify and a few other platforms.
+- `!playlist` -> add an entire playlist Supported` Platforms: Youtube, Spotify
+- `!pause` `!resume` -> self explanitory
+- `!skip` -> Skip currently playing song
 - `!queue` -> The queue of songs
-- `!queue [number]` -> The removes song from queue
+- `!queue -s` -> Compact version of queue
+- `!shuffle` -> shuffles queue
+- `!stop_playback` -> Clears playlist completelly
+- `!dequeue [number]` -> The removes song from queue
 
 And much more! Try `!help` to get a full list of available commands.
 
