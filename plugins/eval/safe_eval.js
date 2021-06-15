@@ -14,10 +14,16 @@ exports.commands = [
     "exec"
 ]
 
+const rmvBacktickRgx = new RegExp("```w+(.*)```|```(.*)```|`(.*)`", 'ms')
+function removeBackticks(content) {
+    return content.match(rmvBacktickRgx)[0]
+}
+
 exports.eval = {
     description: "Evaluates a javascript statement in a Sandboxed node interpreter",
     process: (client, msg, suffix) => {
-        const trimmed = _.trim(_.trim(suffix), '`');
+        const trimmed = _.trim(removeBackticks(_.trim(suffix)))
+        console.log(trimmed)
         try{
             let result = JSON.stringify(vm.run(trimmed), null, 2);
             if (result) {
@@ -32,7 +38,8 @@ exports.eval = {
 exports.exec = {
     description: "Evaluates a javascript code in a Sandboxed node environment. the code MUST be compilable javascript code (eg return 2+2), not arbitrary interpretable statements (eg 2+2)",
     process: (client, msg, suffix) => {
-        const trimmed = _.trim(_.trim(suffix), '`');
+        const trimmed = _.trim(removeBackticks(_.trim(suffix)))
+        console.log(trimmed)
         const jsVM = new NodeVM({
             require: {
                 external: ['discord.js', 'request-promise'],
