@@ -1,6 +1,6 @@
 {
   "name": "DiscordBot",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Bot for Discord app",
   "readme": "README.md",
   "maintainers": [
@@ -46,6 +46,7 @@
     "urban": "^0.3.1",
     "utf-8-validate": "^5.0.2",
     "uws": "^100.0.1",
+    "vm2": "^3.9.3",
     "wikijs": "^6.0.1",
     "youtube-dl": "^3.0.2",
     "youtube-node": "^1.3.3"

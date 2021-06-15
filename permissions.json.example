@@ -6,19 +6,19 @@
 
 {
   "global": {
-    "eval": false,
+    "exec": false,
     "pullanddeploy": false,
     "setUsername": false,
     "cmdauth": false
   },
   "users": {
     "12300000000000004": {
-      "eval": true,
+      "exec": false,
       "cmdauth": true,
       "*": true
     },
     "56700000000000008": {
-      "eval": false,
+      "exec": false,
       "say": false,
       "cmdauth": false,
       "year_fact": false
