@@ -1,6 +1,6 @@
-var request = require("request");
-var AuthDetails = require("../../auth.js").getAuthDetails();
-var Discord = require("discord.js");
+let request = require("request");
+let AuthDetails = require("../../auth.js").getAuthDetails();
+let Discord = require("discord.js");
 
 exports.commands = [
     "twitch_user",
@@ -39,7 +39,7 @@ exports.twitch_user = {
                 }
             },
             function(err,res,body){
-                var stream = JSON.parse(body);
+                let stream = JSON.parse(body);
                 console.log(stream);
                 if(stream.data.length > 0){
                     for(result of stream.data){
@@ -112,13 +112,13 @@ exports.twitch = {
                 
                 function(err,res,body){
                     let content = JSON.parse(body);
-                    var streams = [];
+                    let streams = [];
                     if(content && content.data && content.data.length > 0){
                         streams = content.data;
                     }
                     for(stream of streams){
-                        var image = stream.thumbnail_url.replace("{width}","1920").replace("{height}","1080");
-                        var status_line;
+                        let image = stream.thumbnail_url.replace("{width}","1920").replace("{height}","1080");
+                        let status_line;
                         if(stream.type == "live"){
                             status_line = " is live!";
                         } else if(stream.type == "vodcast"){
@@ -129,7 +129,7 @@ exports.twitch = {
                         }
                         let user = usermap[stream.user_id];
                         delete usermap[stream.user_id];
-                        var title;
+                        let title;
                         if(stream.title && stream.title.length > 0){
                             title = stream.title;
                         } else {
