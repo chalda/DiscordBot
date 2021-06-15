@@ -14,16 +14,31 @@ exports.commands = [
     "exec"
 ]
 
-const rmvBacktickRgx = new RegExp("```w+(.*)```|```(.*)```|`(.*)`", 'ms')
+const rmvBacktickRgx = /```\w+(.*)```|```(.*)```|`(.*)`/ms;
 function removeBackticks(content) {
-    return content.match(rmvBacktickRgx)[0]
+    let match = content.match(rmvBacktickRgx);
+    console.log(JSON.stringify(match));
+    let result = content;
+    if(match) {
+        if(match[1]) {
+            result = match[1];
+        }
+        if(match[2]) {
+            result = match[2];
+        }
+        if(match[3]) {
+            result = match[3];
+        }
+    }
+    console.log(result);
+    return result;
 }
 
 exports.eval = {
-    description: "Evaluates a javascript statement in a Sandboxed node interpreter",
+    description: "Evaluates a javascript expression in a Sandboxed node interpreter",
     process: (client, msg, suffix) => {
-        const trimmed = _.trim(removeBackticks(_.trim(suffix)))
-        console.log(trimmed)
+        const trimmed = _.trim(removeBackticks(_.trim(suffix)));
+        console.log("Evaluating: " + trimmed);
         try{
             let result = JSON.stringify(vm.run(trimmed), null, 2);
             if (result) {
@@ -36,7 +51,7 @@ exports.eval = {
 }
 
 exports.exec = {
-    description: "Evaluates a javascript code in a Sandboxed node environment. the code MUST be compilable javascript code (eg return 2+2), not arbitrary interpretable statements (eg 2+2)",
+    description: "Evaluates javascript code in a Sandboxed node environment. the code MUST be compilable javascript code (eg return 2+2), not arbitrary interpretable statements (eg 2+2)",
     process: (client, msg, suffix) => {
         const trimmed = _.trim(removeBackticks(_.trim(suffix)))
         console.log(trimmed)
