@@ -1,0 +1,7 @@
+{
+    "main": "safe_eval.js",
+    "dependencies": {
+        "vm2": "^3.9.3"
+    }
+}
+  
