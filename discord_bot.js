@@ -33,7 +33,7 @@ if (!AuthDetails.hasOwnProperty("bot_token") || AuthDetails.bot_token === "") {
 }
 
 // Load custom permissions
-let dangerousCommands = ["exec", "pullanddeploy", "setUsername", "cmdauth"]; // set array of dangerous commands
+let dangerousCommands = ["exec", "eval", "pullanddeploy", "setUsername", "cmdauth"]; // set array of dangerous commands
 let Permissions = {};
 try {
   Permissions = require("./permissions.json");
