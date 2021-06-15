@@ -33,7 +33,7 @@ if (!AuthDetails.hasOwnProperty("bot_token") || AuthDetails.bot_token === "") {
 }
 
 // Load custom permissions
-let dangerousCommands = ["eval", "pullanddeploy", "setUsername", "cmdauth"]; // set array of dangerous commands
+let dangerousCommands = ["exec", "eval", "pullanddeploy", "setUsername", "cmdauth"]; // set array of dangerous commands
 let Permissions = {};
 try {
   Permissions = require("./permissions.json");
@@ -207,17 +207,17 @@ commands = {
         .catch(console.error);
     },
   },
-  eval: {
-    usage: "<command>",
-    description:
-      'Executes arbitrary javascript in the bot process. User must have "eval" permission.',
-    process: function (bot, msg, suffix) {
-      let result = eval(suffix, bot).toString();
-      if (result) {
-        msg.channel.send(result);
-      }
-    },
-  },
+  // eval: {
+  //   usage: "<command>",
+  //   description:
+  //     'Executes arbitrary javascript in the bot process. User must have "eval" permission.',
+  //   process: function (bot, msg, suffix) {
+  //     let result = eval(suffix, bot).toString();
+  //     if (result) {
+  //       msg.channel.send(result);
+  //     }
+  //   },
+  // },
   cmdauth: {
     usage: "<userid> <get/toggle> <command>",
     description:
