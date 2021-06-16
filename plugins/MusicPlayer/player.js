@@ -189,7 +189,9 @@ class Player {
             if(!speaking && !this.paused){
                 console.log("Bot stopped speaking");
                 if(this.queue.length >= 1 && this.looping){
-                    this.queue.push(this.queue.shift());
+                    let ended = this.queue.shift();
+                    ended.response = null;
+                    this.queue.push(ended);
                 } else {
                     this.queue.shift();
                 }
@@ -204,7 +206,9 @@ class Player {
         dispatcher.on('end',()=>{
             console.log("Dispatcher song end");
             if(this.queue.length >= 1 && this.looping){
-                this.queue.push(this.queue.shift());
+                let ended = this.queue.shift();
+                ended.response = null;
+                this.queue.push(ended);
             } else {
                 this.queue.shift();
             }
