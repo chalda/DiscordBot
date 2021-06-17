@@ -21,7 +21,8 @@ exports.commands = [
     "pause",
     "resume",
     "playlist",
-    "shuffle"
+    "shuffle",
+    "loop"
 ]
 
 function getResultTitle(result){
@@ -88,6 +89,7 @@ class Player {
         this.queue = [];
         this.playing = false;
         this.paused = false;
+        this.looping = false;
     }
     enqueue(client,msg,response,info) {
         this.queue.push({
@@ -186,7 +188,13 @@ class Player {
         dispatcher.on('speaking',(speaking)=>{
             if(!speaking && !this.paused){
                 console.log("Bot stopped speaking");
-                this.queue.shift();
+                if(this.queue.length >= 1 && this.looping){
+                    let ended = this.queue.shift();
+                    ended.response = null;
+                    this.queue.push(ended);
+                } else {
+                    this.queue.shift();
+                }
                 if(this.queue.length === 0){
                     this.stop_playing(connection);
                 } else {
@@ -197,7 +205,13 @@ class Player {
         });
         dispatcher.on('end',()=>{
             console.log("Dispatcher song end");
-            this.queue.shift();
+            if(this.queue.length >= 1 && this.looping){
+                let ended = this.queue.shift();
+                ended.response = null;
+                this.queue.push(ended);
+            } else {
+                this.queue.shift();
+            }
             if(this.queue.length === 0){
                 this.stop_playing(connection);
             } else {
@@ -221,6 +235,9 @@ class Player {
     resume(){
         this.paused = false;
         this.dispatcher.resume();
+    }
+    loop(){
+        this.looping = !this.looping;
     }
 }
 
@@ -569,6 +586,23 @@ exports.shuffle = {
         if(player) {
             shuffleArray(player.queue);
             msg.channel.send("Shuffled the play queue!");
+        } else {
+            msg.channel.send("Couldn't find a player. Are you playing music?");
+        }
+    }
+}
+
+exports.loop = {
+    description: "Toggle looping the queue",
+    process: function (client, msg, suffix) {
+        let player = getPlayer(msg.guild.id);
+        if(player) {
+            player.loop();
+            if(player.looping){
+                msg.channel.send(wrap('Looping enabled.'));
+            } else {
+                msg.channel.send(wrap('Looping disabled.'));
+            }
         } else {
             msg.channel.send("Couldn't find a player. Are you playing music?");
         }
