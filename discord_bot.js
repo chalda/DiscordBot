@@ -170,6 +170,25 @@ commands = {
       bot.user.setStatus("online").then(console.log).catch(console.error);
     },
   },
+  presence: {
+    usage: "<presence text>",
+    description: "Sets bot's presence.",
+    process: function (bot, msg, suffix) {
+      if (!suffix){
+        bot.user.setPresence({
+          activity: {
+            name:
+              Config.commandPrefix +
+              "help | " +
+              bot.guilds.cache.array().length +
+              " Servers",
+          },
+        });
+      } else {
+        bot.user.setPresence({activity: {name: suffix}}).then(console.log).catch(console.error);
+      }
+    },
+  },
   say: {
     usage: "<message>",
     description: "Bot sends message",
