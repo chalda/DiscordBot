@@ -1,5 +1,4 @@
 const fs = require("fs");
-const { forEach } = require("lodash");
 const _ = require("lodash");
 
 process.on("unhandledRejection", (reason) => {
@@ -561,7 +560,7 @@ bot.on("presenceUpdate", (oldPresence, newPresence) => {
     if (newPresence.status === "online" || newPresence.status === "idle") {
       let msgs = messagebox[newPresence.userID];
       if (msgs != undefined) {
-        console.log("Found message/s for " + newPresence.userID);
+        console.log("Fetching message/s for " + newPresence.userID);
 
         // send messages
         msgs.forEach(msg => {
