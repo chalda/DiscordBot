@@ -10,7 +10,8 @@
     "eval": false,
     "pullanddeploy": false,
     "setUsername": false,
-    "cmdauth": false
+    "cmdauth": false,
+    "presence": false
   },
   "users": {
     "12300000000000004": {

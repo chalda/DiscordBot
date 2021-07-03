@@ -33,7 +33,7 @@ if (!AuthDetails.hasOwnProperty("bot_token") || AuthDetails.bot_token === "") {
 }
 
 // Load custom permissions
-let dangerousCommands = ["exec", "eval", "pullanddeploy", "setUsername", "cmdauth"]; // set array of dangerous commands
+let dangerousCommands = ["exec", "eval", "pullanddeploy", "setUsername", "cmdauth", "presence"]; // set array of dangerous commands
 let Permissions = {};
 try {
   Permissions = require("./permissions.json");
@@ -168,6 +168,25 @@ commands = {
     description: "Sets bot status to online.",
     process: function (bot, msg, suffix) {
       bot.user.setStatus("online").then(console.log).catch(console.error);
+    },
+  },
+  presence: {
+    usage: "<presence text>",
+    description: "Sets bot's presence.",
+    process: function (bot, msg, suffix) {
+      if (!suffix){
+        bot.user.setPresence({
+          activity: {
+            name:
+              Config.commandPrefix +
+              "help | " +
+              bot.guilds.cache.array().length +
+              " Servers",
+          },
+        });
+      } else {
+        bot.user.setPresence({activity: {name: suffix}}).then(console.log).catch(console.error);
+      }
     },
   },
   say: {
