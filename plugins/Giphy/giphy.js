@@ -5,7 +5,7 @@ exports.commands = [
 var qs = require("querystring");
 
 var giphy_config = {
-    "api_key": "dc6zaTOxFJmzC",
+    "api_key": "your key here",
     "rating": "r",
     "url": "http://api.giphy.com/v1/gifs/random",
     "permission": ["NORMAL"]
