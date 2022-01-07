@@ -180,7 +180,7 @@ commands = {
             name:
               Config.commandPrefix +
               "help | " +
-              bot.guilds.cache.array().length +
+              bot.guilds.cache.size +
               " Servers",
           },
         });
@@ -336,7 +336,7 @@ bot.on("ready", function () {
   require("./plugins.js").init(hooks);
   console.log(
     "Logged in! Currently serving " +
-    bot.guilds.cache.array().length +
+    bot.guilds.cache.size +
     " servers."
   );
   bot.user.setPresence({
@@ -344,7 +344,7 @@ bot.on("ready", function () {
       name:
         Config.commandPrefix +
         "help | " +
-        bot.guilds.cache.array().length +
+        bot.guilds.cache.size +
         " Servers",
     },
   });
