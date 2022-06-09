@@ -13,12 +13,12 @@ exports.inspirobot = {
 		},
 		function(err,res,body){
             if(body.length > 0){
-                msg.channel.send("", {
-                    embed: {
+                msg.channel.send({
+                    embeds: [{
                         "image": {
                             url: body
                         }
-                    }
+                    }]
                 });
             } else {
                 msg.channel.send("No inspiration to be had :(");

@@ -166,14 +166,14 @@ class Player {
             if(this.queue[0].response){
                 if(this.queue[0].response.channel){
                     const embed = generateResultEmbed('Now Playing',video_info,this.queue[0].queuer);
-                    this.queue[0].response.channel.send('',embed);
+                    this.queue[0].response.channel.send({ embeds: [embed]});
                     this.queue[0].response.delete();
                 }
             } else {
                 let msg_channel = this.voiceChannel.guild.channels.cache.find((v)=>v.type == "text" && v.name === MUSIC_CHANNEL_NAME);
                 if(msg_channel){
                     const embed = generateResultEmbed('Now Playing',video_info,this.queue[0].queuer);
-                    msg_channel.send('',embed);
+                    msg_channel.send({ embeds: [embed]});
                 }
             }
         const dispatcher = connection.play(buffer,{bitrate:'auto',volume:true});
@@ -293,7 +293,7 @@ exports.play = {
                     response.edit('Invalid Video!!');
                 } else {
                     const embed = generateResultEmbed('Queued: '+player.queue.length,info,msg.author);
-                    response.edit('',embed);
+                    response.edit({ embeds: [embed]});
                     player.enqueue(client,msg,response,info);
                 }
             });
@@ -353,7 +353,7 @@ exports.queue = {
                 const song = player.queue[count];
                 const title = count == 0 ? 'Now Playing:' : `${count}:`;
                 count += 1;
-                msg.channel.send('',generateResultEmbed(title,song.info,song.queuer)).then(msg_maker);
+                msg.channel.send({ embeds: [generateResultEmbed(title,song.info,song.queuer)]}).then(msg_maker);
             }
             msg_maker(msg);
         }
@@ -509,7 +509,7 @@ exports.playlist = {
 
                 if(show_playlist){
                     embed = {
-                        embed: {
+                         embeds:[{
                             color: 0x1db954,
                             author: {
                                 name: playlist.body.owner.display_name,
@@ -519,7 +519,7 @@ exports.playlist = {
                                 url: playlist.body.images[0].url,
                             },
                             title: playlist.body.name
-                        }
+                        }]
                     };
                 }
                 let response = await msg.channel.send("Processing playlist: 0 of " + playlist.body.tracks.items.length,embed);

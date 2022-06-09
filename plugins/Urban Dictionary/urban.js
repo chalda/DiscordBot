@@ -51,7 +51,7 @@ exports.urban = {
 									if(json.example) {
 										embed.addField("Example:",json.example, false);
 									}
-									msg.channel.send("",embed);
+									msg.channel.send({embeds: [embed]});
 								} else {
 									let followup;
 									followup = ()=>{

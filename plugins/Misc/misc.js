@@ -39,6 +39,6 @@ exports.lmgtfy = {
 		const embed = new Discord.MessageEmbed();
 		embed.title = "Click Here";
 		embed.url = "https://lmgtfy.com/?q="+encodeURIComponent(suffix);
-		msg.channel.send("",embed);
+		msg.channel.send({embeds: [embed]});
 	}
 }

@@ -43,15 +43,15 @@ exports.twitch_user = {
                 console.log(stream);
                 if(stream.data.length > 0){
                     for(result of stream.data){
-                        msg.channel.send("", {
-                            embed: {
+                        msg.channel.send({
+                            embeds: [{
                                 color: 0x4b367c,
                                 author: {
                                     name: result.display_name,
                                     icon_url: result.profile_image_url
                                 },
                                 description: result.description
-                            }
+                            }]
                         });
                     }
                 } else {
@@ -135,8 +135,8 @@ exports.twitch = {
                         } else {
                             title = "Stream is Live!";
                         }
-                        msg.channel.send("",{
-                            embed: {
+                        msg.channel.send({
+                            embeds: [{
                                 color: 0x4b367c,
                                 author: {
                                     name: user.display_name + status_line
@@ -153,13 +153,13 @@ exports.twitch = {
                                     "icon_url": "https://media.forgecdn.net/attachments/214/576/twitch.png",
                                     "text": stream.viewer_count + " viewers"
                                 }
-                            }
+                            }]
                         });
                     }
                     for(userid in usermap){
                         let user = usermap[userid];
-                        msg.channel.send("",{
-                            embed: {
+                        msg.channel.send({
+                            embeds: [{
                                 color: 0x4b367c,
                                 author: {
                                     name: user.display_name + " is offline"
@@ -173,7 +173,7 @@ exports.twitch = {
                                 "image": {
                                     url: user.offline_image_url
                                 }
-                            }
+                            }]
                         });
                     }
                 });
