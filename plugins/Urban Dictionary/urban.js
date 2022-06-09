@@ -9,6 +9,7 @@ exports.urban = {
 			usage: "<word>",
 			description: "looks up a word on Urban Dictionary",
 			process: function(bot,msg,suffix){
+				try {
 					let targetWord = suffix == "" ? urban.random() : urban(suffix);
 					targetWord.first(function(json) {
 							if (json) {
@@ -64,5 +65,9 @@ exports.urban = {
 								msg.channel.send( "No matches found");
 							}
 					});
+				} catch (e) {
+					console.log(e);
+					msg.channel.send("Failed to talk to Urban Dictionary :(");
+				}
 			}
 	}
