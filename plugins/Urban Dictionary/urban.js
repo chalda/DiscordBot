@@ -1,9 +1,10 @@
 let urban = require("urban");
 let Discord = require("discord.js");
 
-exports.commands = [
+// Disabled because it's broken :(
+/* exports.commands = [
 	"urban"
-];
+]; */
 
 exports.urban = {
 			usage: "<word>",

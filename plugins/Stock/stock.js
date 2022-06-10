@@ -1,7 +1,8 @@
 var AuthDetails = require("../../auth.js").getAuthDetails();
-exports.commands = [
+// Stock command disabled because both variants are broken :(
+/*exports.commands = [
 	"stock"
-]
+]*/
 
 if(AuthDetails.worldtradingdata_api_key) {
 	var request = require("request");

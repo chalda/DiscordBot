@@ -12,7 +12,7 @@ exports.create = {
 	usage: "<channel name>",
 	description: "creates a new text channel with the given name.",
 	process: function(bot,msg,suffix) {
-		if(msg.channel.permissionsFor(bot.user).any(Discord.Permissions.MANAGE_CHANNELS)){
+		if(msg.channel.permissionsFor(bot.user).any(Discord.Permissions.FLAGS.MANAGE_CHANNELS)){
 			msg.channel.guild.channels.create(suffix,{type:"text"}).then(function(channel) {
 				msg.channel.send("created " + channel);
 			}).catch(function(error){
@@ -37,8 +37,8 @@ exports.voice = {
 	usage: "<channel name>",
 	description: "creates a new voice channel with the give name.",
 	process: function(bot,msg,suffix) {
-		if(msg.channel.permissionsFor(bot.user).any(Discord.Permissions.MANAGE_CHANNELS)){
-			msg.channel.guild.channels.create(suffix,{type:"voice"}).then(function(channel) {
+		if(msg.channel.permissionsFor(bot.user).any(Discord.Permissions.FLAGS.MANAGE_CHANNELS)){
+			msg.channel.guild.channels.create(suffix,{type:"GUILD_VOICE"}).then(function(channel) {
 				msg.channel.send("created " + channel.id);
 				console.log("created " + channel);
 			}).catch(function(error){
@@ -53,7 +53,7 @@ exports["delete"] = {
 	usage: "<channel name>",
 	description: "deletes the specified channel",
 	process: function(bot,msg,suffix) {
-		if(msg.channel.permissionsFor(bot.user).any(Discord.Permissions.MANAGE_CHANNELS)){
+		if(msg.channel.permissionsFor(bot.user).any(Discord.Permissions.FLAGS.MANAGE_CHANNELS)){
 			var channel = bot.channels.resolve(suffix);
 			if(!channel && suffix.startsWith('<#')){
 				channel = bot.channels.resolve(suffix.substr(2,suffix.length-3));
@@ -78,7 +78,7 @@ exports.topic = {
 	usage: "[topic]",
 	description: 'Sets the topic for the channel. No topic removes the topic.',
 	process: function(bot,msg,suffix) {
-		if(msg.channel.permissionsFor(bot.user).any(Discord.Permissions.MANAGE_CHANNELS)){
+		if(msg.channel.permissionsFor(bot.user).any(Discord.Permissions.FLAGS.MANAGE_CHANNELS)){
 			msg.channel.setTopic(suffix);
 		} else {
 			msg.channel.send("I don't have permission to manage channels!");
