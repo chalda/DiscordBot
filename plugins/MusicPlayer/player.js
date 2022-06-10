@@ -1,8 +1,10 @@
 const YoutubeDL = require('youtube-dl');
 const Discord = require('discord.js');
+const DiscordVoice = require('@discordjs/voice');
 const MemoryStream = require('memorystream');
 const SpotifyWebApi = require('spotify-web-api-node');
 const AuthDetails = require("../../auth.js").getAuthDetails();
+const VoiceManager = require('../../voice_manager');
 
 let options = false;
 const MUSIC_CHANNEL_NAME = (options && options.musicChannelName) || 'music';
@@ -258,12 +260,20 @@ function getPlayer(server) {
     return players[server];
 }
 
+function getUserVoiceChannel(msg) {
+	var voiceChannelArray = msg.guild.channels.cache.filter((v)=>v.type == "GUILD_VOICE").filter((v)=>v.members.has(msg.author.id));
+    console.log(JSON.stringify(voiceChannelArray));
+    return voiceChannelArray.at(0);
+	if(voiceChannelArray.length == 0) return null;
+	else return voiceChannelArray[0];
+}
+
 exports.play = {
     usage: "<search terms|URL>",
     description: "Plays the given video in the user's voice channel. Supports YouTube and many others: http://rg3.github.io/youtube-dl/supportedsites.html",
     process: function(client, msg, suffix, isEdit){
         if(isEdit) return;
-        var arr = msg.guild.channels.cache.filter((v)=>v.type == "voice").filter((v)=>v.members.has(msg.author.id));
+        var arr = msg.guild.channels.cache.filter((v)=>v.type == "GUILD_VOICE").filter((v)=>v.members.has(msg.author.id));
         let responseChannel = msg.guild.channels.cache.find((v)=>v.type == "text" && v.name === MUSIC_CHANNEL_NAME) || msg.channel;
         if (arr.length == 0) return msg.channel.send( wrap('You\'re not in a voice channel.'));
 
@@ -294,10 +304,40 @@ exports.play = {
                 } else {
                     const embed = generateResultEmbed('Queued: '+player.queue.length,info,msg.author);
                     response.edit({ embeds: [embed]});
-                    player.enqueue(client,msg,response,info);
+                    //player.enqueue(client,msg,response,info);
+
+                    const stream = YoutubeDL(info,['-f', 'bestaudio[acodec=opus]/bestaudio/bestvideo']);
+                    const buffer = new MemoryStream(null,{maxbufsize:MAXIMUM_SONG_BUFFER_SIZE});
+                    stream.pipe(buffer);
+                    stream.on('error',(error)=>{
+                        console.log("YoutubeDL Stream error: " + error);
+                    });
+                    stream.on('close',()=>{
+                        console.log("YoutubeDL stream close");
+                    });
+                    
+                    stream.on('info', (info)=>{
+                        console.log('Download started')
+                        console.log('filename: ' + info._filename)
+                        console.log('size: ' + info.size)
+                        //const buffer = Buffer.allocUnsafe(info.size);
+                        //console.log(buffer)
+                    });
+                    
+                    stream.on('end',() => {
+                        console.log("YoutubeDL Stream end");
+                    });
+
+                    resource = DiscordVoice.createAudioResource(buffer);
+                    const events = VoiceManager.queue(getUserVoiceChannel(msg),resource);
+                    events.once('playing',() => {
+                        const embed = generateResultEmbed('Now Playing',info,msg.author);
+                        const result = response.channel.send({ embeds: [embed]});
+                        response.delete();
+                    })
                 }
             });
-        })
+        });
     }
 }
 

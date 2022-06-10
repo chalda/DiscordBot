@@ -23,6 +23,17 @@ console.log(
   Discord.version
 ); // send message notifying bot boot-up
 
+console.log("Voice support status:");
+try {
+  let Voice = require('@discordjs/voice');
+  console.log("discord.js voice library found");
+  console.log(Voice.generateDependencyReport());
+} catch (e) {
+  console.log("Voice support unavailable:");
+  console.log(e);
+}
+const VoiceManager = require('./voice_manager');
+
 const AuthDetails = require("./auth.js").getAuthDetails();
 
 if (!AuthDetails.hasOwnProperty("bot_token") || AuthDetails.bot_token === "") {
@@ -332,7 +343,8 @@ const intents = new Discord.Intents([
   Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
   Discord.Intents.FLAGS.DIRECT_MESSAGES,
   Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
-  Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING
+  Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING,
+  Discord.Intents.FLAGS.GUILD_VOICE_STATES
 ]);
 
 const bot = new Discord.Client({
@@ -527,9 +539,11 @@ function checkMessageForCommand(msg, isEdit) {
   }
 }
 
-bot.on("debug", (info) => {
-  console.log(info);
-});
+if (Config.debug) {
+  bot.on("debug", (info) => {
+    console.log(info);
+  });
+}
 
 bot.on("messageCreate", async (msg) => {
   console.log(`message creation ${msg}`);

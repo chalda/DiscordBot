@@ -1,6 +1,9 @@
 const Discord = require('discord.js');
+const DiscordVoice = require('@discordjs/voice');
 const fs = require('fs');
 const axios = require('axios').default;
+const VoiceManager = require('../../voice_manager');
+const { eventNames } = require('process');
 
 exports.commands = [
     "sfxadd",
@@ -62,7 +65,9 @@ exports.sfxrm = {
 }
 
 function getUserVoiceChannel(msg) {
-	var voiceChannelArray = msg.guild.channels.cache.filter((v)=>v.type == "voice").filter((v)=>v.members.has(msg.author.id)).array();
+	var voiceChannelArray = msg.guild.channels.cache.filter((v)=>v.type == "GUILD_VOICE").filter((v)=>v.members.has(msg.author.id));
+    console.log(JSON.stringify(voiceChannelArray));
+    return voiceChannelArray.at(0);
 	if(voiceChannelArray.length == 0) return null;
 	else return voiceChannelArray[0];
 }
@@ -71,8 +76,9 @@ exports.sfx = {
     usage: "<sound name>",
     description: "Play the sound effect with the given name in the voice channel the user is in",
     process: async (client, msg, suffix, isEdit) => {
-        const channel = getUserVoiceChannel(msg);
-        if (!channel) return msg.channel.send('You\'re not in a voice channel.');
+        const guild_channel = getUserVoiceChannel(msg);
+        console.log(JSON.stringify(guild_channel));
+        if (!guild_channel) return msg.channel.send('You\'re not in a voice channel.');
 
         // Make sure the suffix exists.
         if (!suffix) return msg.channel.send('No name specified!');
@@ -82,7 +88,7 @@ exports.sfx = {
         for await (const dirent of sfxdir) {
             if(dirent.name === suffix) {
                 console.log("Playing " + SFX_LOCATION+dirent.name);
-                const connection = await channel.join();
+                /*const connection = await channel.join();
                 connection.on('warn',console.log);
                 connection.on('error',console.log);
                 const dispatcher = connection.play(SFX_LOCATION+dirent.name);
@@ -98,6 +104,32 @@ exports.sfx = {
                 });
                 dispatcher.on('end',()=>{
                     connection.disconnect();
+                });*/
+                /*const connection = DiscordVoice.joinVoiceChannel({
+                    channelId: guild_channel.id,
+                    guildId: guild_channel.guild.id,
+                    adapterCreator: guild_channel.guild.voiceAdapterCreator,
+                });
+                connection.on('stateChange', (oldState, newState) => {
+                    console.log(`Connection transitioned from ${oldState.status} to ${newState.status}`);
+                });
+                const player = DiscordVoice.createAudioPlayer();
+                player.on('stateChange', (oldState, newState) => {
+                    console.log(`Audio player transitioned from ${oldState.status} to ${newState.status}`);
+                });
+                //await DiscordVoice.entersState(connection, DiscordVoice.VoiceConnectionStatus.Ready, 5_000);
+                player.play(DiscordVoice.createAudioResource(SFX_LOCATION+dirent.name));
+                connection.subscribe(player);
+                await DiscordVoice.entersState(player,DiscordVoice.AudioPlayerStatus.Playing);
+                await DiscordVoice.entersState(player,DiscordVoice.AudioPlayerStatus.Idle);
+                player.stop();
+                connection.destroy();*/
+                let events = VoiceManager.queue(guild_channel,DiscordVoice.createAudioResource(SFX_LOCATION+dirent.name));
+                events.on('playing', () => {
+                    console.log("Start playing " + dirent.name);
+                });
+                events.on('done', () => {
+                    console.log("Done playing " + dirent.name);
                 });
             }
         }
