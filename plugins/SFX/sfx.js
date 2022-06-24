@@ -99,7 +99,7 @@ exports.sfx = {
                     console.log(`sfx file error: ${error}`);
                 })
 
-                let events = VoiceManager.queue(guild_channel,DiscordVoice.createAudioResource(buffer));
+                let events = VoiceManager.queue(guild_channel,DiscordVoice.createAudioResource(buffer),{content: suffix});
                 const response = msg.channel.send(`will play ${dirent.name}`);
                 events.on('playing', async () => {
                     console.log(`Start playing ${dirent.name} in ${guild_channel.name}`);

@@ -1,16 +1,6 @@
+const Discord = require('discord.js');
 const DiscordVoice = require('@discordjs/voice');
 const EventEmitter = require('events');
-
-async function createPlayer(guild_channel) {
-    const connection = DiscordVoice.joinVoiceChannel({
-        channelId: guild_channel.id,
-        guildId: guild_channel.guild.id,
-        adapterCreator: channel.guild.voiceAdapterCreator,
-    });
-    const player = DiscordVoice.createAudioPlayer();
-    await DiscordVoice.entersState(connection, VoiceConnectionStatus.Ready, 5_000);
-
-}
 
 function log_state(manager) {
     console.log(`State for ${manager.guild_name}(${manager.guild_id}):\n\tstate: ${manager.state}\n\tconnection: ${manager.connection_state}\n\tplayer: ${manager.player_state}\n\tresource: ${manager.resource_state}\n\tqueue size: ${manager.queue.length}`);
@@ -109,6 +99,7 @@ function make_playback_manager(guild, connection, player, resource) {
         playing: resource,
         events: new EventEmitter(),
         queue: [],
+        loop: false,
         state: 'starting',
         connection_state: 'signalling',
         player_state: 'buffering',
@@ -162,7 +153,7 @@ exports.getUserVoiceChannel = (msg) => {
 	else return voiceChannelArray.at(0);
 }
 
-exports.queue = (guild_channel, resource) => {
+exports.queue = (guild_channel, resource, description) => {
     resource.playStream.on('error', () => {
         console.log('resource error');
     });
@@ -181,7 +172,8 @@ exports.queue = (guild_channel, resource) => {
         const events = new EventEmitter();
         manager.queue.push({
             resource: resource,
-            events: events
+            events: events,
+            description: description,
         });
         return events;
     } else {
@@ -191,46 +183,21 @@ exports.queue = (guild_channel, resource) => {
             guildId: guild_channel.guild.id,
             adapterCreator: guild_channel.guild.voiceAdapterCreator,
         });
-        /*connection.on('stateChange', (oldState, newState) => {
-            console.log(`Connection for ${guild_channel.guild.name}(${guild_channel.guild.id}) transitioned from ${oldState.status} to ${newState.status}`);
-        });*/
+
+        // Set up a new audio player
         const player = DiscordVoice.createAudioPlayer();
         player.on('stateChange', (oldState, newState) => {
             console.log(`Audio player for ${guild_channel.guild.name}(${guild_channel.guild.id}) transitioned from ${oldState.status} to ${newState.status}`);
         });
         player.play(resource);
-        /*const events = new EventEmitter();
-        const manager = {
-            guild_id: guild_channel.guild.id,
-            player: player,
-            playing: resource,
-            events: events,
-            queue: [],
-            connection_state: 'signalling',
-            player_state: 'buffering',
-        };*/
+        // Make a playback manager to manage playback in this channel
         const manager = make_playback_manager(guild_channel.guild, connection, player, resource);
+        manager.description = description;
         const events = manager.events;
-        /*connection.on('stateChange', (oldState, newState) => {
-            if (manager.connection_state !== oldState) {
-                console.log(`Connection for ${guild_channel.guild.name}(${guild_channel.guild.id}) was in state ${oldState} but we thought it was in ${manager.connection_state}`)
-            }
-            manager.connection_state = newState;
-        });
-        player.on('stateChange', (oldState, newState) => {
-            console.log(`Audio player for ${guild_channel.guild.name}(${guild_channel.guild.id}) transitioned from ${oldState.status} to ${newState.status}`);
-            if (manager.player_state !== oldState) {
-                console.log(`We thought it was in ${manager.player_state} instead!`);
-            }
-            manager.player_state = newState;
-        });*/
         playback_managers[guild_channel.guild.id] = manager;
+        // Start playback as soon as the connection is ready
         connection.once('ready', () => {
             connection.subscribe(player);
-            /*player.once('playing', () => {
-                events.emit('playing', player);
-                player.once('idle', make_on_finished(connection,player,events,manager));
-            });*/
         });
         return events;
     }
@@ -264,9 +231,131 @@ exports.unpause = (guild_id) => {
 exports.stop_playback = (guild_id) => {
     if (playback_managers.hasOwnProperty(guild_id)) {
         const manager = playback_managers[guild_id];
-        manager.queue = [];
+        manager.queue.length = 0;
         manager.player.stop(true);
         return true;
     }
     return false;
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+exports.shuffle = (guild_id) => {
+    if (playback_managers.hasOwnProperty(guild_id)) {
+        const manager = playback_managers[guild_id];
+        shuffleArray(manager.queue);
+        return true;
+    }
+    return false;
+}
+
+exports.loop = (guild_id) => {
+    throw 'Not implemented!';
+    if (playback_managers.hasOwnProperty(guild_id)) {
+        const manager = playback_managers[guild_id];
+        manager.loop = !manager.loop;
+        return manager.loop;
+    }
+    return 'error';
+}
+
+exports.dequeue = (guild_id, index) => {
+    if (playback_managers.hasOwnProperty(guild_id)) {
+        const manager = playback_managers[guild_id];
+        if ( index >=0 && index < manager.queue.length) {
+            manager.queue.splice(index, 1);
+            return true;
+        }
+    }
+    return false;
+}
+
+exports.show_queue = async (msg, compact) => {
+    const guild_id = msg.guild.id;
+    if (playback_managers.hasOwnProperty(guild_id)) {
+        const manager = playback_managers[guild_id];
+        if (manager.queue.length > 9) {
+            compact = true;
+        }
+        if(compact) {
+            let list = manager.queue.map((entry) => {
+                if (entry.hasOwnProperty('description')) {
+                    if (entry.description.hasOwnProperty('content')) {
+                        return entry.description.content;
+                    }
+                }
+                return '<unknown>';
+            });
+            let playing = '<unknown>';
+            if (manager.hasOwnProperty('description')) {
+                if (manager.description.hasOwnProperty('content')) {
+                    playing = manager.description.content;
+                }
+            }
+            let response = `Now Playing: ${playing}\n`;
+            let index = 0;
+            while (list.length > 0) {
+                let entry = `${index}: ${list.shift()}\n`;
+                index += 1;
+                let newmsg = `${response}${entry}`;
+                if(newmsg.length > (1024 - 8)){
+                    await msg.channel.send(response);
+                    response = entry;
+                } else {
+                    response = newmsg;
+                }
+            }
+            msg.channel.send(response);
+        } else {
+            //Assume we can stuff all the embeds into one message
+            let list = manager.queue.map((entry) => {
+                if (entry.hasOwnProperty('description')) {
+                    if (entry.description.hasOwnProperty('embed')) {
+                        return entry.description.embed;
+                    } else if (entry.description.hasOwnProperty('content')) {
+                        return new Discord.MessageEmbed().setTitle(`Queued: ${entry.description.content}`);
+                    }
+                }
+                return new Discord.MessageEmbed().setTitle('<unknown>');
+            });
+            let playing = new Discord.MessageEmbed().setTitle('Queued: <unknown>');
+            if (manager.hasOwnProperty('description')) {
+                if (manager.description.hasOwnProperty('embed')) {
+                    playing = manager.description.embed;
+                } else if (manager.description.hasOwnProperty('content')) {
+                    playing = new Discord.MessageEmbed().setTitle(`Queued: ${manager.description.content}`);
+                }
+            }
+            playing.title.replace('Queued','Now Playing');
+            let embeds = [playing];
+            embeds = embeds.concat(list);
+            await msg.channel.send({embeds: embeds});
+        }
+        return true;
+    }
+    return false;
+}
+
+exports.EventWaiter = (events) => {
+    return {
+        playing: () => {
+            return new Promise((resolve, reject) => {
+                events.once('playing',() => {
+                    resolve();
+                });
+            });
+        },
+        done: () => {
+            return new Promise((resolve, reject) => {
+                events.once('done', () => {
+                    resolve();
+                });
+            });
+        }
+    }
 }
