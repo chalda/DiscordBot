@@ -18,13 +18,15 @@ exports.commands = [
     "play",
     "skip",
     "stop_playback",
-    "queue",
-    "dequeue",
+    // Need rewrite for the unified queue
+    //"queue",
+    //"dequeue",
     "pause",
     "resume",
     "playlist",
-    "shuffle",
-    "loop"
+    // Need rewrite for the unified queue
+    //"shuffle",
+    //"loop"
 ]
 
 function getResultTitle(result){
@@ -94,15 +96,16 @@ class Player {
         this.looping = false;
     }
     enqueue(client,msg,response,info) {
+        this.voiceChannel = VoiceManager.getUserVoiceChannel(msg);
         this.queue.push({
             queuer: msg.author,
             response: response,
             info: info
         });
-        if(this.voiceChannel === undefined){
-            this.voiceChannel = getUserVoiceChannel(msg);
-        }
-        this.play_queue();
+        //if(this.voiceChannel === undefined){
+            
+        //}
+        this.play_queue(this.voiceChannel);
     }
     skip(){
         if(this.dispatcher){
@@ -114,20 +117,21 @@ class Player {
     }
     stop_playback(){
         this.queue = [];
-        if(this.dispatcher){
+        /*if(this.dispatcher){
             this.dispatcher.pause();
             return true;
         } else {
             return false;
-        }
+        }*/
     }
-    play_queue(){
+    play_queue(voiceChannel){
         if(this.playing || this.queue.length === 0){
             //already playing
             return;
         }
         this.playing = true;
-        this.voiceChannel.join().then(connection=>{
+        this.play_song(voiceChannel);
+        /*this.voiceChannel.join().then(connection=>{
             this.connection = connection;
             if(DEBUG){
                 connection.on('debug',console.log);
@@ -138,9 +142,9 @@ class Player {
         }).catch(err=>{
             console.error("Couldn't join the voice channel :(");
             console.log(err);
-        })
+        })*/
     }
-    play_song(connection){
+    play_song(voiceChannel){
         const video_info = this.queue[0].info;
         
         const stream = YoutubeDL(video_info,['-f', 'bestaudio[acodec=opus]/bestaudio/bestvideo']);
@@ -178,18 +182,52 @@ class Player {
                     msg_channel.send({ embeds: [embed]});
                 }
             }
-        const dispatcher = connection.play(buffer,{bitrate:'auto',volume:true});
-        this.stream = stream;
-        this.dispatcher = dispatcher;
-        if(DEBUG){
-            dispatcher.on('debug',console.log);
-        }
-        dispatcher.on('start',()=>{
-            console.log('Playback start');
-        });
-        dispatcher.on('speaking',(speaking)=>{
-            if(!speaking && !this.paused){
-                console.log("Bot stopped speaking");
+            console.log(`Queuing ${buffer.toString()} to ${voiceChannel.toString()}`);
+            const events = VoiceManager.queue(voiceChannel,buffer);
+            events.once('done', () => {
+                if(this.queue.length >= 1 && this.looping){
+                    let ended = this.queue.shift();
+                    ended.response = null;
+                    this.queue.push(ended);
+                } else {
+                    this.queue.shift();
+                }
+                if(this.queue.length === 0){
+                    this.stop_playing(connection);
+                } else {
+                    const video = this.queue[0].info;
+                    this.play_song();
+                }
+            });
+            /*const dispatcher = connection.play(buffer,{bitrate:'auto',volume:true});
+            this.stream = stream;
+            this.dispatcher = dispatcher;
+            if(DEBUG){
+                dispatcher.on('debug',console.log);
+            }
+            dispatcher.on('start',()=>{
+                console.log('Playback start');
+            });
+            dispatcher.on('speaking',(speaking)=>{
+                if(!speaking && !this.paused){
+                    console.log("Bot stopped speaking");
+                    if(this.queue.length >= 1 && this.looping){
+                        let ended = this.queue.shift();
+                        ended.response = null;
+                        this.queue.push(ended);
+                    } else {
+                        this.queue.shift();
+                    }
+                    if(this.queue.length === 0){
+                        this.stop_playing(connection);
+                    } else {
+                        const video = this.queue[0].info;
+                        this.play_song(connection,video);
+                    }
+                }
+            });
+            dispatcher.on('end',()=>{
+                console.log("Dispatcher song end");
                 if(this.queue.length >= 1 && this.looping){
                     let ended = this.queue.shift();
                     ended.response = null;
@@ -203,28 +241,11 @@ class Player {
                     const video = this.queue[0].info;
                     this.play_song(connection,video);
                 }
-            }
-        });
-        dispatcher.on('end',()=>{
-            console.log("Dispatcher song end");
-            if(this.queue.length >= 1 && this.looping){
-                let ended = this.queue.shift();
-                ended.response = null;
-                this.queue.push(ended);
-            } else {
-                this.queue.shift();
-            }
-            if(this.queue.length === 0){
-                this.stop_playing(connection);
-            } else {
-                const video = this.queue[0].info;
-                this.play_song(connection,video);
-            }
-        });
-    },SONG_BUFFER_TIME);
+            });*/
+        },SONG_BUFFER_TIME);
     }
-    stop_playing(connection){
-        connection.disconnect();
+    stop_playing(){
+        //connection.disconnect();
         this.playing = false;
         this.voiceChannel = undefined;
         this.stream = undefined;
@@ -268,6 +289,33 @@ function getUserVoiceChannel(msg) {
 	else return voiceChannelArray[0];
 }
 
+function playYoutube(info,channel) {
+    const stream = YoutubeDL(info,['-f', 'bestaudio[acodec=opus]/bestaudio/bestvideo']);
+    const buffer = new MemoryStream(null,{maxbufsize:MAXIMUM_SONG_BUFFER_SIZE});
+    stream.pipe(buffer);
+    stream.on('error',(error)=>{
+        console.log("YoutubeDL Stream error: " + error);
+    });
+    stream.on('close',()=>{
+        console.log("YoutubeDL stream close");
+    });
+    
+    stream.on('info', (info)=>{
+        console.log('Download started')
+        console.log('filename: ' + info._filename)
+        console.log('size: ' + info.size)
+        //const buffer = Buffer.allocUnsafe(info.size);
+        //console.log(buffer)
+    });
+    
+    stream.on('end',() => {
+        console.log("YoutubeDL Stream end");
+    });
+
+    resource = DiscordVoice.createAudioResource(buffer);
+    return VoiceManager.queue(channel,resource);
+}
+
 exports.play = {
     usage: "<search terms|URL>",
     description: "Plays the given video in the user's voice channel. Supports YouTube and many others: http://rg3.github.io/youtube-dl/supportedsites.html",
@@ -306,7 +354,7 @@ exports.play = {
                     response.edit({ embeds: [embed]});
                     //player.enqueue(client,msg,response,info);
 
-                    const stream = YoutubeDL(info,['-f', 'bestaudio[acodec=opus]/bestaudio/bestvideo']);
+                    /*const stream = YoutubeDL(info,['-f', 'bestaudio[acodec=opus]/bestaudio/bestvideo']);
                     const buffer = new MemoryStream(null,{maxbufsize:MAXIMUM_SONG_BUFFER_SIZE});
                     stream.pipe(buffer);
                     stream.on('error',(error)=>{
@@ -329,12 +377,13 @@ exports.play = {
                     });
 
                     resource = DiscordVoice.createAudioResource(buffer);
-                    const events = VoiceManager.queue(getUserVoiceChannel(msg),resource);
+                    const events = VoiceManager.queue(getUserVoiceChannel(msg),resource);*/
+                    const events = playYoutube(info,getUserVoiceChannel(msg));
                     events.once('playing',() => {
                         const embed = generateResultEmbed('Now Playing',info,msg.author);
                         const result = response.channel.send({ embeds: [embed]});
                         response.delete();
-                    })
+                    });
                 }
             });
         });
@@ -344,8 +393,7 @@ exports.play = {
 exports.skip = {
     description: "skips to the next song in the playback queue",
     process: function(client, msg, suffix){
-        let player = getPlayer(msg.guild.id);
-        if(!player.skip()){
+        if (!VoiceManager.skip(msg.guild.id)) {
             msg.channel.send("Couldn't skip :(");
         }
     }
@@ -354,8 +402,7 @@ exports.skip = {
 exports.stop_playback = {
     description: "stops music playback",
     process: function(client, msg, suffix){
-        let player = getPlayer(msg.guild.id);
-        if(!player.stop_playback()){
+        if(!VoiceManager.skip(msg.guild.id)){
             msg.channel.send("Couldn't stop playback :( Were you playing anything?");
         }
     }
@@ -439,11 +486,16 @@ exports.dequeue = {
 exports.pause = {
     description: "pauses music playback",
     process: function(client, msg, suffix) {
-        let player = getPlayer(msg.guild.id);
+        /*let player = getPlayer(msg.guild.id);
         if (!player.playing) return msg.channel.send( wrap('No music being played.'));
         // Pause.
         msg.channel.send( wrap('Playback paused.'));
-        player.pause();
+        player.pause();*/
+        if (VoiceManager.pause(msg.guild.id)) {
+            msg.channel.send( wrap('Playback paused.'));
+        } else {
+            msg.channel.send("Couldn't pause :(");
+        }
     }
 }
 
@@ -456,12 +508,17 @@ exports.pause = {
 exports.resume = {
     description: "resumes music playback",
     process: function(client, msg, suffix) {
-        let player = getPlayer(msg.guild.id);
+        /*let player = getPlayer(msg.guild.id);
         if (!player.playing) return msg.channel.send( wrap('No music being played.'));
 
         // Resume.
         msg.channel.send( wrap('Playback resumed.'));
-        player.resume();
+        player.resume();*/
+        if (VoiceManager.unpause(msg.guild.id)) {
+            msg.channel.send( wrap('Playback resumed.'));
+        } else {
+            msg.channel.send("Couldn't resume :(");
+        }
     }
 }
 
@@ -494,16 +551,18 @@ exports.playlist = {
                 } else {
                     try {
                         let player = getPlayer(msg.guild.id);
-                        
+                        let channel = getUserVoiceChannel(msg);
                         if(Array.isArray(output)){
                             for(song of output) {
-                                player.enqueue(client,msg,null,song);
+                                //player.enqueue(client,msg,null,song);
+                                const events = playYoutube(song,channel);
                             }
                             let response = await rsp;
                             response.edit("queued " + output.length + " songs");
                         } else {
                             // For playlists of one song the song is returned directly without an enclosing array.
-                            player.enqueue(client,msg,null,output);
+                            //player.enqueue(client,msg,null,output);
+                            const events = playYoutube(output,channel);
                             let response = await rsp;
                             response.edit("queued 1 song");
                         }
@@ -591,10 +650,12 @@ exports.playlist = {
                 });
                 let loaded = 0;
                 let edited = true;
+                let channel = getUserVoiceChannel(msg);
                 for(song of songs) {
                     try {
                         let info = await song;
-                        player.enqueue(client,msg,null,info);
+                        //player.enqueue(client,msg,null,info);
+                        const events = playYoutube(info,channel);
                     } catch (e) {
                         console.log("failed trying to search for a song!");
                         console.error(e);
