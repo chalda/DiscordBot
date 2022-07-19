@@ -14,7 +14,7 @@ const parseResposneAndSend = (stock, channel) => {
 
   channel.send("", {
     embed: {
-      title: symbol,
+      title: symbol.toUpperCase(),
       description: `__**Price: ${formattedPrice}**__\n`,
       url: "https://finage.co.uk/stock/" + symbol,
     },
