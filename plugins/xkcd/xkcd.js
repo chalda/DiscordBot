@@ -1,3 +1,4 @@
+let Discord = require("discord.js");
 exports.commands = [
 	"xkcd",
 	"highnoon"
@@ -13,13 +14,17 @@ exports.xkcd = {
 		require("request")(url,function(err,res,body){
 			try{
 				var comic = JSON.parse(body);
-				msg.channel.send(
-					comic.title+"\n"+comic.img,function(){
-						msg.channel.send(comic.alt)
-				});
+				let embed = new Discord.MessageEmbed();
+				embed.color = 0xffffff;
+				embed.url = `https://xkcd.com/${comic.num}/`;
+				embed.title = comic.title;
+				embed.type = 'image';
+				embed.image = { url: comic.img };
+				embed.description = comic.alt;
+				msg.channel.send({embeds: [embed]});
 			}catch(e){
 				msg.channel.send(
-					"Couldn't fetch an XKCD for "+suffix);
+					`Couldn't fetch an XKCD for ${suffix}\n${e}`);
 			}
 		});
 	}

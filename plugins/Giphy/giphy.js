@@ -1,6 +1,8 @@
-exports.commands = [
+
+// command is broken, looks like Giphy finally stopped supporting the API key in the developer docs
+/*exports.commands = [
 	"giphy"
-]
+]*/
 
 var qs = require("querystring");
 

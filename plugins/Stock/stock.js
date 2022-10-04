@@ -8,7 +8,7 @@ const formatStockPrice = (num) => {
   }).format(num);
 };
 
-const parseResposneAndSend = (stock, channel) => {
+const parseResponseAndSend = (stock, channel) => {
   const { price, symbol, timestamp } = stock;
   const formattedPrice = formatStockPrice(price);
 
@@ -55,10 +55,10 @@ if (AuthDetails.finage_api_key) {
           } else {
             if (result.length) {
               for (let stock of result) {
-                parseResposneAndSend(stock, msg.channel);
+                parseResponseAndSend(stock, msg.channel);
               }
             } else {
-              parseResposneAndSend(result, msg.channel);
+              parseResponseAndSend(result, msg.channel);
             }
           }
         }
