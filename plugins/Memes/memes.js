@@ -49,11 +49,11 @@ exports.init = (hooks) => {
             }
             for(meme in Memes.imgMemes){
                 if(msg.toString().includes(meme)){
-                    msg.channel.send("",{embed:{
+                    msg.channel.send({embeds:[{
                         "image": {
                             url: Memes.imgMemes[meme]
                         }
-                    }});
+                    }]});
                 }
             }
         }

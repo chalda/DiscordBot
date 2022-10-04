@@ -1,7 +1,8 @@
 var AuthDetails = require("../../auth.js").getAuthDetails();
-exports.commands = [
+// Stock command disabled because both variants are broken :(
+/*exports.commands = [
 	"stock"
-]
+]*/
 
 if(AuthDetails.worldtradingdata_api_key) {
 	var request = require("request");
@@ -50,7 +51,7 @@ if(AuthDetails.worldtradingdata_api_key) {
 	var string = require('string-sanitizer');
 	var axios = require('axios');
 	var cheerio = require('cheerio');
-	var tmxmoney_url = 'https://web.tmxmoney.com/quote.php?qm_symbol=';
+	var tmxmoney_url = 'https://money.tmx.com/en/quote/tsla';
 
 	exports.stock = {
 			usage: "<stock to fetch>",
@@ -60,6 +61,7 @@ if(AuthDetails.worldtradingdata_api_key) {
 					axios.get(qurl).then(response => {
 							if(response.status === 200) {
 									var html = response.data;
+									console.log(html);
 									var $ = cheerio.load(html);
 									var price = $('.price > span').text()
 									console.log(suffix + " price: $" + price);

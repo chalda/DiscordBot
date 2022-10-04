@@ -23,6 +23,17 @@ console.log(
   Discord.version
 ); // send message notifying bot boot-up
 
+console.log("Voice support status:");
+try {
+  let Voice = require('@discordjs/voice');
+  console.log("discord.js voice library found");
+  console.log(Voice.generateDependencyReport());
+} catch (e) {
+  console.log("Voice support unavailable:");
+  console.log(e);
+}
+const VoiceManager = require('./voice_manager');
+
 const AuthDetails = require("./auth.js").getAuthDetails();
 
 if (!AuthDetails.hasOwnProperty("bot_token") || AuthDetails.bot_token === "") {
@@ -200,7 +211,7 @@ commands = {
     usage: "<message>",
     description: "Bot sends message in text to speech.",
     process: function (bot, msg, suffix) {
-      msg.channel.send(suffix, { tts: true });
+      msg.channel.send({content: suffix, tts: true });
     },
   },
   msg: {
@@ -306,7 +317,7 @@ if (AuthDetails.hasOwnProperty("client_id")) {
       msg.channel.send(
         "Invite link: https://discordapp.com/oauth2/authorize?&client_id=" +
         AuthDetails.client_id +
-        "&scope=bot&permissions=470019135"
+        "&scope=bot&permissions=397489077312"
       ); // send link to invite bot into server.
     },
   };
@@ -326,7 +337,23 @@ function updateMessagebox() {
   );
 }
 
-const bot = new Discord.Client();
+const intents = new Discord.Intents([
+  Discord.Intents.FLAGS.GUILDS,
+  Discord.Intents.FLAGS.GUILD_MESSAGES,
+  Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+  Discord.Intents.FLAGS.DIRECT_MESSAGES,
+  Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+  Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING,
+  Discord.Intents.FLAGS.GUILD_VOICE_STATES
+]);
+
+const bot = new Discord.Client({
+  intents: intents,
+  partials: [
+    'MESSAGE',
+    'CHANNEL'
+  ]
+});
 
 let hooks = {
   onMessage: [],
@@ -340,13 +367,14 @@ bot.on("ready", function () {
     " servers."
   );
   bot.user.setPresence({
-    activity: {
+    activities: [{
       name:
         Config.commandPrefix +
         "help | " +
         bot.guilds.cache.size +
         " Servers",
-    },
+    }],
+    status: 'online'
   });
   console.log(
     "Type " + Config.commandPrefix + "help on Discord for a command list."
@@ -511,7 +539,17 @@ function checkMessageForCommand(msg, isEdit) {
   }
 }
 
-bot.on("message", (msg) => {
+if (Config.debug) {
+  bot.on("debug", (info) => {
+    console.log(info);
+  });
+}
+
+bot.on("messageCreate", async (msg) => {
+  console.log(`message creation ${msg}`);
+  if (msg.partial) {
+    msg = await msg.fetch();
+  }
   if (!checkMessageForCommand(msg, false)) {
     for (msgListener of hooks.onMessage) {
       msgListener(msg);
@@ -520,6 +558,10 @@ bot.on("message", (msg) => {
 });
 bot.on("messageUpdate", (oldMessage, newMessage) => {
   checkMessageForCommand(newMessage, true);
+});
+
+bot.on('interactionCreate', (interation) => {
+  console.log(`interaction: ${JSON.stringify(interation)}`);
 });
 
 //Log user status changes

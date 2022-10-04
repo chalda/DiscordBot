@@ -79,7 +79,7 @@ WolframPlugin.prototype.respond = async function (query, channel, bot, tmpMsg) {
 						name: "WolframAlpha",
 						url: "https://www.wolframalpha.com/"
 					};
-					await channel.send("", embed);
+					await channel.send({ embeds: [embed]});
 				}
 			}
 			if (pod.hasOwnProperty("infos")) {
@@ -107,7 +107,7 @@ WolframPlugin.prototype.respond = async function (query, channel, bot, tmpMsg) {
 						}
 					}
 				}
-				await channel.send(message, embeds);
+				await channel.send({content: message, embeds: embeds});
 			}
 		}
 	} else {

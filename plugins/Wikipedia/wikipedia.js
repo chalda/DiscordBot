@@ -41,7 +41,7 @@ async function ShowPage(msg, page_title) {
 	}
 	summary = await summary;
 	if (summary.length > 2048) {
-		await msg.channel.send("", embed);
+		await msg.channel.send({embeds: [embed]});
 		let sumText = summary.toString().split('\n');
 		let continuation = function () {
 			let paragraph = sumText.shift();
@@ -52,7 +52,7 @@ async function ShowPage(msg, page_title) {
 		continuation();
 	} else {
 		embed.description = summary.toString();
-		msg.channel.send("", embed);
+		msg.channel.send({embeds: [embed]});
 	}
 }
 

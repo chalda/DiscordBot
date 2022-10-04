@@ -1,6 +1,10 @@
 const Discord = require('discord.js');
+const DiscordVoice = require('@discordjs/voice');
 const fs = require('fs');
+const MemoryStream = require('memorystream');
 const axios = require('axios').default;
+const VoiceManager = require('../../voice_manager');
+const { eventNames } = require('process');
 
 exports.commands = [
     "sfxadd",
@@ -62,17 +66,19 @@ exports.sfxrm = {
 }
 
 function getUserVoiceChannel(msg) {
-	var voiceChannelArray = msg.guild.channels.cache.filter((v)=>v.type == "voice").filter((v)=>v.members.has(msg.author.id)).array();
+	var voiceChannelArray = msg.guild.channels.cache.filter((v)=>v.type == "GUILD_VOICE").filter((v)=>v.members.has(msg.author.id));
+    console.log(JSON.stringify(voiceChannelArray));
 	if(voiceChannelArray.length == 0) return null;
-	else return voiceChannelArray[0];
+	else return voiceChannelArray.at(0);
 }
 
 exports.sfx = {
     usage: "<sound name>",
     description: "Play the sound effect with the given name in the voice channel the user is in",
     process: async (client, msg, suffix, isEdit) => {
-        const channel = getUserVoiceChannel(msg);
-        if (!channel) return msg.channel.send('You\'re not in a voice channel.');
+        const guild_channel = VoiceManager.getUserVoiceChannel(msg);
+        console.log(JSON.stringify(guild_channel));
+        if (!guild_channel) return msg.channel.send('You\'re not in a voice channel.');
 
         // Make sure the suffix exists.
         if (!suffix) return msg.channel.send('No name specified!');
@@ -82,22 +88,26 @@ exports.sfx = {
         for await (const dirent of sfxdir) {
             if(dirent.name === suffix) {
                 console.log("Playing " + SFX_LOCATION+dirent.name);
-                const connection = await channel.join();
-                connection.on('warn',console.log);
-                connection.on('error',console.log);
-                const dispatcher = connection.play(SFX_LOCATION+dirent.name);
-                dispatcher.on('debug',console.log);
-                
-                dispatcher.on('start',()=>{
-                    console.log('Playback start');
+
+                // HACK: We manually make a file stream and buffer here because otherwise
+                // discord.js breaks and never plays sfx after the Youtube player has played
+                let file_stream = fs.createReadStream(SFX_LOCATION+dirent.name);
+                let MAXIMUM_SONG_BUFFER_SIZE = (options && options.maxSongBufferSize) || 1024 * 1024 * 1024;
+                const buffer = new MemoryStream(null,{maxbufsize:MAXIMUM_SONG_BUFFER_SIZE});
+                file_stream.pipe(buffer);
+                file_stream.on('error',(error) => {
+                    console.log(`sfx file error: ${error}`);
+                })
+
+                let events = VoiceManager.queue(guild_channel,DiscordVoice.createAudioResource(buffer),{content: suffix});
+                const response = msg.channel.send(`will play ${dirent.name}`);
+                events.on('playing', async () => {
+                    console.log(`Start playing ${dirent.name} in ${guild_channel.name}`);
+                    (await response).edit(`playing ${dirent.name}`);
                 });
-                dispatcher.on('speaking',(speaking)=>{
-                    if(!speaking){
-                        connection.disconnect();
-                    }
-                });
-                dispatcher.on('end',()=>{
-                    connection.disconnect();
+                events.on('done', async () => {
+                    console.log("Done playing " + dirent.name);
+                    (await response).delete();
                 });
             }
         }

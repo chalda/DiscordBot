@@ -24,7 +24,7 @@ exports.chuckNorris = {
 }
 
 exports.watchtogether = {
-	usage: "[video url (Youtube, Vimeo)",
+	usage: "[video url (Youtube, Vimeo)]",
 	description: "Generate a watch2gether room with your video to watch with your friends!",
 	process: function(bot,msg,suffix){
 		const watch2getherUrl = "https://www.watch2gether.com/go#";
@@ -39,6 +39,6 @@ exports.lmgtfy = {
 		const embed = new Discord.MessageEmbed();
 		embed.title = "Click Here";
 		embed.url = "https://lmgtfy.com/?q="+encodeURIComponent(suffix);
-		msg.channel.send("",embed);
+		msg.channel.send({embeds: [embed]});
 	}
 }

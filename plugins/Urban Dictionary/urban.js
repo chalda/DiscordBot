@@ -1,9 +1,10 @@
 let urban = require("urban");
 let Discord = require("discord.js");
 
-exports.commands = [
+// Disabled because it's broken :(
+/* exports.commands = [
 	"urban"
-];
+]; */
 
 exports.urban = {
 			usage: "<word>",
@@ -51,7 +52,7 @@ exports.urban = {
 									if(json.example) {
 										embed.addField("Example:",json.example, false);
 									}
-									msg.channel.send("",embed);
+									msg.channel.send({embeds: [embed]});
 								} else {
 									let followup;
 									followup = ()=>{

@@ -74,8 +74,8 @@ exports.userid = {
 	usage: "[user to get id of]",
 	description: "Returns the unique id of a user. This is useful for permissions.",
 	process: function(bot,msg,suffix) {
-		if(msg.mentions.members.array().size > 0){
-			if(msg.mentions.members.array().size > 1){
+		if(msg.mentions.members.size > 0){
+			if(msg.mentions.members.size > 1){
 				var response = "multiple users found:";
 				for(id of msg.mentions.members.keys()){
 					response += "\nThe id of <@" + id + "> is " + id;
