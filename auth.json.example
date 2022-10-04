@@ -10,7 +10,7 @@
   "wolfram_api_key": "go here and click sign up http://products.wolframalpha.com/api/",
   "twitch_client_id": "create a twitch app here https://dev.twitch.tv/dashboard/apps/create (requires a twitch account)",
   "twitch_client_secret": "get this from the twitch dev dashboard once you've created your twitch app",
-  "worldtradingdata_api_key": "create one at https://www.worldtradingdata.com/register",
+  "finage_api_key": "create one at https://finage.co.uk/",
   "spotify_client_id": "create an app at https://developer.spotify.com/my-applications/",
   "spotify_client_secret": "create an app at https://developer.spotify.com/my-applications/"
 }
