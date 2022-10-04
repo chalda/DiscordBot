@@ -12,12 +12,12 @@ const parseResponseAndSend = (stock, channel) => {
   const { price, symbol, timestamp } = stock;
   const formattedPrice = formatStockPrice(price);
 
-  channel.send("", {
-    embed: {
+  channel.send({
+    embeds: [{
       title: symbol.toUpperCase(),
       description: `__**Price: ${formattedPrice}**__\n`,
       url: "https://finage.co.uk/stock/" + symbol,
-    },
+    }],
   });
 };
 
