@@ -1,13 +1,13 @@
 
-// command is broken, looks like Giphy finally stopped supporting the API key in the developer docs
-/*exports.commands = [
+exports.commands = [
 	"giphy"
-]*/
+]
 
 var qs = require("querystring");
+var AuthDetails = require("../../auth.json");
 
 var giphy_config = {
-    "api_key": "dc6zaTOxFJmzC",
+    "api_key": AuthDetails.giphy_api_key,
     "rating": "r",
     "url": "http://api.giphy.com/v1/gifs/random",
     "permission": ["NORMAL"]

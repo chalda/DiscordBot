@@ -42,3 +42,6 @@ sfx_files
 # IDE files
 .vs
 .idea
+
+# Gitpod
+.gitpod.yml
