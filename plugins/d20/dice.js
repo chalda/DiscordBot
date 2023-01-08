@@ -1,3 +1,5 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 exports.commands = [
 	"roll", "vroll"
 ]
@@ -25,7 +27,20 @@ exports.roll = {
 				msg.channel.send(`${msg.author} tried to roll too many dice at once!`);
 			}
 		}
-	}
+	},
+	slashCommand: new SlashCommandBuilder()
+        .setName('roll')
+        .setDescription("rolls dice")
+        .addStringOption(option => option
+            .setName('dice')
+            .setDescription('the dice to roll')
+            .setRequired(true))
+		.addBooleanOption(b => b.setName("concise").setDescription("Don't show individual dice results")),
+    slashCommandExec: async interaction => {
+        const dice = interaction.options.getString('dice');
+        const result = interaction.options.getBoolean('concise') ? `${interaction.member} rolled ${d20.roll(dice)}` : `${interaction.member} rolled ${d20.verboseRoll(dice)}`
+        await interaction.reply(result);
+    }
 }
 
 exports.vroll = {

@@ -5,6 +5,7 @@ const MemoryStream = require('memorystream');
 const SpotifyWebApi = require('spotify-web-api-node');
 const AuthDetails = require("../../auth.js").getAuthDetails();
 const VoiceManager = require('../../voice_manager');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 let options = false;
 const MUSIC_CHANNEL_NAME = (options && options.musicChannelName) || 'music';
@@ -42,8 +43,24 @@ function generateResultEmbed(title,result, queuer){
 		.setTitle(title)
 		// Set the color of the embed
 		.setColor(0xFF0000)
+        .setURL(result.webpage_url)
 		// Set the main content of the embed
 		.setDescription(getResultTitle(result))
+		.setThumbnail(result.thumbnail)
+		.addField('Duration:', result.duration, true)
+		.addField('Queued By:', `${queuer}`, true);
+    // Send the embed to the same channel as the message
+}
+
+function generateDetailedResultEmbed(result, queuer){		
+	return new Discord.MessageEmbed()
+		// Set the title of the field
+		.setTitle(getResultTitle(result))
+		// Set the color of the embed
+		.setColor(0xFF0000)
+        .setURL(result.webpage_url)
+		// Set the main content of the embed
+		.setDescription(result.description)
 		.setThumbnail(result.thumbnail)
 		.addField('Duration:', result.duration, true)
 		.addField('Queued By:', `${queuer}`, true);
@@ -341,15 +358,49 @@ exports.play = {
                     console.log(err);
                     response.edit('Invalid Video!!');
                 } else {
-                    const embed = generateResultEmbed('Queued:',info,msg.author);
-                    response = await response.edit({ content: ' ', embeds: [embed]});
+                    const embed = generateDetailedResultEmbed(info,msg.author);
+                    response = await response.edit({ content: 'Queued To Play:', embeds: [embed]});
                     const events = await playYoutube(info,getUserVoiceChannel(msg),msg.author);
                     const waiter = VoiceManager.EventWaiter(events);
                     await waiter.playing();
-                    const embed2 = generateResultEmbed('Now Playing',info,msg.author);
-                    await response.edit({ embeds: [embed2]});
+                    await response.edit({ content: 'Now Playing:', embeds: [embed]});
                 }
             });
+        });
+    },
+    slashCommand: new SlashCommandBuilder()
+        .setName('play')
+        .setDescription("Plays internet video/audio in voice.")
+        .addStringOption(option => option
+            .setName('args')
+            .setDescription('search terms or a URL from a site in http://rg3.github.io/youtube-dl/supportedsites.html')
+            .setRequired(true)),
+    slashCommandExec: async interaction => {
+        let suffix = interaction.options.getString('args');
+        const channels = await interaction.guild.channels.fetch();
+        let voiceChannelArray = channels.filter((v)=>v.type == "GUILD_VOICE").filter((v)=>v.members.has(interaction.member.id));
+        if (voiceChannelArray.length == 0) {
+            return await interaction.reply({content: 'You\'re not in a voice channel.', ephemeral: true});
+        }
+        let msgtxt = 'Loading...'
+        if(!isUrl(suffix)) {
+            suffix = 'ytsearch1:' + suffix;
+            msgtxt = 'Searching...'
+        }
+        await interaction.reply({content:msgtxt,ephemeral:true});
+        YoutubeDL.getInfo(suffix, ['-i','--max-downloads', '1', '--no-playlist', '--no-check-certificate'], async (err,info) =>{
+            if(err){
+                console.log(err);
+                interaction.followUp({content: 'Invalid Video!!', ephemeral: true});
+            } else {
+                console.log(JSON.stringify(info));
+                const embed = generateDetailedResultEmbed(info,interaction.member);
+                response = await interaction.followUp({ content: 'Queued To Play:', embeds: [embed]});
+                const events = await playYoutube(info,voiceChannelArray.at(0),interaction.member);
+                const waiter = VoiceManager.EventWaiter(events);
+                await waiter.playing();
+                await response.edit({ content: 'Now Playing:', embeds: [embed]});
+            }
         });
     }
 }
