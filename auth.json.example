@@ -12,5 +12,6 @@
   "twitch_client_secret": "get this from the twitch dev dashboard once you've created your twitch app",
   "finage_api_key": "create one at https://finage.co.uk/",
   "spotify_client_id": "create an app at https://developer.spotify.com/my-applications/",
-  "spotify_client_secret": "create an app at https://developer.spotify.com/my-applications/"
+  "spotify_client_secret": "create an app at https://developer.spotify.com/my-applications/",
+  "giphy_api_key": "create an api app at https://developers.giphy.com/dashboard/?create=true"
 }
