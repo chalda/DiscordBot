@@ -52,7 +52,8 @@
     "vm2": "^3.9.11",
     "wikijs": "^6.0.1",
     "youtube-dl": "^3.0.2",
-    "youtube-node": "^1.3.3"
+    "youtube-node": "^1.3.3",
+    "prettier": "2.5.0"
   },
   "main": "discord_bot.js",
   "scripts": {
