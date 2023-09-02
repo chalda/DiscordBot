@@ -6,6 +6,5 @@
     "trailingComma": "none",
     "jsxBracketSameLine": false,
     "parser": "babel",    // Updated to use Babel parser instead of babylon.
-    "semi": false,        // Updated to remove semicolons at the end of every line.
     "rcVerbose": true
 }
