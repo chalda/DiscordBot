@@ -15,7 +15,7 @@ exports.urban = {
 					targetWord.first(function(json) {
 							if (json) {
 								console.log(JSON.stringify(json));
-								messages = [];
+								let messages = [];
 								const title = `Urban Dictionary: **${json.word}**`;
 								let definition = "Definition: " + json.definition;
 								let message = title + "\n\n" + definition;
