@@ -75,11 +75,11 @@ function load_plugins(hooks){
     var commandCount = 0;
     for (var i = 0; i < plugin_folders.length; i++) {
         var plugin;
-        try{
+        //try{
             plugin = require(plugin_directory + plugin_folders[i])
-        } catch (err){
+        /*} catch (err){
             console.log("Improper setup of the '" + plugin_folders[i] +"' plugin. : " + err);
-        }
+        }*/
         if (plugin){
             if(plugin.init){
                 plugin.init(hooks)

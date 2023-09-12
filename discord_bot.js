@@ -16,6 +16,8 @@ try {
   process.exit();
 }
 
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 console.log(
   "Starting DiscordBot\nNode version: " +
   process.version +
@@ -168,6 +170,12 @@ commands = {
         msg.channel.send("Note that !ping takes no arguments!");
       }
     },
+    slashCommand: new SlashCommandBuilder()
+    .setName('ping')
+    .setDescription('Responds pong; useful for checking if bot is alive.'),
+    slashCommandExec: async (interaction) => {
+      await interaction.reply('pong!');
+    }
   },
   idle: {
     description: "Sets bot status to idle.",
@@ -206,6 +214,13 @@ commands = {
     process: function (bot, msg, suffix) {
       msg.channel.send(suffix);
     },
+    slashCommand: new SlashCommandBuilder()
+    .setName('say')
+    .setDescription('Bot sends message')
+    .addStringOption(option => option.setName('message').setDescription('The message to say.').setRequired(true)),
+    slashCommandExec: async (interaction) => {
+      await interaction.reply(interaction.options.getString('message'));
+    }
   },
   announce: {
     usage: "<message>",
@@ -359,7 +374,7 @@ let hooks = {
   onMessage: [],
 };
 
-bot.on("ready", function () {
+bot.on("ready", async function () {
   require("./plugins.js").init(hooks);
   console.log(
     "Logged in! Currently serving " +
@@ -379,6 +394,48 @@ bot.on("ready", function () {
   console.log(
     "Type " + Config.commandPrefix + "help on Discord for a command list."
   );
+  let guilds = await bot.guilds.fetch();
+  //console.log(guilds);
+  for (oauth_guild of guilds) {
+    const guild = await oauth_guild[1].fetch();
+    const guild_permissions = guild.members.resolve(bot.user.id).permissions;
+    const allowed = guild_permissions.has('USE_APPLICATION_COMMANDS');
+    if(!allowed) {
+      console.log(`skipping slash command registration for ${guild.name} since we don't have permission to do so in that guild.`);
+      continue;
+    }
+    //console.log(guild_permissions.toArray());
+    console.log(`registering commands for ${guild.name}`);
+    
+    /*bot.application.commands.create(new SlashCommandBuilder()
+    .setName('ping')
+    .setDescription('Guild test command to ping the bot')
+    ,guild[1].id).then(console.log).catch(console.error);*/
+    //console.log(Object.keys(commands));
+    let cmdNames = Object.keys(commands);
+    for (let i in cmdNames) {
+      let command = commands[cmdNames[i]];
+      if (command.hasOwnProperty('makeSlashCommand')) {
+        command.makeSlashCommand().then(async slashcmd => {
+          try {
+            const result = await bot.application.commands.create(slashcmd,guild.id);
+            command.slashCommandResult = result;
+          } catch (err) {
+            console.log(err);
+          }
+        }).catch(err => console.log(err));
+      } else if (command.hasOwnProperty('slashCommand')) {
+        bot.application.commands.create(command.slashCommand,guild.id)
+          .then(result => command.slashCommandResult = result)
+          .catch(err => console.log(err));
+      }
+    }
+  }
+  /*bot.application.commands.create({
+    name: 'ping',
+    description: 'Test command to ping the bot',
+    dmPermission: true
+  }).then(console.log).catch(console.error);*/
 });
 
 bot.on("disconnected", function () {
@@ -560,8 +617,24 @@ bot.on("messageUpdate", (oldMessage, newMessage) => {
   checkMessageForCommand(newMessage, true);
 });
 
-bot.on('interactionCreate', (interation) => {
-  console.log(`interaction: ${JSON.stringify(interation)}`);
+bot.on('interactionCreate', (interaction) => {
+  console.log(`interaction: ${interaction.toString()}`);
+  /*if (interaction.commandName === 'ping') {
+    interaction.reply('pong!')
+  }*/
+  if (interaction.isCommand()) {
+    let handled = false;
+    if (commands.hasOwnProperty(interaction.commandName)) {
+      const cmd = commands[interaction.commandName];
+      if (cmd.hasOwnProperty('slashCommandExec')) {
+        cmd.slashCommandExec(interaction);
+        handled = true;
+      }
+    }
+    if (!handled) {
+      console.log(`interaction ${interaction.commandName} not handled!`);
+    }
+  }
 });
 
 //Log user status changes

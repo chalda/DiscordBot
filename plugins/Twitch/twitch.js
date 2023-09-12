@@ -1,6 +1,8 @@
 let request = require("request");
 let AuthDetails = require("../../auth.js").getAuthDetails();
 let Discord = require("discord.js");
+const { reject } = require("lodash");
+const { SlashCommandBuilder } = require("@discordjs/builders");
 
 exports.commands = [
     "twitch_user",
@@ -66,7 +68,117 @@ exports.twitch_user = {
 	}
 }
 
-//{"access_token":"6ln64v93opvb44ltjo04axly5zm2ex","expires_in":5342200,"token_type":"bearer"}
+async function twitch_stream(query) {
+    let twitch_api = "https://api.twitch.tv/helix/";
+    let user_query = "users?login=" + query.split(' ').join("&login=");
+    let stream_query = "streams?user_login=" + query.split(' ').join("&user_login=");
+    try {
+        const access_token = await GetAccessToken();
+        let users = await new Promise(function(resolve,reject){
+            request({
+                url: twitch_api+user_query,
+                headers: {
+                    'Client-ID': AuthDetails.twitch_client_id,
+                    'Authorization': `Bearer ${access_token}`
+                }
+            },
+            function(err,res,body){
+                let content = JSON.parse(body);
+                if(content && content.data && content.data.length > 0){
+                    resolve(content.data);
+                } else {
+                    reject(err,res,body);
+                }
+            });
+        });
+
+        console.log(JSON.stringify(users));
+        let usermap = users.reduce(function(map,element){
+            map[element.id] = element;
+            return map;
+        },{});
+        let streams = await new Promise((resolve,reject) => 
+            request({
+                url: twitch_api+stream_query,
+                headers: {
+                    'Client-ID': AuthDetails.twitch_client_id,
+                    'Authorization': `Bearer ${access_token}`
+                }
+            },
+            function(err,res,body){
+                let content = JSON.parse(body);
+                let streams = [];
+                if(content && content.data && content.data.length > 0){
+                    streams = content.data;
+                }
+                resolve(streams);
+        }));
+        console.log(JSON.stringify(streams));
+        let result = {
+            embeds: []
+        };
+        for(stream of streams){
+            let image = stream.thumbnail_url.replace("{width}","1920").replace("{height}","1080");
+            let status_line;
+            if(stream.type == "live"){
+                status_line = " is live!";
+            } else if(stream.type == "vodcast"){
+                status_line = " is streaming a vodcast";
+            } else {
+                status_line = " is offline";
+                image = stream.offline_image_url
+            }
+            let user = usermap[stream.user_id];
+            delete usermap[stream.user_id];
+            let title;
+            if(stream.title && stream.title.length > 0){
+                title = stream.title;
+            } else {
+                title = "Stream is Live!";
+            }
+            result.embeds.push({
+                color: 0x4b367c,
+                author: {
+                    name: user.display_name + status_line
+                },
+                url: "https://www.twitch.tv/"+user.login,
+                title: stream.title,
+                "thumbnail": {
+                    url: user.profile_image_url
+                },
+                "image": {
+                    url: image
+                },
+                "footer": {
+                    "icon_url": "https://media.forgecdn.net/attachments/214/576/twitch.png",
+                    "text": stream.viewer_count + " viewers"
+                }
+            });
+        }
+        for(userid in usermap){
+            let user = usermap[userid];
+            result.embeds.push({
+                color: 0x4b367c,
+                author: {
+                    name: user.display_name + " is offline"
+                },
+                url: "https://www.twitch.tv/"+user.login,
+                title: "Stream is Offline",
+                description: user.description,
+                "thumbnail": {
+                    url: user.profile_image_url
+                },
+                "image": {
+                    url: user.offline_image_url
+                }
+            });
+        }
+        return result;
+    } catch (err) {
+        console.log(`Couldn't query twitch for ${query}\n${err}`);
+        return null;
+    }
+}
 
 exports.twitch = {
 	usage: "<stream(s)>",
@@ -93,9 +205,6 @@ exports.twitch = {
                     }
                 });
             });
-            let stream_promise = new Promise(function(resolve,reject){
-                
-            });
             user_promise.then(users => {
                 console.log(JSON.stringify(users));
                 let usermap = users.reduce(function(map,element){
@@ -112,6 +221,7 @@ exports.twitch = {
                 
                 function(err,res,body){
                     let content = JSON.parse(body);
+                    console.log(content);
                     let streams = [];
                     if(content && content.data && content.data.length > 0){
                         streams = content.data;
@@ -189,5 +299,21 @@ exports.twitch = {
             console.log(JSON.stringify(res));
             console.log(JSON.stringify(body));
         });
-	}
+	},
+    slashCommand: new SlashCommandBuilder()
+        .setName('twitch')
+        .setDescription("returns information about the given twitch stream(s)")
+        .addStringOption(option => option
+            .setName('streams')
+            .setDescription('the stream(s) to show the status of')
+            .setRequired(true)),
+    slashCommandExec: async interaction => {
+        const streams = interaction.options.getString('streams');
+        const result = await twitch_stream(streams);
+        if (result) {
+            await interaction.reply(result);
+        } else {
+            await interaction.reply({content:`Couldn't get info from twitch about ${streams}`, ephemeral: true});
+        }
+    }
 }
