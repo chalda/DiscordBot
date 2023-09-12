@@ -224,15 +224,31 @@ commands = {
       if (user.startsWith("<@")) {
         user = user.substr(2, user.length - 3);
       }
+
       let target = msg.channel.guild.members.fetch({ query: user, limit: 1 });
       target
         .then((result) => {
-          messagebox[target.id] = {
-            channel: msg.channel.id,
-            content: target + ", " + msg.author + " said: " + message,
-          };
-          updateMessagebox();
-          msg.channel.send("Message saved.");
+          if (result.size > 0) {
+            if (messagebox[result.firstKey()] == undefined) {
+              messagebox[result.firstKey()] = [
+                {
+                  author: msg.author,
+                  content: message
+                }];
+            } else {
+              messagebox[result.firstKey()].push(
+                {
+                  author: msg.author,
+                  content: message
+                }
+              );
+            }
+            updateMessagebox();
+            msg.channel.send("Message saved.");
+          } else {
+            msg.channel.send("Could not find user.");
+          }
+          
         })
         .catch(console.error);
     },
@@ -306,7 +322,37 @@ commands = {
         }
       }
     },
-  },
+    },
+  msglist: {
+    usage: "<user>",
+    description: "Retrieves messages that will be sent to a user when they come online.",
+    process: function (bot, msg, suffix) {
+      let args = suffix.split(" ");
+      let user = args.shift();
+      if (user.startsWith("<@")) {
+        user = user.substr(2, user.length - 3);
+      }
+
+      msg.channel.guild.members.fetch({ query: user, limit: 1 })
+        .then((result) => {
+          if (result.size > 0) {
+            if (messagebox[result.firstKey()] == undefined) {
+              msg.author.send("No messages for " + user);
+            } else {
+              msg.author.send("Messages for " + user + ":\n");
+              messagebox[result.firstKey()].forEach((msgItem, i) => {
+                if (msg.author.id == msgItem.author.id) {
+                  msg.author.send(i + ": '" + msgItem.content + "'\n");
+                }
+              });
+            }
+          } else {
+            msg.channel.send("Could not find user.");
+          }
+        })
+        .catch(console.error);
+    },
+  }
 };
 
 if (AuthDetails.hasOwnProperty("client_id")) {
@@ -565,21 +611,32 @@ bot.on('interactionCreate', (interation) => {
 });
 
 //Log user status changes
-bot.on("presence", function (user, status, gameId) {
-  //if(status === "online"){
-  //console.log("presence update");
-  console.log(user + " went " + status);
-  //}
+bot.on("presenceUpdate", (oldPresence, newPresence) => {
+  // Note: There may not be a value for oldPresencee
+  //console.log(oldPresence.userID + " went " + oldPresence.status + " d:" + oldPresence.clientStatus.desktop + " m:" + oldPresence.clientStatus.mobile + " w:" + oldPresence.clientStatus.web);
+  //console.log(newPresence.userID + " went " + newPresence.status + " d:" + newPresence.clientStatus.desktop + " m:" + newPresence.clientStatus.mobile + " w:" + newPresence.clientStatus.web);
+
   try {
-    if (status != "offline") {
-      if (messagebox.hasOwnProperty(user.id)) {
-        console.log("Found message for " + user.id);
-        let message = messagebox[user.id];
-        let channel = bot.channels.get("id", message.channel);
-        delete messagebox[user.id];
+    // check for new messages if user status changes to online or idle only
+    if (newPresence.status === "online" || newPresence.status === "idle") {
+      let msgs = messagebox[newPresence.userID];
+      if (msgs != undefined) {
+        console.log("Fetching message/s for " + newPresence.userID);
+
+        // send messages
+        msgs.forEach(msg => {
+          bot.users.fetch(newPresence.userID)
+            .then((user) => {
+              user.send(
+                "New Message From " + msg.author.username + "!\n" +
+                "'" + msg.content + "'")
+          });
+        });
+
+        // delete all messages
+        delete messagebox[newPresence.userID];
         updateMessagebox();
-        bot.send(channel, message.content);
-      }
+      } 
     }
   } catch (e) { }
 });
