@@ -2,8 +2,7 @@ const fs = require("fs");
 const _ = require("lodash");
 
 process.on("unhandledRejection", (reason) => {
-  console.error(reason);
-  process.exit(1);
+  console.error("Unhandled promise rejection:", reason);
 });
 
 let Discord;
@@ -222,7 +221,7 @@ commands = {
       let user = args.shift();
       let message = args.join(" ");
       if (user.startsWith("<@")) {
-        user = user.substr(2, user.length - 3);
+        user = user.substring(2, user.length - 1);
       }
       let target = msg.channel.guild.members.fetch({ query: user, limit: 1 });
       target
@@ -262,7 +261,7 @@ commands = {
       let cmd = args.shift();
 
       if (userid.startsWith("<@")) {
-        userid = userid.substr(2, userid.length - 3);
+        userid = userid.substring(2, userid.length - 1);
       }
 
       let target = msg.channel.guild.members.find("id", userid);
@@ -510,7 +509,7 @@ function checkMessageForCommand(msg, isEdit) {
           }
           if (msgTxt.length > 1024 - 8) {
             //Truncate the stack if it's too long for a discord message
-            msgTxt = msgTxt.substr(0, 1024 - 8);
+            msgTxt = msgTxt.substring(0, 1024 - 8);
           }
           msg.channel.send(msgTxt);
         }
